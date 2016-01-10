@@ -1,0 +1,60 @@
+#+TITLE: GTD
+#+AUTHOR: sunday
+#+TAGS: { WORK(w) Emacs(e) PROJECT(p) WANT(s) Daily(x) Weekly(y) Monthly(z) }
+
+* workspace
+
+* asdk
+:PROPERTIES
+:CATEGORY: asdk
+:END
+
+* sunday                                                               :WANT:
+** TODO [#B] 将 dotfile 文件使用 github 管理
+SCHEDULED: <2016-01-10 日>
+** TODO [#B] 将 org gtd 文件是哦用 github 管理
+SCHEDULED: <2016-01-10 日>
+
+* Reading
+** TODO [#C] UNIX 编程艺术
+** TODO [#C] 程序员修炼之道
+** TODO [#C] UNIX 环境高级编程
+** TODO [#C] 程序员的自我修养
+** TODO [#C] 代码大全
+** TODO [#C] 深入理解计算机系统
+** TODO [#C] 人月神话
+** TODO [#C] 程序员的思维修炼 : 开发认知潜能的九堂课
+** TODO [#C] Effective C++ : 改善程序与设计的 55 个具体做法(第 3 版)
+** TODO [#C] More Effective C++（中文版） : 35 个改善编程与设计的有效方法
+** TODO [#C] 梦断代码
+** TODO [#C] 深度探索 C++对象模型
+** TODO [#C] 提高 C++性能的编程技术
+** TODO [#C] 编程匠艺 : 编写卓越的代码
+** TODO [#C] More Exceptional C++（中文版）
+** TODO [#C] Effective STL 中文版 : 50 条有效使用 STL 的经验
+** TODO [#C] Exceptional C++（中文版）
+ 
+** TODO [#C] read the wget documention
+** TODO [#C] read the lftp documention
+** TODO [#C] read the sed documention
+** TODO [#C] read the tmux documention
+
+* Daily Task                                                          :Daily:
+:PROPERTIES
+:CATEGORY: daily
+:END
+
+* Weekly Task                                                        :Weekly:
+:PROPERTIES
+:CATEGORY: weekly
+:END
+** TODO Finishing last week to complete the work and the work schedule next week
+DEADLINE: <2016-01-11 日 +1w>
+
+* Monthly Task                                                      :Monthly:
+:PROPERTIES
+:CATEGORY: monthly
+:END
+** TODO Finishing last month to complete the work and the work schedule next month
+DEADLINE: <2016-01-31 五 +1m>
+

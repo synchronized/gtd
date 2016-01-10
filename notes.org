@@ -1,0 +1,20 @@
+#+TITLE: Notes
+#+AUTHOR: sunday
+#+TAGS: { WORK(w) Emacs(e) PROJECT(p) WANT(s) Learn(l) }
+
+* Quick notes
+
+** org-mode 
+- [[http://www.cnblogs.com/Open_Source/archive/2011/07/17/2108747.html#fn.5][Org-mode 简明手册]]
+ 
+ [2016-01-10 日 17:25]
+
+* Learning                                                            :Learn:
+** emacs lisp                                                       :Emacs:
+*** TODO [#B] magit mode 
+SCHEDULED: <2016-01-10 日>
+** skynet 
+** tcp/ip protocol 
+** iptables for linux
+** metasploit framework
+** Hadoop
