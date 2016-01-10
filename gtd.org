@@ -10,10 +10,10 @@
 :END
 
 * sunday                                                               :WANT:
-** TODO [#B] 将 dotfile 文件使用 github 管理
-SCHEDULED: <2016-01-10 日>
-** TODO [#B] 将 org gtd 文件是哦用 github 管理
-SCHEDULED: <2016-01-10 日>
+** DONE [#B] 将 dotfile 文件使用 github 管理
+CLOSED: [2016-01-10 日 23:58] SCHEDULED: <2016-01-10 日>
+** DONE [#B] 将 org gtd 文件是哦用 github 管理
+CLOSED: [2016-01-10 日 23:58] SCHEDULED: <2016-01-10 日>
 
 * Reading
 ** TODO [#C] UNIX 编程艺术

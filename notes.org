@@ -11,8 +11,8 @@
 
 * Learning                                                            :Learn:
 ** emacs lisp                                                       :Emacs:
-*** TODO [#B] magit mode 
-SCHEDULED: <2016-01-10 日>
+*** DONE [#B] magit mode 
+CLOSED: [2016-01-10 日 23:58] SCHEDULED: <2016-01-10 日>
 ** skynet 
 ** tcp/ip protocol 
 ** iptables for linux
