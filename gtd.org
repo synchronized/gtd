@@ -1,13 +1,152 @@
 #+TITLE: GTD
 #+AUTHOR: sunday
-#+TAGS: { WORK(w) Emacs(e) PROJECT(p) WANT(s) Daily(x) Weekly(y) Monthly(z) }
+#+TAGS: { WORK(w) Emacs(e) PROJECT(p) WANT(s) Daily(x) Weekly(y) Monthly(z) asdk(a) }
 
 * workspace
 
-* asdk
+
+* asdk                                                                 :asdk:
 :PROPERTIES
 :CATEGORY: asdk
 :END
+** DONE [#A] sdk 联调-飓风（jufengsdk)
+CLOSED: [2016-01-11 一 18:43] SCHEDULED: <2016-01-07 四>
+** DONE [#A] sdk 联调-盟宝充值通知接入问题
+CLOSED: [2016-01-11 一 18:42] 解决了充值通知地址返回格式错误的问题
+** DONE [#A] 充值查询-玉米 sdk（cornsdk)-充值不到帐
+CLOSED: [2016-01-11 一 18:42] SCHEDULED: <2016-01-11 一>
+CREATED: [2016-01-11 一 09:57]
+
+** DONE [#A] sdk 接入-三星爱贝(samsungsdk)
+CLOSED: [2016-01-20 三 09:55] SCHEDULED: <2016-01-13 三>
+[[file:~/workdoc/asdk-hz/samsungsdk/Android%E8%81%9A%E5%90%88%E6%94%AF%E4%BB%983.4.6%EF%BC%88%E5%B8%A6%E8%B4%A6%E5%8F%B7%E7%99%BB%E5%BD%95%E5%8A%9F%E8%83%BD%EF%BC%89.doc][接入文档]]
+[[http://www.iapppay.com/g-introduction.html][接入文档-服务端]]
+CREATED: [2016-01-11 一 18:40]
+** DONE [#B] sdk 接入-悠讯(yooxunsdk)
+CLOSED: [2016-01-13 三 09:14] SCHEDULED: <2016-01-11 一>
+[[file:~/workdoc/asdk-hz/yooxun/2016-01-12/%E8%AF%95%E7%8E%A9%E7%9B%92%E5%AD%90_android_sdk_%E6%8E%A5%E5%85%A5%E6%96%87%E6%A1%A3.pdf][接入文档-客户端]]
+[[file:~/workdoc/asdk-hz/yooxun/2016-01-12/%E8%AF%95%E7%8E%A9%E7%9B%92%E5%AD%90_server_%E6%8E%A5%E5%85%A5%E6%96%87%E6%A1%A3.pdf][接入文档-服务器]]
+** DONE [#A] sdk 接入-魔方 sdk(morefunsdk)
+CLOSED: [2016-01-20 三 09:55] SCHEDULED: <2016-01-13 三>
+[[file:~/workdoc/asdk-hz/morefunsdk/MoreFunSDK_2.2.5_Android_SDK_demo_%E6%96%87%E6%A1%A3/doc/MoreFun%20SDK-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8E%A5%E5%85%A5%E6%96%87%E6%A1%A3.docx][接入文档-server]]
+[[file:~/workdoc/asdk-hz/morefunsdk/MoreFunSDK_2.2.5_Android_SDK_demo_%E6%96%87%E6%A1%A3/doc/MoreFun-%E5%AE%A2%E6%88%B7%E7%AB%AF.doc][接入文档-client]]
+[[file:~/workdoc/asdk-hz/morefunsdk/MoreFunSDK_2.2.5_Android_SDK_demo_%E6%96%87%E6%A1%A3/doc/SDK-%E6%B5%81%E7%A8%8B.docx][接入文档-流程]]
+** DONE [#B] sdk 接入-悠悠村 sdk(youyoucunsdk)
+CLOSED: [2016-01-20 三 17:43]
+CBC 加密(充值)
+SCHEDULED: <2016-01-20 三>
+** DONE [#B] sdk 接入-榴莲 sdk(liuliansdk)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+** DONE [#B] qqsdk2-优化[4/4]
+CLOSED: [2016-01-25 一 15:29]
+- [X] qqsdklogin 协议
+- [X] wxsdklogin 协议
+- [X] pay 协议
+- [X] getbalence 协议
+SCHEDULED: <2016-01-22 五>
+** DONE [#B] 07073 sdk 联调（syiossdk）
+CLOSED: [2016-01-25 一 16:10] SCHEDULED: <2016-01-20 三>
+** DONE [#B] sdk 充值回调问题查找-畅玩(changwansdk)
+CLOSED: [2016-01-22 一 15:29] SCHEDULED: <2016-01-22 五>
+
+** TODO [#B] amsdk 优化
+将每个游戏不同的现金货币的名称改为配置
+* gamesconfig
+:PROPERTIES
+:CATEGORY: asdk
+:END
+** 数码宝贝新秩序(100079100322)
+[[file:~/workdoc/asdk/param/2016-01-13/%E3%80%8A%E6%95%B0%E7%A0%81%E5%AE%9D%E8%B4%9D%E6%96%B0%E7%A7%A9%E5%BA%8F%E3%80%8B-%E8%BF%90%E8%90%A5%E4%B8%80%E9%83%A8-SDK%E6%8E%A5%E5%85%A5%E8%A1%A820160111.xls][《数码宝贝新秩序》-运营一部-SDK 接入表 20160111.xls]]
+[[file:~/workdoc/asdk/param/2016-01-13/%E3%80%8A%E6%95%B0%E7%A0%81%E5%AE%9D%E8%B4%9D%E6%96%B0%E7%A7%A9%E5%BA%8F%E3%80%8B-%E8%BF%90%E8%90%A5%E4%BA%8C%E9%83%A8-SDK%E6%8E%A5%E5%85%A5%E8%A1%A820160113.xls][《数码宝贝新秩序》-运营二部-SDK 接入表 20160113.xls]]
+[[file:~/workdoc/asdk/param/2016-01-11/%E9%98%BF%E6%96%AF%E5%8D%A1%E5%BE%B7%E3%80%8A%E8%8B%B1%E9%9B%84%E4%B8%87%E5%B2%81%E3%80%8B1215%E9%A6%96%E5%8F%91SDK%E6%8E%A5%E5%85%A5%E9%9C%80%E6%B1%82%E8%A1%A8.xls][阿斯卡德《英雄万岁》1215 首发 SDK 接入需求表.xls]]
+*** DONE [#B] 配置参数-虫虫(ccsdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-游龙(youlongsdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-海马(hmsdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-靠谱(kaopu2sdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-07073(sysdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+
+*** DONE [#B] 配置参数-当乐(downjoy2sdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-oppo(oppo2sdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-vivo(vivo2sdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+*** TODO [#B] 配置参数-优酷(youkugamesdk)-数码宝贝新秩序(100079100322)
+SCHEDULED: <2016-01-26 二>
+*** DONE [#B] 配置参数-豌豆荚(wandousdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-魅族(meizusdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-金立(amsdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
+*** TODO [#B] 配置参数-4399(m4399sdk)-数码宝贝新秩序(100079100322)
+SCHEDULED: <2016-01-26 四>
+*** TODO [#B] 配置参数-酷狗(kugou2sdk)-数码宝贝新秩序(100079100322)
+SCHEDULED: <2016-01-26 四>
+*** DONE [#B] 配置参数-TT 语音(ttsdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 18:10] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-安峰(anfansdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 18:14] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-果盘(guopansdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 19:35] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-有米(umisdk)-数码宝贝新秩序(100079100322)
+CLOSED: [2016-01-21 四 19:37] SCHEDULED: <2016-01-21 四>
+
+
+** 数码宝贝 go(100079100328)
+*** DONE [#B] 配置参数-360(qihoo2sdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-21 四 18:24]
+将 360 的参数改为多宝的（因为 360 的要给别家发）
+SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-联想(lenovo2sdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-25 一 13:46]
+没有配置计费点
+SCHEDULED: <2016-01-26 二>
+*** DONE [#B] 配置参数-安峰(anfansdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-22 五 21:30] SCHEDULED: <2016-01-22 五>
+*** DONE [#B] 配置参数-乐视(letvsdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-22 五 21:30] SCHEDULED: <2016-01-22 五>
+*** DONE [#B] 配置参数-当乐(downjoy2sdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-22 五 21:30] SCHEDULED: <2016-01-22 五>
+*** DONE [#B] 配置参数-vivo(vivo2sdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-22 五 21:30] SCHEDULED: <2016-01-22 五>
+*** DONE [#B] 配置参数-安智(anzhisdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-22 五 21:33] SCHEDULED: <2016-01-22 五>
+*** DONE [#B] 配置参数-应用宝(qqsdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-25 一 16:05] SCHEDULED: <2016-01-22 五>
+*** DONE [#B] 配置参数-金立(amsdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-22 五 21:33] SCHEDULED: <2016-01-22 五>
+*** DONE [#B] 配置参数-4399(m4399sdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-22 五 21:39] SCHEDULED: <2016-01-22 五>
+*** DONE [#B] 配置参数-搜狗(sogousdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-22 五 21:39] SCHEDULED: <2016-01-22 五>
+*** DONE [#B] 配置参数-当乐(downjoyiossdk)-数码宝贝 go(100079100328)
+CLOSED: [2016-01-22 五 21:39] SCHEDULED: <2016-01-22 五>
+
+** 英雄无间道(100079100244)
+*** DONE [#B] 配置参数-爱兔子(itoolsiossdk)-英雄无间道(100079100244)
+CLOSED: [2016-01-20 三 17:46] SCHEDULED: <2016-01-20 三>
+CREATED: [2016-01-20 三 17:04]
+*** DONE [#B] 配置参数-当乐(ios)2sdk(downjoyios2sdk)-英雄无间道(100079100244)
+CLOSED: [2016-01-11 一 18:42] SCHEDULED: <2016-01-11 一>
+CREATED: [2016-01-11 一 09:47]
+*** DONE [#B] 配置参数-应用宝(qqsdk)-英雄无间道(100079100244)
+CLOSED: [2016-01-25 一 16:04] SCHEDULED: <2016-01-22 五>
+*** DONE [#B] 配置参数-悠悠村(youyoucun)-英雄无间道(100079100244)
+CLOSED: [2016-01-21 四 17:38] SCHEDULED: <2016-01-21 四>
+*** DONE [#B] 配置参数-榴莲 sdk(liuliansdk)-英雄无间道(100079100244)
+CLOSED: [2016-01-21 四 17:36] SCHEDULED: <2016-01-21 四>
+** 小小三国(100079100316)
+*** DONE [#B] 配置参数-啊游戏-小小三国(100079100316)
+CLOSED: [2016-01-21 四 14:24] SCHEDULED: <2016-01-14 四>
+[[file:~/workdoc/asdk/param/2016-01-11/%E5%B0%8F%E5%B0%8F%E4%B8%89%E5%9B%BD-%E9%98%BF%E6%B8%B8%E6%88%8F%E5%8F%82%E6%95%B0.txt][小小三国-阿游戏参数.txt]]
+
+
 
 * sunday                                                               :WANT:
 ** DONE [#B] 将 dotfile 文件使用 github 管理
@@ -33,11 +172,10 @@ CLOSED: [2016-01-10 日 23:58] SCHEDULED: <2016-01-10 日>
 ** TODO [#C] More Exceptional C++（中文版）
 ** TODO [#C] Effective STL 中文版 : 50 条有效使用 STL 的经验
 ** TODO [#C] Exceptional C++（中文版）
- 
-** TODO [#C] read the wget documention
-** TODO [#C] read the lftp documention
-** TODO [#C] read the sed documention
-** TODO [#C] read the tmux documention
+** TODO [#C] wget documention
+** TODO [#C] lftp documention
+** TODO [#C] sed documention
+** TODO [#C] tmux documention
 
 * Daily Task                                                          :Daily:
 :PROPERTIES
@@ -49,8 +187,11 @@ CLOSED: [2016-01-10 日 23:58] SCHEDULED: <2016-01-10 日>
 :CATEGORY: weekly
 :END
 ** TODO Finishing last week to complete the work and the work schedule next week
-DEADLINE: <2016-01-11 日 +1w>
-
+DEADLINE: <2016-02-01 一 +1w>
+:PROPERTIES:
+:LAST_REPEAT: [2016-01-22 五 09:41]
+:END:
+- State "DONE"       from "TODO"       [2016-01-22 五 09:39]
 * Monthly Task                                                      :Monthly:
 :PROPERTIES
 :CATEGORY: monthly
