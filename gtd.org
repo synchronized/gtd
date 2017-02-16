@@ -1,386 +1,40 @@
 #+TITLE: GTD
 #+AUTHOR: sunday
-#+TAGS: { WORK(w) Emacs(e) PROJECT(p) WANT(s) Daily(x) Weekly(y) Monthly(z) asdk(a) }
+#+TAGS: { Emacs(e) PROJECT(p) WANT(s) Daily(x) Weekly(y) Monthly(z) asdk(a) ks(k) }
+#+TAGS: { bug(b) task(t) }
 
 * workspace
 
 
-* asdk                                                                 :asdk:
-:PROPERTIES
-:CATEGORY: asdk
-:END
-** DONE [#A] sdk 联调-飓风（jufengsdk)
-CLOSED: [2016-01-11 一 18:43] SCHEDULED: <2016-01-07 四>
-** DONE [#A] sdk 联调-盟宝充值通知接入问题
-CLOSED: [2016-01-11 一 18:42] 解决了充值通知地址返回格式错误的问题
-** DONE [#A] 充值查询-玉米 sdk（cornsdk)-充值不到帐
-CLOSED: [2016-01-11 一 18:42] SCHEDULED: <2016-01-11 一>
-CREATED: [2016-01-11 一 09:57]
 
-** DONE [#A] sdk 接入-三星爱贝(samsungsdk)
-CLOSED: [2016-01-20 三 09:55] SCHEDULED: <2016-01-13 三>
-[[file:~/workdoc/asdk-hz/samsungsdk/Android%E8%81%9A%E5%90%88%E6%94%AF%E4%BB%983.4.6%EF%BC%88%E5%B8%A6%E8%B4%A6%E5%8F%B7%E7%99%BB%E5%BD%95%E5%8A%9F%E8%83%BD%EF%BC%89.doc][接入文档]]
-[[http://www.iapppay.com/g-introduction.html][接入文档-服务端]]
-CREATED: [2016-01-11 一 18:40]
-** DONE [#B] sdk 接入-悠讯(yooxunsdk)
-CLOSED: [2016-01-13 三 09:14] SCHEDULED: <2016-01-11 一>
-[[file:~/workdoc/asdk-hz/yooxun/2016-01-12/%E8%AF%95%E7%8E%A9%E7%9B%92%E5%AD%90_android_sdk_%E6%8E%A5%E5%85%A5%E6%96%87%E6%A1%A3.pdf][接入文档-客户端]]
-[[file:~/workdoc/asdk-hz/yooxun/2016-01-12/%E8%AF%95%E7%8E%A9%E7%9B%92%E5%AD%90_server_%E6%8E%A5%E5%85%A5%E6%96%87%E6%A1%A3.pdf][接入文档-服务器]]
-** DONE [#A] sdk 接入-魔方 sdk(morefunsdk)
-CLOSED: [2016-01-20 三 09:55] SCHEDULED: <2016-01-13 三>
-[[file:~/workdoc/asdk-hz/morefunsdk/MoreFunSDK_2.2.5_Android_SDK_demo_%E6%96%87%E6%A1%A3/doc/MoreFun%20SDK-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8E%A5%E5%85%A5%E6%96%87%E6%A1%A3.docx][接入文档-server]]
-[[file:~/workdoc/asdk-hz/morefunsdk/MoreFunSDK_2.2.5_Android_SDK_demo_%E6%96%87%E6%A1%A3/doc/MoreFun-%E5%AE%A2%E6%88%B7%E7%AB%AF.doc][接入文档-client]]
-[[file:~/workdoc/asdk-hz/morefunsdk/MoreFunSDK_2.2.5_Android_SDK_demo_%E6%96%87%E6%A1%A3/doc/SDK-%E6%B5%81%E7%A8%8B.docx][接入文档-流程]]
-** DONE [#B] sdk 接入-悠悠村 sdk(youyoucunsdk)
-CLOSED: [2016-01-20 三 17:43]
-CBC 加密(充值)
-SCHEDULED: <2016-01-20 三>
-** DONE [#B] sdk 接入-榴莲 sdk(liuliansdk)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-** DONE [#B] qqsdk2-优化[4/4]
-CLOSED: [2016-01-25 一 15:29]
-- [X] qqsdklogin 协议
-- [X] wxsdklogin 协议
-- [X] pay 协议
-- [X] getbalence 协议
-SCHEDULED: <2016-01-22 五>
-** DONE [#B] 07073 sdk 联调（syiossdk）
-CLOSED: [2016-01-25 一 16:10] SCHEDULED: <2016-01-20 三>
-** DONE [#B] sdk 充值回调问题查找-畅玩(changwansdk)
-CLOSED: [2016-01-22 一 15:29] SCHEDULED: <2016-01-22 五>
-** DONE [#B] sdk 接入-新浪 sdk(xinlangsdk)
-CLOSED: [2016-01-28 四 14:56] SCHEDULED: <2016-01-27 三>
-** DONE [#B] sdk 接入-啪啪游戏厅 sdk(papagamesdk)
-CLOSED: [2016-02-01 一 11:16] SCHEDULED: <2016-01-27 四>
-
-** TODO [#B] amsdk 优化
-将每个游戏不同的现金货币的名称改为配置
-** TODO [#B] sdk 优化-将 sdk 渠道，游戏等配置数据采用后台管理方式来获取[2/7]
-- [X] 将渠道数据的存取接口统一
-- [X] 将游戏数据的存取接口统一
-- [-] 将渠道-游戏映射数据的存取接口统一[26/173]
-  + [X] downjoysdk(当乐)
-  + [X] migamesdk(小米)
-  + [X] bxsdk(冰雪 SDK)
-  + [X] kugousdk(酷狗 SDK)
-  + [X] duokusdk(多酷 SDK)
-  + [X] opposdk(OPPO SDK)
-  + [X] gfansdk(机锋 SDK)
-  + [X] ucsdk(UC SDK)
-  + [X] huaweisdk(华为 SDK)
-  + [X] qihoosdk(360 SDK)
-  + [X] baidusdk(百度 SDK)
-  + [X] anzhisdk(安智)
-  + [ ] mmsdk(MM SDK)
-  + [X] sohusdk(搜狐 SDK)(已废弃)
-  + [X] shoumengsdk(手盟 SDK)
-  + [X] ifengsdk(凤凰 SDK)
-  + [X] changwansdk(畅玩)
-  + [X] wandousdk(豌豆荚 SDK)
-  + [X] estoresdk(天翼 SDK)
-  + [ ] pipawsdk(琵琶 SDK)
-  + [ ] sqwwsdk(17173 SDK)
-  + [ ] skysdk(斯凯 SDK)
-  + [ ] dianjinsdk(点金 SDK)
-  + [ ] anzhi2sdk(安智 SDK)
-  + [ ] meizusdk(魅族 SDK)
-  + [ ] lenovosdk(联想 SDK)
-  + [ ] skysmssdk(没找到)
-  + [ ] cmgamesdk(中国游戏基地 SDK)
-  + [ ] ywydsdk(掌赢 SDK)
-  + [ ] ndsdk(91 SDK)
-  + [ ] egamesdk(电信爱游戏 SDK)
-  + [ ] ipaysdk(泰丰 SDK)
-  + [ ] g3gamesdk(3G 门户 SDK)
-  + [ ] chanyousdk(禅游 SDK)
-  + [ ] vivosdk(vivo SDK)
-  + [ ] mzwsdk(拇指玩)
-  + [ ] aiossdk(富嘉 SDK)
-  + [ ] ndiossdk(91 ios SDK)
-  + [ ] downjoyiossdk(当乐 SDK)
-  + [ ] jodosdk(卓动 SDK)
-  + [ ] youtusdk(优土 SDK)
-  + [ ] niuxsdk(迅雷 SDK)
-  + [ ] yyhsdk(应用汇 SDK)
-  + [ ] ppiossdk(pp 助手 SDK)
-  + [ ] uciossdk(UC IOS SDK)
-  + [ ] tbiossdk(同步推 SDK)
-  + [ ] mzsdk(37 手游 SDK)
-  + [ ] yywansdk(丫丫玩 SDK)
-  + [ ] amsdk(金立 SDK)
-  + [ ] kyiossdk(快用 ios)
-  + [ ] sogousdk(搜狗 SDK)
-  + [ ] milisdk(米粒 SDK)
-  + [ ] ksgamesdk(金山 SDK)
-  + [ ] kupadsdk(酷派 SDK)
-  + [ ] marssdk(火星 SDK)
-  + [ ] busonlsdk(巴士在线 SDK)
-  + [ ] iappiossdk(海马 SDK)
-  + [ ] youlongsdk(游龙 SDK)
-  + [ ] kudongsdk(酷动 SDK)
-  + [ ] youxiskysdk(游戏天空 SDK)
-  + [ ] baidugamesdk(已废弃)
-  + [ ] skymmsdk(已废弃)
-  + [ ] qqsdk(应用宝 sdk)
-  + [ ] ihuizhisdk(融网 SDK)
-  + [ ] youkusdk(游酷 SDK)
-  + [ ] xcsdk(小葱 SDK)
-  + [ ] ledousdk(乐逗 SDK)
-  + [ ] m4399sdk(4399 SDK)
-  + [ ] youkugamesdk(优酷 SDK)
-  + [ ] kupad2sdk(酷派 SDK)
-  + [ ] youlusdk(游路 SDK)
-  + [ ] i4iossdk(爱思 SDK)
-  + [ ] xyzsiossdk(xy 助手(ios)SDK)
-  + [ ] iiappleiossdk(爱苹果 SDK)
-  + [ ] itoolsiossdk(爱兔子 SDK)
-  + [ ] kupad3sdk(酷派 SDK)
-  + [ ] jodo2sdk(卓动 SDK)
-  + [ ] nd2sdk(91 SDK)
-  + [X] duoku2sdk(多酷 SDK)
-  + [ ] sky2sdk(斯凯冒泡新 SDK)
-  + [ ] nduosdk(N 多网)
-  + [ ] lenovo2sdk(联想)
-  + [ ] kuaiwansdk(快玩 SDK)
-  + [ ] jolosdk(聚乐 HTC)
-  + [ ] fujiaiossdk(富嘉(ios)SDK)
-  + [ ] atetsdk(atet SDK)
-  + [ ] jodo3sdk(卓动 SDK)
-  + [ ] iapp2iossdk(海马 SDK)
-  + [ ] mrbiossdk(猫人吧(ios)SDK)
-  + [ ] mrbsdk(猫人吧 SDK)
-  + [ ] mumayisdk(木蚂蚁 SDK)
-  + [ ] fysdk(疯游 SDK)
-  + [ ] vivo2sdk(vivo 2 sdk)
-  + [ ] iapp3iossdk(海马 3(ios)sdk)
-  + [ ] asyouxisdk(爱上游戏 SDK)
-  + [X] qihoo2sdk(360(2)SDK)
-  + [ ] downjoy2sdk(当乐(2)SDK)
-  + [ ] pjsdk(泡椒 SDK)
-  + [ ] guopansdk(叉叉/果盘)
-  + [ ] kaopusdk(靠谱 SDK)
-  + [ ] egame2sdk(爱游戏 SDK)
-  + [ ] ppssdk(PPS SDK)
-  + [ ] kupad4sdk(酷派(4)SDK)
-  + [ ] pptvsdk(PPTV)
-  + [X] letvsdk(乐视 tv)
-  + [ ] egame3sdk(电信爱游戏)
-  + [ ] baofengsdk(暴风 SDK)
-  + [ ] ccsdk(虫虫 sdk)
-  + [ ] umisdk(有米/偶玩 SDK)
-  + [ ] sysdk(07073 SDK)
-  + [ ] woniusdk(蜗牛 SDK)
-  + [ ] xmwsdk(熊猫玩)
-  + [ ] yyh2sdk(应用汇 2)
-  + [ ] kuwosdk(酷我 SDK)
-  + [ ] ouwansdk(有米专服 SDK)
-  + [ ] oupengsdk(欧朋 SDK)
-  + [ ] hmsdk(海马 SDK)
-  + [ ] huaweisdk2(华为(2) SDK)
-  + [ ] xyzssdk(xy 助手 SDK)
-  + [ ] itoolssdk(爱兔子 SDK)
-  + [ ] ewansdk(益玩 SDK)
-  + [ ] foxsdk(狐狸 SDK)
-  + [X] baidu2sdk(口袋妖怪的包)
-  + [ ] lbyxsdk(猎宝 SDK)
-  + [ ] qikesdk(7K SDK)
-  + [ ] tiantuosdk(天拓 SDK)
-  + [ ] ttsdk(TT)
-  + [ ] appstore(没找到)
-  + [X] baidu3sdk(口袋妖妖怪的包)
-  + [ ] meitusdk(美图 SDK)
-  + [ ] kysdk(斯凯 SDK)
-  + [ ] kugou2sdk(酷狗(2) SDK)
-  + [ ] m37sdk(37 手游)
-  + [ ] anqusdk(安趣)
-  + [ ] xunsdk(盛讯达 SDK)
-  + [ ] kaopu2sdk(靠谱(2) sdk)
-  + [ ] lewansdk(乐玩 SDK)
-  + [ ] sj8090sdk(8090sdk)
-  + [ ] tbsdk(同步推(android) SDK)
-  + [ ] opposdk2(oppo(2) sdk)
-  + [X] lhhsdk(乐嗨嗨 SDK)
-  + [ ] leshisdk(乐视视频 SDK)
-  + [ ] caohuasdk(草花 SDK)
-  + [ ] forestsdk(forest SDK)
-  + [ ] samsungsdk(三星爱贝 SDK)
-  + [ ] alitvsdk(阿里 TV SDK)
-  + [ ] shunwangsdk(顺网 SDK)
-  + [ ] anfansdk(安峰 sdk)
-  + [X] pywsdk(朋友玩 SDK)
-  + [ ] wan3456sdk(邑世 3456 玩 SDK)
-  + [ ] duanzisdk(段子 SDK)
-  + [ ] jrttsdk(今日头条 SDK)
-  + [ ] qikemsdk(7K 整合应用宝 SDK)
-  + [ ] play68sdk(彰明 play68 SDK)
-  + [ ] guopaniossdk(叉叉/果盘(ios))
-  + [ ] cornsdk(玉米 SDK)
-  + [ ] mengbaosdk(盟宝 sdk)
-  + [ ] qbsdk(钱宝 SDK)
-  + [ ] le8iossdk(乐 8(IOS) SDK)
-  + [X] oppo2sdk(OPPO(2) SDK)
-  + [ ] zhuoyousdk(卓易)
-  + [ ] muzhisdk(拇指游玩 sdk)
-  + [ ] downjoyios2sdk(当乐 sdk(ios)4.0 以上版本)
-  + [ ] jufengsdk(飓风 sdk)
-  + [ ] yooxunsdk(悠讯 sdk)
-  + [ ] morefunsdk(魔方 sdk)
-  + [ ] ppios2sdk(PP 助手 sdk)
-  + [ ] syiossdk(07073 IOS sdk)
-  + [ ] youyoucunsdk(悠悠村 SDK)
-  + [ ] qqsdk2(应用宝 SDK2)
-  + [ ] liuliansdk(榴莲 sdk)
-  + [ ] xinlangsdk(新浪 sdk)
-  + [ ] papagamesdk(啪啪游戏厅 sdk)
-- [ ] 提供渠道数据的管理接口
-- [ ] 提供游戏数据的管理接口
-- [ ] 提供渠道-游戏映射数据的管理接口
-- [ ] 将游戏数据存储改为使用 php 文件的方式
-* gamesconfig
-:PROPERTIES
-:CATEGORY: asdk
-:END
-** 数码宝贝新秩序(100079100322)
-[[file:~/workdoc/asdk/param/2016-01-13/%E3%80%8A%E6%95%B0%E7%A0%81%E5%AE%9D%E8%B4%9D%E6%96%B0%E7%A7%A9%E5%BA%8F%E3%80%8B-%E8%BF%90%E8%90%A5%E4%B8%80%E9%83%A8-SDK%E6%8E%A5%E5%85%A5%E8%A1%A820160111.xls][《数码宝贝新秩序》-运营一部-SDK 接入表 20160111.xls]]
-[[file:~/workdoc/asdk/param/2016-01-13/%E3%80%8A%E6%95%B0%E7%A0%81%E5%AE%9D%E8%B4%9D%E6%96%B0%E7%A7%A9%E5%BA%8F%E3%80%8B-%E8%BF%90%E8%90%A5%E4%BA%8C%E9%83%A8-SDK%E6%8E%A5%E5%85%A5%E8%A1%A820160113.xls][《数码宝贝新秩序》-运营二部-SDK 接入表 20160113.xls]]
-[[file:~/workdoc/asdk/param/2016-01-11/%E9%98%BF%E6%96%AF%E5%8D%A1%E5%BE%B7%E3%80%8A%E8%8B%B1%E9%9B%84%E4%B8%87%E5%B2%81%E3%80%8B1215%E9%A6%96%E5%8F%91SDK%E6%8E%A5%E5%85%A5%E9%9C%80%E6%B1%82%E8%A1%A8.xls][阿斯卡德《英雄万岁》1215 首发 SDK 接入需求表.xls]]
-*** DONE [#B] 配置参数-虫虫(ccsdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-游龙(youlongsdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-海马(hmsdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-靠谱(kaopu2sdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-07073(sysdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-
-*** DONE [#B] 配置参数-当乐(downjoy2sdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-oppo(oppo2sdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-vivo(vivo2sdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-豌豆荚(wandousdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-魅族(meizusdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-金立(amsdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 17:34] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-TT 语音(ttsdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 18:10] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-安峰(anfansdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 18:14] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-果盘(guopansdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 19:35] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-有米(umisdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-21 四 19:37] SCHEDULED: <2016-01-21 四>
-
-*** DONE [#B] 配置参数-应用宝(qqsdk)-数码宝贝新秩序(100079100322)
-CLOSED: [2016-01-25 一 17:16] SCHEDULED: <2016-01-25 一>
-*** TODO [#B] 配置参数-优酷(youkugamesdk)-数码宝贝新秩序(100079100322)
-SCHEDULED: <2016-01-27 三>
-*** TODO [#B] 配置参数-4399(m4399sdk)-数码宝贝新秩序(100079100322)
-SCHEDULED: <2016-01-27 三>
-*** TODO [#B] 配置参数-酷狗(kugou2sdk)-数码宝贝新秩序(100079100322)
-SCHEDULED: <2016-01-27 三>
-
-** 数码宝贝 go(100079100328)
-*** DONE [#B] 配置参数-360(qihoo2sdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-21 四 18:24]
-将 360 的参数改为多宝的（因为 360 的要给别家发）
-SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-联想(lenovo2sdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-25 一 13:46]
-没有配置计费点
-SCHEDULED: <2016-01-25 一>
-*** DONE [#B] 配置参数-安峰(anfansdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-22 五 21:30] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-乐视(letvsdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-22 五 21:30] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-当乐(downjoy2sdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-22 五 21:30] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-vivo(vivo2sdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-22 五 21:30] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-安智(anzhisdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-22 五 21:33] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-应用宝(qqsdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-25 一 16:05] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-金立(amsdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-22 五 21:33] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-4399(m4399sdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-22 五 21:39] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-搜狗(sogousdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-22 五 21:39] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-当乐 ios2(downjoyios2sdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-22 五 21:39] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-爱思(i4iossdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-26 二 10:00] SCHEDULED: <2016-01-26 五>
-*** DONE [#B] 配置参数-华为(huaweisdk)-数码宝贝 go(100079100328)
-CLOSED: [2016-01-26 二 11:38] SCHEDULED: <2016-01-26 五>
-
-
-** 英雄无间道(100079100244)
-*** DONE [#B] 配置参数-爱兔子(itoolsiossdk)-英雄无间道(100079100244)
-CLOSED: [2016-01-20 三 17:46] SCHEDULED: <2016-01-20 三>
-CREATED: [2016-01-20 三 17:04]
-*** DONE [#B] 配置参数-当乐(ios)2sdk(downjoyios2sdk)-英雄无间道(100079100244)
-CLOSED: [2016-01-11 一 18:42] SCHEDULED: <2016-01-11 一>
-CREATED: [2016-01-11 一 09:47]
-*** DONE [#B] 配置参数-应用宝(qqsdk)-英雄无间道(100079100244)
-CLOSED: [2016-01-25 一 16:04] SCHEDULED: <2016-01-22 五>
-*** DONE [#B] 配置参数-悠悠村(youyoucun)-英雄无间道(100079100244)
-CLOSED: [2016-01-21 四 17:38] SCHEDULED: <2016-01-21 四>
-*** DONE [#B] 配置参数-榴莲 sdk(liuliansdk)-英雄无间道(100079100244)
-CLOSED: [2016-01-21 四 17:36] SCHEDULED: <2016-01-21 四>
-** 小小三国(100079100316)
-*** DONE [#B] 配置参数-啊游戏-小小三国(100079100316)
-CLOSED: [2016-01-21 四 14:24] SCHEDULED: <2016-01-14 四>
-[[file:~/workdoc/asdk/param/2016-01-11/%E5%B0%8F%E5%B0%8F%E4%B8%89%E5%9B%BD-%E9%98%BF%E6%B8%B8%E6%88%8F%E5%8F%82%E6%95%B0.txt][小小三国-阿游戏参数.txt]]
-*** DONE [#B] 配置参数-金立(amsdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 19:44] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-联想(lenovo2sdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:46] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-酷派(kupad3sdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:46] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-拇指玩(mzwsdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:46] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-安智(anzhisdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:46] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-PPTV(pptvsdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:46] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-叉叉（果盘）(guopansdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:46] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-叉叉/果盘(ios)(guopaniossdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:46] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-TT(ttsdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:46] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-熊猫玩(xmwsdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:46] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-聚乐 HTC(jolosdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:51] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-虫虫(ccsdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:51] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-N 多网(nduosdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:51] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-靠谱(kaopu2sdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:51] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-电信爱游戏(egame3sdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:51] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-卓易(zhuoyousdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:51] SCHEDULED: <2016-01-26 二>
-*** DONE [#B] 配置参数-飓风(jufengsdk)-小小三国(100079100316)
-CLOSED: [2016-01-26 二 20:51] SCHEDULED: <2016-01-26 二>
-*** TODO [#B] 配置参数-应用汇 2(yyh2sdk)-小小三国(100079100316)
-SCHEDULED: <2016-02-20 六>
-** 我欲 X 神(100079100298)
-*** DONE [#B] 配置参数-海马 sdk(hmsdk)-我欲 X 神(100079100298)
-CLOSED: [2016-01-25 一 16:56] SCHEDULED: <2016-01-25 一>
-
-** 战将天下(100079100335)
-*** DONE [#B] 配置参数-九游/UC(ucsdk)-站将天下(100079100335)
-CLOSED: [2016-01-26 二 21:13] SCHEDULED: <2016-01-26 二>
-
+* kingstone                                                              :ks:
+** bear-api 开发
+*** 我的金库(Coffers)
+**** DONE [#A] 我的金库首页(coffersIndex)
+CLOSED: [2017-02-09 四 13:55] SCHEDULED: <2017-02-08 三>
+**** DONE [#A] 我的单个黄金资产(userGold)
+CLOSED: [2017-02-10 五 16:14] SCHEDULED: <2017-02-08 三>
+**** DONE [#A] 金豆兑换券兑金豆(exchangeBeans)
+CLOSED: [2017-02-10 五 16:14] SCHEDULED: <2017-02-08 三>
+**** DONE [#A] 充值(cashCharge)
+CLOSED: [2017-02-13 一 09:17] SCHEDULED: <2017-02-08 三>
+**** DONE [#A] 提现(withdrawCash)
+CLOSED: [2017-02-14 二 12:13] SCHEDULED: <2017-02-13 一>
+**** DONE [#A] 确认现金充值(confirmCharge)
+CLOSED: [2017-02-14 二 12:13] SCHEDULED: <2017-02-09 四>
+**** DONE [#A] 确认现金提现(confirmWithdraw)
+CLOSED: [2017-02-14 二 12:13] SCHEDULED: <2017-02-13 一>
+**** DONE [#A] 金豆兑现(beansPayCash)
+CLOSED: [2017-02-14 二 12:14] SCHEDULED: <2017-02-13 一>
+**** DONE [#A] 金豆钱包(beansWallet)
+CLOSED: [2017-02-14 二 16:47] SCHEDULED: <2017-02-14 四>
+**** DONE [#A] 充值记录(rechargeRecord)
+CLOSED: [2017-02-14 二 20:04] SCHEDULED: <2017-02-14 五>
+**** DONE [#A] 提现记录(withdrawRecord)
+CLOSED: [2017-02-14 二 20:04] SCHEDULED: <2017-02-14 五>
+**** [#A] 跳转至 wap 页面(jumpToWeb)
+**** [#A] 获取产品订单页面 url(getGoodsOrderUrl) 新增
+**** [#A] 获取我的奖励页面 url(getRewardUrl) 新增
 
 * sunday                                                               :WANT:
 ** DONE [#B] 将 dotfile 文件使用 github 管理
@@ -412,24 +66,24 @@ CLOSED: [2016-01-10 日 23:58] SCHEDULED: <2016-01-10 日>
 ** TODO [#C] tmux documention
 
 * Daily Task                                                          :Daily:
-:PROPERTIES
-:CATEGORY: daily
-:END
+# :PROPERTIES
+# :CATEGORY: daily
+# :END
 
 * Weekly Task                                                        :Weekly:
-:PROPERTIES
-:CATEGORY: weekly
-:END
-** TODO Finishing last week to complete the work and the work schedule next week
-DEADLINE: <2016-02-01 一 +1w>
-:PROPERTIES:
-:LAST_REPEAT: [2016-01-22 五 09:41]
-:END:
-- State "DONE"       from "TODO"       [2016-01-22 五 09:39]
+# :PROPERTIES
+# :CATEGORY: weekly
+# :END
+# ** TODO Finishing last week to complete the work and the work schedule next week
+# DEADLINE: <2016-02-01 一 +1w>
+# :PROPERTIES:
+# :LAST_REPEAT: [2016-01-22 五 09:41]
+# :END:
+# - State "DONE"       from "TODO"       [2016-01-22 五 09:39]
 * Monthly Task                                                      :Monthly:
-:PROPERTIES
-:CATEGORY: monthly
-:END
-** TODO Finishing last month to complete the work and the work schedule next month
-DEADLINE: <2016-01-31 五 +1m>
+# :PROPERTIES
+# :CATEGORY: monthly
+# :END
+# ** TODO Finishing last month to complete the work and the work schedule next month
+# DEADLINE: <2016-01-31 五 +1m>
 
