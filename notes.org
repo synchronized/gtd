@@ -29,6 +29,15 @@ sudo apt-get install gnome-tweak-tool
 打开 gnome-tweak-tool
 打字->大些锁定键行为->Make Caps Lock an additional Ctrl
 [2017-02-18 六 23:27]
+** debian 设置桌面帮顶键为 Emacs 风格
+- 设置为 Emacs 风格
+#+BEGIN_SRC shell
+gsettings set org.gnome.desktop.interface gtk-key-theme "Emacs"
+#+END_SRC
+- 还原为默认风格
+#+BEGIN_SRC shell
+gsettings set org.gnome.desktop.interface gtk-key-theme "Default"
+#+END_SRC
 
 ** shell if 条件
 与：-a，当指定多个条件时，默认为与关系
