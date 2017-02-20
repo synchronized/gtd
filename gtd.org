@@ -35,6 +35,24 @@ CLOSED: [2017-02-14 二 20:04] SCHEDULED: <2017-02-14 五>
 **** [#A] 跳转至 wap 页面(jumpToWeb)
 **** [#A] 获取产品订单页面 url(getGoodsOrderUrl) 新增
 **** [#A] 获取我的奖励页面 url(getRewardUrl) 新增
+**** DONE [#A] 补上之前的 TODO
+CLOSED: [2017-02-15 五 18:10] SCHEDULED: <2016-02-15 一>
+*** DONE [#A] 搭建测试环境(192.168.1.6)
+CLOSED: [2017-02-16 五 18:09] SCHEDULED: <2017-02-16 四>
+*** 托管首页(TgIndex)
+**** DONE [#A] 托管首页(TgIndex)
+CLOSED: [2017-02-18 六 11:44] SCHEDULED: <2017-02-17 五>
+**** DONE [#A] 获取广告信息(FetchAd)
+CLOSED: [2017-02-18 六 11:45] SCHEDULED: <2017-02-18 五>
+**** DONE [#A] 返回信息详情(GetActivityGoodinfo)
+CLOSED: [2017-02-18 六 11:45] SCHEDULED: <2017-02-18 五>
+**** DONE [#A] 刷新邀请 url(RefreshInviteUrl)
+CLOSED: [2017-02-18 六 11:45] SCHEDULED: <2017-02-18 五>
+**** TODO [#A] 首页活动弹窗广告(GetTgindexAd)
+SCHEDULED: <2017-02-18 五>
+**** TODO [#A] 极光推送首页弹窗广告图(GetJpushAd)
+SCHEDULED: <2017-02-18 五>
+
 
 * sunday                                                               :WANT:
 ** DONE [#B] 将 dotfile 文件使用 github 管理
