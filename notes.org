@@ -41,6 +41,25 @@ if [ xxxx -a xxxxx -o xxxxx ! xxxx]; then
 ** sed 替换多个文本(多个语句分隔符)
 sed 's/<search1>/<replace1>/; s/<search2>/<replace2>/' <file>
 [2017-02-16 四 14:43]
+
+** CentOS 添加证书信任
+- Install the ca-certificates package:
+#+BEGIN_SRC shell
+yum install ca-certificates
+#+END_SRC
+- Enable the dynamic CA configuration feature:
+#+BEGIN_SRC shell
+update-ca-trust force-enable
+#+END_SRC
+- Add it as a new file to /etc/pki/ca-trust/source/anchors/:
+#+BEGIN_SRC shell
+cp foo.crt /etc/pki/ca-trust/source/anchors/
+#+END_SRC
+- Use command:
+#+BEGIN_SRC shell
+update-ca-trust extract
+#+END_SRC
+[[http://kb.kerio.com/product/kerio-connect/server-configuration/ssl-certificates/adding-trusted-root-certificates-to-the-server-1605.html][Adding trusted root certificates to the server]]
  
 
 * Learning                                                            :Learn:
