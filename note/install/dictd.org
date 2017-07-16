@@ -1,0 +1,39 @@
+* 安装词典
+** 准备工作
+下载词库 dicts2.7z(词库得到网上找)
+安装 dict 和 dictd
+#+BEGIN_SRC shell
+apt-get install dict dictd
+#+END_SRC
+** 配置词库
+*** 将词库解压到/usr/share/dictd
+#+BEGIN_SRC shell
+7z x dicts2.7z
+mv dicts/* /usr/share/dictd
+#+END_SRC
+*** 配置词库
+#+BEGIN_SRC shell
+cat >> /var/lib/dictd/db.list<<EOF
+database langdao-ec
+ {
+  data  /usr/share/dictd/langdao-ec.dict.dz
+  index /usr/share/dictd/langdao-ec.index
+}
+
+database langdao-ce
+ {
+  data  /usr/share/dictd/langdao-ce.dict.dz
+  index /usr/share/dictd/langdao-ce.index
+}
+EOF
+#+END_SRC
+*** 配置服务
+#+BEGIN_SRC shell
+sudo systemctl start dictd
+sudo systemctl enable dictd
+#+END_SRC
+** 说明
+这里以后查询单词就用下面的命令
+英文->中文 dict [langdao-ec] <单词>
+中文->英文 dict langdao-ce <汉语>
+

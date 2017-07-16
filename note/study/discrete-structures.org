@@ -1,0 +1,104 @@
+* CS Body of Knowledge
+- Discrete structures (DS) 离散数学
+- Programming Fundamentals (PF)
+- Algorithms and Complexity (AL)
+- Architecture and Organization (AR)
+- Operating Systems (OS)
+- Net-Centric Computing (NC)
+- Programming Languages (PL)
+- Human-Computer Interaction (HC)
+- Graphics and Visual Computing (GV)
+- Intelligent Systems (IS)
+- Information Management (IM)
+- Social and Professional Issues (SP)
+- Software Engineering (SE)
+- Computational Science and Numerical Methods(CN)
+
+* Discrete Structures
+- DS1. Functions, relations, and sets 函数, 关系, 集合[核心] (6)
+- DS2. Basic logic 基础逻辑[核心] (10)
+- DS3. Proof techniques 证明计算[核心] (12)
+- DS4. Basics of counting 计算基础[核心] (5)
+- DS5. Graphs and trees [图和树] (4)
+- DS6. Discrete probability [离散概率论] (6)
+
+* Advanced courses
+- CS301. Combinatorics 组合数学
+- CS302. Probability and Statistics 概率统计
+- CS303. Coding and Information Theory 编码理论 
+
+* 第一节
+** 学习目标
+- 举例说明基本术语: 函数, 关系, 集合
+- 执行与函数, 关系和集合相关的运算
+- 把实例与适合的集合， 函数或者关系模型相联系，并在上下文中解释相关的操作和术语
+- 解释基本的计算原理, 包括对角化和鸽洞原理的应用
+
+** topic 主题
+- 函数(满射, 入射, 逆, 复合)
+- 关系(自反, 对称, 传递, 等价关系)
+- 集合(补集, 笛卡尔积, 幂集)
+- 鸽洞原理
+- 基数和可数性
+
+* 第二节
+** 学习目标
+- 应用符号命题逻辑和谓词逻辑的形式化方法
+- 描述如何使用符号逻辑的形式化工具作为算法和真是情形建模
+- 使用形式逻辑证明和逻辑推理来解决诸如迷宫等问题
+- 描述谓词逻辑的重要性和局限性
+
+** 主题
+- 蕴含, 逆, 补, 逆否, 矛盾
+- 形式证明的结构
+- 直接证法
+- 反例证法
+- 通过逆否命题证明
+- 归谬证法
+- 数学归纳
+- 完全归纳
+- 递归数学定义
+- 良序
+
+* 第三节
+** 学习目标
+- 概述本单元中给出的每一种证明技术的基本结构并给出相应的实例
+- 讨论对于指定的问题哪种类型的证明是最优的
+- 把数学归纳思想与递归定义的结构联系起来
+- 说明数学归纳和完全归纳的差别并举例说明如何合理的使用它们
+
+** 主题
+- 计数理论(counting arguments)
+- ----和积规则(sum and production rules)
+- ----包含排斥原理
+- ----算数和几何等级
+- ----斐波纳契(Fibonacci)数列
+- 鸽洞原理
+- 排列组合
+- ----基本定义
+- ----Pascal 恒等式
+- ----二项式定理
+- 求解递推关系式
+- ----常见实例
+- ----Master 定理
+
+* 第四节
+** 学习目标
+- 通过例子说明图论的基本术语, 各自的特性和特殊情况
+- 说明树和图的不同遍历方法
+- 使用图和树为计算机科学中的问题建模
+- 把图和树与数据结构, 算法和计算相联系
+
+* 详细内容
+** 逻辑, 证明, 数学归纳法
+
+** 集合, 序列, 串, 数字系统, 关系和函数
+** 算法: 递归算法, 算法分析
+** 组合, 排列和鸽洞原理
+** 递推关系
+** 图, 图的同构, 哈米尔顿回路, 殴拉回路, 平面图
+** 树, 树的遍历, 最小生成树, 决策树
+** 网络模型
+** 布尔代数与组合电路
+** 自动机, 文法和语法
+** 计算几何 

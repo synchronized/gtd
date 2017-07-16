@@ -1,0 +1,170 @@
+* 安装 debian
+** 配置源地址
+deb http://ftp.cn.debian.org/debian/ jessie main contrib non-free
+deb-src http://ftp.cn.debian.org/debian/ jessie main contrib non-free
+
+deb http://http.debian.net/debian jessie-backports main
+
+deb http://security.debian.org/ jessie/updates main contrib
+deb-src http://security.debian.org/ jessie/updates main contrib
+
+# jessie-updates, previously known as 'volatile'
+deb http://ftp.cn.debian.org/debian/ jessie-updates main
+deb-src http://ftp.cn.debian.org/debian/ jessie-updates main
+
+** 配置系统环境变量
+#+BEGIN_SRC shell
+echo 'export HISTTIMEFORMAT="%F %T `whoami` "' |sudo tee -a /etc/profile
+echo 'MPDCONF=/home/sunday/.mpd/mpd.conf' |sudo tee -a /etc/default/mpd
+#+END_SRC
+
+** 安装的包
+#+BEGIN_SRC shell
+sudo apt-get install vim emacs sudo zsh tmux gnupg pass ranger xsel
+sudo apt-get install python-all-dev python-pip git git-svn git-flow libssl-dev
+sudo apt-get install fcitx-ui-classic fcitx-ui-light fcitx-googlepinyin gconf-editor
+sudo apt-get install qemu-kvm bridge-utils libvirt-bin virtinst virt-manager virt-viewer
+sudo apt-get install vim-python-jedi python-virtualenv virtualenvwrapper
+sudo apt-get install shadowsocks-libev mpd zip unzip p7zip tar gzip apt-file wget
+sudo apt-get install mpg123 silversearcher-ag libncurses5-dev pkg-config npm
+#+END_SRC
+
+** python 包
+#+BEGIN_SRC shell
+sudo pip install percol
+#+END_SRC
+
+** 安装 firefox 和 Thunderbird
+#+BEGIN_SRC shell
+echo 'deb http://downloads.sourceforge.net/project/ubuntuzilla/mozilla/apt all main' |tee -a /etc/apt/sources.list.d/mozilla.list
+sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com C1289A29
+sudo apt-get update
+sudo apt-get install thunderbird 
+sudo apt-get install flashplugin-nonfree
+#+END_SRC
+
+** 安装 qq
+#+BEGIN_SRC shell
+sudo dpkg --add-architecture i386
+sudo apt-get update
+sudo apt-get install wine32 wine64
+unzip wine-qqintl.zip
+cd wine-qqintl
+sudo dpkg -i *.deb
+sudo apt-get install -f
+#+END_SRC
+
+** 编译 proxychains4
+#+BEGIN_SRC shell
+mkdir ~/build
+git clone https://github.com/rofl0r/proxychains-ng.git ~/build/proxychains-ng
+cd ~/build/proxychains-ng
+./configure
+make
+sudo make install
+sudo make install-config
+sudo sed -i 's/^socks4/# socks4/' /usr/local/etc/proxychains.conf
+echo 'socks5 127.0.0.1 1080' |sudo tee -a /usr/local/etc/proxychains.conf
+#+END_SRC
+
+** 无线网卡
+#+BEGIN_SRC shell
+echo 'deb http://httpredir.debian.org/debian/ jessie main contrib non-free' |sudo tee -a /etc/apt/sources.list.d/debian-httpredir.list
+apt-get update
+apt-get install firmware-*
+#+END_SRC
+
+** 修复不能自动挂在移动硬盘和 u 盘的 bug
+如果是用 u 盘安装的系统，debian 会把 u 盘当作光盘挂在到 cdrom 上
+#+BEGIN_EXAMPLE fstab
+/dev/sr0        /media/cdrom0   udf,iso9660 user,noauto     0       0
+#+END_EXAMPLE
+把这行注释就行了，但是不知道是不是所有的系统都会这样所以没有写命令
+
+** 升级到最新的 docker
+#+BEGIN_SRC shell
+curl -sSL https://get.docker.com/ | sh
+#+END_SRC
+
+** 设置国内的 docker registry
+#+BEGIN_SRC shell
+curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://8f8ead5c.m.daocloud.io
+#+END_SRC
+
+** 下载安装最新的 global 工具
+原因是系统自带的 input buffer 太小了，遇到文件多的项目运行 gtags 命令时会报 input buffer overflow 错误
+#+BEGIN_SRC shell
+tar -zxvf ~/source/global-6.5.5.tar.gz -C ~/build/
+cd ~/build/global-6.5.5
+./configure
+make
+sudo make install
+#+END_SRC
+
+** 安装 php 常用包
+#+BEGIN_SRC shell
+sudo apt-get install php5 php5-dev php5-cli libmysqlclient15-dev php5-mysqlnd php5-mcrypt 
+sudo apt-get install php5-gd php5-memcache php5-memcached php5-redis php5-xhprof
+sudo apt-get install php5-sqlite libevent-dev libpng12-dev 
+#+END_SRC
+
+安装 libevent 不过这个包只有 bate 版本
+#+BEGIN_SRC shell
+sudo pecl install channel://pecl.php.net/libevent-0.1.0
+echo 'extension=libevent.so' |sudo tee /etc/php5/mods-available/libevent.ini
+cd /etc/php5/cli/conf.d
+sudo ln -s ../../mods-available/libevent.ini 20-libevent.ini
+#+END_SRC
+
+安装 event 包
+#+BEGIN_SRC shell
+sudo pecl install channel://pecl.php.net/event-2.1.0
+echo 'extension=event.so' |sudo tee /etc/php5/mods-available/event.ini
+cd /etc/php5/cli/conf.d
+sudo ln -s ../../mods-available/event.ini 20-event.ini
+#+END_SRC
+
+** 配置 emacs 的 js2-mode
+#+BEGIN_SRC sh
+  $ npm install -g tern
+#+END_SRC
+
+To use the formatting features, install =js-beautify=:
+#+BEGIN_SRC sh
+  $ npm install -g js-beautify
+#+END_SRC
+
+To activate error checking using flycheck install =JSHint=:
+#+BEGIN_SRC sh
+  $ npm install -g jshint
+#+END_SRC
+
+** 安装 thrift
+#+BEGIN_SRC shell
+sudo apt-get install libboost-dev libboost-test-dev automake libtool 
+sudo apt-get install flex bison pkg-config g++ thrift
+
+cd ~/build/thrift-0.9.3
+./configure
+sudo make -j$(nproc)
+sudo make install
+#+END_SRC
+** 代理(shadowsocks-libev)
+apt-get install shadowsocks-libev
+配置文件路径/etc/shadowsocks-libev/*.json
+启动：sudo systemctl start shadowsocks-libev-local@config
+开机启动：sudo enable start shadowsocks-libev-local@config
+注意:config 就是配置文件路径里面的 json 文件名
+** 安装 R 语言
+apt-get intall r-base
+** 安装 http 代理
+本地 socket5 代理转 http 代理
+apt-get install polipo
+配置文件路径: /etc/polipo/config
+配置信息文档: http://localhost:8123/polipo/config
+添加配置:
+cat <<EOF |sudo tee -a /etc/polipo/config
+socksparentproxy = localhost:1080
+proxyaddress = 0.0.0.0
+EOF
+

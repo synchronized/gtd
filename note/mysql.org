@@ -1,0 +1,24 @@
+* mysql 
+** 常用语句
+*** 创建数据库 
+create database <db_name> default charset utf8 collate utf8_general_ci;
+*** 创建/授权用户
+grant privileges on <db_name>.<tbl_name> to '<user_name>'@'<user_host>' identified by '<user_pass>'
+flush privileges
+** 事物隔离级别
++ read uncommitted(脏读) 可以看到未提交的数据
++ read committed
+  读取提交的数据。但是，可能多次读取的数据结果不一致（不可重复读，幻读）
+  写的观点: 读取的行数据，可以写。
++ repeatable read(mysql 默认隔离级别)
+  可以重复读取，但有幻读。
+  读写观点: 读取的数据行不可写，但是可以往表中新增数据。
+  在 MySQL 中，其他事务新增的数据，看不到，不会产生幻读。
+  采用多版本并发控制（MVCC）机制解决幻读问题。
++ serializable 可读，不可写,读写冲突
+*** 查看事物隔离级别
++ 当前会话 select @@tx_isolation;
++ 整个系统 select @@global.tx_isolation;
+*** 设置事物隔离级别
++ 当前会话 set session transaction isolatin level repeatable read;
++ 整个系统 set global transaction isolation level repeatable read;

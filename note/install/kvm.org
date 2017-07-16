@@ -1,0 +1,49 @@
+* 说明
+  libvirt 安装的虚拟机会生成一个 xml 文件描述虚拟机硬件信息
+  路径分别在下列目录下
+  /etc/libvirt/qemu/(如果加了-c qemu:///system 参数就会在这里)
+  ~/.config/libvirt/qemu/
+
+* check cpu
+  cat /proc/cpuinfo|grep vmx
+* install
+  sudo apt-get install qemu-kvm bridge-utils libvirt-bin virtinst virt-manager virt-viewer
+* use
+** create img
+   sudo qemu-img create -f qcow2 winxp.img 10G
+** start kvm
+*** use qemu-system-x86_64
+    qemu-system-x86_64 -hda winxp.img -cdrom <your iso file> -boot d -m 1024 -no-acpi -soundhw all
+    virsh define /kvm/xml/of/path/**.xml
+    virsh start <your kvm name>
+*** use virsh
+    virsh -c qemu:///system start <your kvm name>
+*** virt-install
+    virt-install --name hadoop-namenode -r 1024 \
+    --disk path=/home/sunday/workspace/kvm/hadoop-namenode.img,size=50,format=qcow2 \
+    --cdrom /home/sunday/install/system/CentOS-5.7-x86_64-bin-DVD-1of2.iso \
+    --accelerate --connect=qemu:///system
+
+** connect kvm
+*** virt-viewer
+    virt-viewer -c qemu:///system hadoop-namenode
+
+** stop kvm
+virsh shutdown <your kvm name>
+
+* console
+#+BEGIN_SRC shell
+sudo apt-get install libguestfs-tools
+
+cat >> ttyS0.conf <<EOF
+# ttyS0.conf - getty
+# This service maintains a getty on ttyS0 from the point the system is
+# started until it is shut down again.
+start on stopped rc RUNLEVEL=[2345]
+stop on runlevel [!2345]
+respawn
+EOF
+
+virt-copy-in -d vm1 ttyS0.conf /etc/init
+#+END_SRC
+
