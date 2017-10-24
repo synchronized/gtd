@@ -1,0 +1,9 @@
+* 准备工作
+sudo yum install gcc gcc-c++ automake autoconf make libtool zlib-devel openssl-devel pcre-devel
+cd /data/package
+tar -zxvf openresty-1.11.2.3.tar.gz 
+cd openresty-1.11.2.3
+./configure --prefix=/data/server/openresty-1.11.2.3
+./configure --prefix=/data/server/openresty-1.11.2.3 --with-luajit --with-http_v2_module --with-http_ssl_module --with-ipv6
+gmake
+gmake install

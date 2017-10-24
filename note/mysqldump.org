@@ -1,0 +1,15 @@
+* mysqldump
+** 常用选项
+--opt               Same as --add-drop-table, --add-locks, --create-options,
+                      --quick, --extended-insert, --lock-tables, --set-charset,
+                      and --disable-keys. Enabled by default, disable with
+                      --skip-opt.
+
+-d, --no-data       No row information.
+-t, --no-create-info
+                      Don't write table creation info.
+
+*** 导出结构不导出数据
+mysqldump　--opt　-d　数据库名 
+*** 导出数据不导出结构
+mysqldump　-t　数据库名

@@ -90,3 +90,36 @@ CLOSED: [2016-01-10 日 23:58] SCHEDULED: <2016-01-10 日>
 ** iptables for linux
 ** metasploit framework
 ** Hadoop
+
+
+* 2017-07-18
+** 回顾
+*** 工作目录<->版本库
+- git --help
+- git <子命令> --help
+- git status 查看工作目录的状态
+- git add 添加修噶(新增，修改，删除)到 index(stage)
+- git add -u 已经在版本库但是修改的
+- git add . 全部，(不管在不在版本库里面)
+- git commit 提交
+- git reset [--soft | --mixed [-N] | --hard] 撤销提交
+- git revert 复原提交(生成一个相反更新)
+
+*** 查看服务器信息
+- git remote add origin <服务器地址>
+- git remote -v 查看服务器代号和地址
+
+*** 将服务器的仓库 checkout 到本地
+- git clone <服务器地址> [<本地目录>] 检出新的代码库 (svn checkout)
+- git init && git remote add origin <服务器地址>
+- git push --set-upstream origin <分支名称>
+
+*** 分支管理
+- git branch -a 查看分支(-a 是所有的)
+- git status 查看当前的状态(在哪个分支)
+- git checkout -b <分支名称> 创建分支
+- git checkout 切换分支
+- git branch -d 删除分支
+
+*** 
+

@@ -4,55 +4,14 @@
 #+TAGS: { bug(b) task(t) }
 
 * workspace
+** TODO [#B] ssm 框架
+** TODO [#B] 新的 15 个接口
 
-
-
-* kingstone                                                              :ks:
-** bear-api 开发
-*** 我的金库(Coffers)
-**** DONE [#A] 我的金库首页(coffersIndex)
-CLOSED: [2017-02-09 四 13:55] SCHEDULED: <2017-02-08 三>
-**** DONE [#A] 我的单个黄金资产(userGold)
-CLOSED: [2017-02-10 五 16:14] SCHEDULED: <2017-02-08 三>
-**** DONE [#A] 金豆兑换券兑金豆(exchangeBeans)
-CLOSED: [2017-02-10 五 16:14] SCHEDULED: <2017-02-08 三>
-**** DONE [#A] 充值(cashCharge)
-CLOSED: [2017-02-13 一 09:17] SCHEDULED: <2017-02-08 三>
-**** DONE [#A] 提现(withdrawCash)
-CLOSED: [2017-02-14 二 12:13] SCHEDULED: <2017-02-13 一>
-**** DONE [#A] 确认现金充值(confirmCharge)
-CLOSED: [2017-02-14 二 12:13] SCHEDULED: <2017-02-09 四>
-**** DONE [#A] 确认现金提现(confirmWithdraw)
-CLOSED: [2017-02-14 二 12:13] SCHEDULED: <2017-02-13 一>
-**** DONE [#A] 金豆兑现(beansPayCash)
-CLOSED: [2017-02-14 二 12:14] SCHEDULED: <2017-02-13 一>
-**** DONE [#A] 金豆钱包(beansWallet)
-CLOSED: [2017-02-14 二 16:47] SCHEDULED: <2017-02-14 四>
-**** DONE [#A] 充值记录(rechargeRecord)
-CLOSED: [2017-02-14 二 20:04] SCHEDULED: <2017-02-14 五>
-**** DONE [#A] 提现记录(withdrawRecord)
-CLOSED: [2017-02-14 二 20:04] SCHEDULED: <2017-02-14 五>
-**** [#A] 跳转至 wap 页面(jumpToWeb)
-**** [#A] 获取产品订单页面 url(getGoodsOrderUrl) 新增
-**** [#A] 获取我的奖励页面 url(getRewardUrl) 新增
-**** DONE [#A] 补上之前的 TODO
-CLOSED: [2017-02-15 五 18:10] SCHEDULED: <2016-02-15 一>
-*** DONE [#A] 搭建测试环境(192.168.1.6)
-CLOSED: [2017-02-16 五 18:09] SCHEDULED: <2017-02-16 四>
-*** 托管首页(TgIndex)
-**** DONE [#A] 托管首页(TgIndex)
-CLOSED: [2017-02-18 六 11:44] SCHEDULED: <2017-02-17 五>
-**** DONE [#A] 获取广告信息(FetchAd)
-CLOSED: [2017-02-18 六 11:45] SCHEDULED: <2017-02-18 五>
-**** DONE [#A] 返回信息详情(GetActivityGoodinfo)
-CLOSED: [2017-02-18 六 11:45] SCHEDULED: <2017-02-18 五>
-**** DONE [#A] 刷新邀请 url(RefreshInviteUrl)
-CLOSED: [2017-02-18 六 11:45] SCHEDULED: <2017-02-18 五>
-**** TODO [#A] 首页活动弹窗广告(GetTgindexAd)
-SCHEDULED: <2017-02-18 五>
-**** TODO [#A] 极光推送首页弹窗广告图(GetJpushAd)
-SCHEDULED: <2017-02-18 五>
-
+* asdk
+** TODO [#B] 去掉砍头息(把利息放到还款的时候)
+SCHEDULED: <2017-07-22 六>
+** TODO [#B] 额度的增长规则
+SCHEDULED: <2017-07-20 二>
 
 * sunday                                                               :WANT:
 ** DONE [#B] 将 dotfile 文件使用 github 管理

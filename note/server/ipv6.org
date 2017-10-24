@@ -1,0 +1,109 @@
+* ipv6 
+** 修改 disable_ipv6.conf，不同的系统命名会有些差别
+# cp /etc/modprobe.d/disable_ipv6.conf /data/guotest/ipv6/  ##先备份下原始配置，这是个好习惯！
+# vim /etc/modprobe.d/disable_ipv6.conf   ##注释 alias ipv6 off 及修改 options ipv6 disable 为 0
+修改前
+#+BEGIN_SRC shell
+alias net-pf-10 off
+alias ipv6 off
+options ipv6 disable=1
+#+END_SRC
+
+修改后
+#+BEGIN_SRC shell
+alias net-pf-10 off
+#alias ipv6 off
+options ipv6 disable=0
+#+END_SRC
+
+# cp /etc/sysconfig/network /data/guotest/ipv6/
+# vim /etc/sysconfig/network    ##修改 NETWORKING_IPV6 为 yes
+修改前
+#+BEGIN_SRC shell
+NETWORKING=yes
+HOSTNAME=coolnull
+NETWORKING_IPV6=no
+PEERNTP=no
+GATEWAY=*.*.*.*
+#+END_SRC
+
+修改后
+#+BEGIN_SRC shell
+NETWORKING=yes
+HOSTNAME=coolnull
+NETWORKING_IPV6=yes
+PEERNTP=no
+GATEWAY=*.*.*.*
+#+END_SRC
+
+** 修改/etc/sysctl.conf，把下面三项设置都改为 0
+修改前
+#+BEGIN_SRC shell
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+#+END_SRC
+
+修改后
+#+BEGIN_SRC shell
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0
+#+END_SRC
+
+** 至此 ipv6 的服务器端支持已经完成，重启服务器测试是否支持 ipv6，重启后
+如果有输出则已经支持 ipv6
+#+BEGIN_SRC shell
+# lsmod | grep ipv6
+ipv6                  318183  23 sit
+#+END_SRC
+
+** 查看 ipv6 的信息，有看到输出就可以
+#+BEGIN_SRC shell
+# ifconfig|grep -i inet6
+          inet6 addr: fe80::x:x:x:x/64 Scope:Link
+          inet6 addr: fe80::x:x:x:x/64 Scope:Link
+          inet6 addr: x:x:x:x::2/64 Scope:Global
+          inet6 addr: fe80::x:x/128 Scope:Link
+          inet6 addr: ::1/128 Scope:Host
+#+END_SRC
+
+* 阿里云 centos 添加 ipv6 隧道
+** 注册 Tunnel broker
+https://www.tunnelbroker.net/
+注册很容易，就不讲了，注册需要邮箱验证，，gmail、163 能收得到认证邮件，qq 还是一样收不到
+** 创建通道“Create Regular Tunnel”
+填写云服务器 ip 以及选择默认的隧道节点，点击 Create Tunnel 创建。
+填写 ip 都，如果出现“IP is a potential tunnel endpoint.”
+则证明可以添加 ipv6 隧道，一般隧道节点系统已经默认分配，可以手动选择，大家可以在自己的云服务器上分别 ping 一下这些 ip，选时延低的。
+
+** 创建 ipv6 隧道及路由
+到下一页面切换到 Example configurations 选项卡，
+如果你的 VPS 是 centOS/Debian 这些常见 Linux 的话，
+下拉菜单选择 Linux-route2，出现了设置的命令，复制到自己的云服务器上运行。
+
+#+BEGIN_SRC shell
+
+#ip tunnel change he-ipv6 mode sit remote 74.82.46.6 local 172.18.215.51 ttl 255
+modprobe ipv6
+#ip tunnel add he-ipv6 mode sit remote 74.82.46.6 local 39.108.112.142 ttl 255
+ip tunnel add he-ipv6 mode sit remote 74.82.46.6 local 172.18.215.51 ttl 255
+ip link set he-ipv6 up
+ip addr add 2001:470:23:c5a::2/64 dev he-ipv6
+ip route add ::/0 dev he-ipv6
+ip -f inet6 addr
+#+END_SRC
+如果执行命令失败，可以复制以下命令，Server IPv4 Address Client IPv4 Address Server IPv6 Address 等按 IPv6 Tunnel 那页对应的填写
+#+BEGIN_SRC shell
+# modprobe ipv6
+# ip tunnel add he-ipv6 mode sit remote <Server IPv4 Address> local <Client IPv4 Address> ttl 255
+# ip link set he-ipv6 up
+# ip addr add <Client IPv6 Address> dev he-ipv6
+# ip -6 route add ::/0 dev he-ipv6
+# ip -f inet6 addr
+#+END_SRC
+
+这里有个要注意的地方，Client IPv4 Address 该填的是 ECS 内网的 IP 地址，而不是公网的 IP 地址。具体 HE.net tunnel broker 里面有这样一句话：
+NOTE: When behind a firewall appliance that passes protocol 41, use the IPv4 address you get from your appliance’s DHCP service instead of the IPv4 endpoint you provided to our broker.
+
+刚开始 Client IPV4 Address 我填的是 ECS 的公网地址，所以一直无法 ping6 通过。这里我用的阿里云专用网络的 ECS，所以刚开始失败我还以为专用网络或安全组（防火墙）问题，后来发现不是。

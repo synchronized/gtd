@@ -1,0 +1,49 @@
+* letsencrypt
+** 参考:
+- https://linuxstory.org/deploy-lets-encrypt-ssl-certificate-with-certbot/
+** 配置 nginx 并重启
+在要配置 ssl 域名的 server 段配置下面的 location 段
+注意：root 换成你自己的
+配置完需要重新加载 nginx 配置
+#+BEGIN_SRC conf
+        location ^~ /.well-known/acme-challenge/ {
+            default_type "text/plain";
+            root /data/www/admin.canary.58changwan.com/;
+        }
+
+        location = /.well-known/acme-challenge/ {
+            return 404;
+        }
+#+END_SRC
+
+** 生成证书
+#+BEGIN_SRC shell
+certbot certonly --webroot -w /data/www/admin.canary.58changwan.com/ -d admin.canary.58changwan.com
+#+END_SRC
+
+** 配置 nginx https
+在要配置 https 的域名的 server 段中配置下面的配置
+注意：需要把域名换成你自己的域名
+配置完需要重新加载 nginx 配置
+#+BEGIN_SRC config
+  ssl_certificate /etc/letsencrypt/live/admin.canary.58changwan.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/admin.canary.58changwan.com/privkey.pem;
+  ssl_session_timeout 1d;
+  ssl_session_cache shared:SSL:50m;
+  ssl_session_tickets off;
+#+END_SRC
+
+** 续签
+letsencrypt 有效期为 90 天,需要定时续签
+#+BEGIN_SRC shell
+cat > /usr/local/bin/letsencrypt-renew <EOF
+#!/bin/bash
+/usr/bin/certbot renew --quiet --agree-tos
+/data/server/nginx/sbin/nginx -s reload
+EOF
+#+END_SRC
+
+在计划任务中加入任务
+#+BEGIN_SRC shell
+0 0 1 * * /usr/local/bin/letsencrypt-renew
+#+END_SRC

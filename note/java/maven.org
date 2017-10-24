@@ -56,6 +56,11 @@ mvn -B archetype:generate \
 mvn dependency:copy-dependencies -DoutputDirectory=lib
 #+END_SRC
 
+** 安装 jar 文件到本地仓库
+#+BEGIN_SRC shell
+mvn install:install-file -Dfile=path/to/hello-world-1.0.jar -DgroupId=com.thoughtworks.davenkin -DartifactId=hello-world -Dversion=1.0 -Dpackaging=jar
+#+END_SRC
+
 ** 其他常用命令
 1. 编译源代码
 #+BEGIN_SRC shell
