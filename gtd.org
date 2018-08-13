@@ -1,17 +1,71 @@
 #+TITLE: GTD
 #+AUTHOR: sunday
-#+TAGS: { Emacs(e) PROJECT(p) WANT(s) Daily(x) Weekly(y) Monthly(z) asdk(a) ks(k) }
+#+TAGS: { Emacs(e) PROJECT(p) WANT(s) Daily(x) Weekly(y) Monthly(z) asdk(a) }
 #+TAGS: { bug(b) task(t) }
 
 * workspace
-** TODO [#B] ssm 框架
-** TODO [#B] 新的 15 个接口
+** TODO [#B] 编写数据库备份服务(python)
+** TODO [#B] 编写数据库还原服务(python)
+** TODO [#B] 数据库代理
+** TODO [#B] rsync服务(将服务器数据库备份还原至本地)
+** TODO [#B] elasticsearch 全文搜索服务
+** TODO [#B] spack 大数据服务
+** TODO [#B] 汇总所有应用的错误日志
 
-* asdk
-** TODO [#B] 去掉砍头息(把利息放到还款的时候)
-SCHEDULED: <2017-07-22 六>
-** TODO [#B] 额度的增长规则
-SCHEDULED: <2017-07-20 二>
+** 花啦啦
+*** TODO [#B] grouse-渠道管理
+SCHEDULED: <2018-03-30 五>
+CREATED: [2018-03-23 五 17:20]
+
+*** DONE [#B] grouse-工作认证剩余部分显示
+CLOSED: [2018-03-27 二 09:08] SCHEDULED: <2018-03-23 五>
+CREATED: [2018-03-23 五 17:20]
+
+*** TODO grouse-白名单管理
+CREATED: [2018-03-23 五 17:20]
+
+*** TODO [#B] grouse-版本管理
+SCHEDULED: <2018-03-29 四>
+CREATED: [2018-03-23 五 17:20]
+
+*** TODO [#B] grouse-系统参数设置
+CREATED: [2018-03-23 五 17:20]
+
+*** TODO [#B] grouse-消息管理
+CREATED: [2018-03-23 五 17:20]
+
+*** TODO [#A] billy-自建黑名单系统
+SCHEDULED: <2018-03-26 一>
+CREATED: [2018-03-23 五 17:20]
+
+*** TODO [#A] canary-数据统计
+CREATED: [2018-03-23 五 17:20]
+
+** 游戏白条
+*** TODO [#B] grouse-认证管理
+SCHEDULED: <2018-03-28 三>
+CREATED: [2018-03-23 五 17:20]
+
+*** TODO [#B] grouse-权限管理
+SCHEDULED: <2018-03-28 三>
+CREATED: [2018-03-23 五 17:20]
+
+*** TODO grouse-白名单管理
+CREATED: [2018-03-23 五 17:20]
+
+*** TODO grouse-系统参数设置
+CREATED: [2018-03-23 五 17:20]
+
+*** TODO kangaroo-微信支付订单查询功能确认(可能有问题)
+DEADLINE: <2018-03-25 日>
+CREATED: [2018-03-23 五 17:20]
+*** TODO kangaroo-支付宝订单查询功能确认
+DEADLINE: <2018-03-25 日>
+CREATED: [2018-03-23 五 17:20]
+*** TODO [#A] kangaroo-为新支付jspay(公众号支付) [50%]
+DEADLINE: <2018-03-25 日>
+CREATED: [2018-03-23 五 17:20]
+
 
 * sunday                                                               :WANT:
 ** DONE [#B] 将 dotfile 文件使用 github 管理

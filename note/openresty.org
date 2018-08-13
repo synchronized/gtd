@@ -1,4 +1,6 @@
 * 准备工作
+** redhat
+#+BEGIN_SRC shell
 sudo yum install gcc gcc-c++ automake autoconf make libtool zlib-devel openssl-devel pcre-devel
 cd /data/package
 tar -zxvf openresty-1.11.2.3.tar.gz 
@@ -7,3 +9,19 @@ cd openresty-1.11.2.3
 ./configure --prefix=/data/server/openresty-1.11.2.3 --with-luajit --with-http_v2_module --with-http_ssl_module --with-ipv6
 gmake
 gmake install
+#+END_SRC
+
+
+** debian/ubuntu
+#+BEGIN_SRC shell
+cd ~/build/openresty
+tar -zxvf openresty-1.11.2.3.tar.gz 
+cd openresty-1.11.2.3
+#+END_SRC
+将can_run("ldconfig") 改为can_run("/sbin/ldconfig")
+#+BEGIN_SRC shell
+./configure --prefix=/home/sunday/opt/openresty-1.11.2.3 --with-luajit --with-http_v2_module --with-http_ssl_module --with-ipv6
+make
+make install
+#+END_SRC
+
