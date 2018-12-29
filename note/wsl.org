@@ -1,0 +1,33 @@
+* 开机启动
+** 创建windiws开机启动文件
+#+BEGIN_SRC shell
+Set WshShell = CreateObject("WScript.Shell") 
+WshShell.Run "C:\Windows\System32\bash.exe -c 'sudo /etc/rc.local'",0
+Set WshShell = Nothing
+#+END_SRC
+
+保存到相应目录，如:
+#+BEGIN_SRC shell
+D:\sunday\opt\wsl
+#+END_SRC
+
+** 将文件添加到开机启动
+1. 打开开机启动文件夹
+#+BEGIN_SRC shell
+win+r shell:startup 
+#+END_SRC
+将之前保存的文件连接到这里
+
+
+** 在wsl 子系统里面将要执行的命令放到里面就好了
+#+BEGIN_SRC shell
+cat /etc/rc.local
+#+END_SRC
+
+#+BEGIN_SRC shell
+/usr/sbin/service ssh start
+/usr/sbin/service privoxy start
+/usr/sbin/service supervisor start
+# 将E:/盘挂载到/data目录
+/bin/mount -o rw,gid=1000,uid=1000,umask=022,fmask=011 -t drvfs e: /data
+#+END_SRC
