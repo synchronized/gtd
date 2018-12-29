@@ -1,0 +1,13 @@
+** 迁移存储目录
+*** 查看当前目录
+#+BEGIN_SRC shell
+sudo docker info | grep "Docker Root Dir"
+#+END_SRC
+
+*** 软链接
+#+BEGIN_SRC shell
+sudo systemctl stop docker
+mkdir -p /data/docker
+mv /var/lib/docker /data/docker/var
+ln -s /data/docker/var /var/lib/docker
+#+END_SRC
