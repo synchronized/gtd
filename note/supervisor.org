@@ -1,0 +1,4 @@
+** 安装
+#+BEGIN_SRC shell
+pip install supervisor
+#+END_SRC

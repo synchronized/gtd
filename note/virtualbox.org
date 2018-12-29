@@ -1,0 +1,49 @@
+* 安装增强功能
+** 挂载virtualbox iso
+设备->安装增强功能
+** 虚拟机内部挂载虚拟光驱
+#+BEGIN_SRC shell
+sudo mkdir -p /media/cdrom0/
+sudo mount /dev/cdrom /media/cdrom0/
+#+END_SRC
+** 安装内核头文件
+查看内核版本
+#+BEGIN_SRC shell
+uname -r
+#+END_SRC
+
+例如在我的计算机上上述命令的执行结果是：
+#+BEGIN_SRC shell
+4.9.0-4-amd64
+#+END_SRC
+
+下一步命令我们需要使用这个参数。
+安装内核头文件，命令：
+#+BEGIN_SRC shell
+apt-get install build-essential linux-headers-内核版本号
+#+END_SRC
+
+例如在我的计算机上需要执行的命令就是：
+#+BEGIN_SRC shell
+apt-get install build-essential linux-headers-4.9.0-4-amd64
+#+END_SRC
+
+** 安装增强功能
+#+BEGIN_SRC shell
+sudo ./VBoxLinuxAdditions.run
+#+END_SRC
+
+* 挂载共享目录
+** 创建共享文件夹
+选择虚拟机->设置->共享文件夹->固定分配->添加->选择文件夹
+** 在虚拟机内部挂载共享文件夹
+#+BEGIN_SRC shell
+sudo mount -o rw,gid=1000,uid=1000,umask=022,fmask=011 -t vboxsf <share_name> <directory>
+#+END_SRC
+<share_name> 就是在创建共享目录时的命名
+<directory>  就是要挂载的目录
+
+如:
+#+BEGIN_SRC shell
+sudo mount -o rw,gid=1000,uid=1000,umask=022,fmask=011 -t vboxsf e_drive /data
+#+END_SRC

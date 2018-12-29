@@ -1,0 +1,73 @@
+* Linux
+** 安装
+参考：[[https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/][官方文档]] 
+- 拷贝mongodb-org-3.2.repo 文件到服务器 /etc/yum.repos.d/目录
+- 安装mongodb-org 包
+#+BEGIN_SRC shell
+sudo yum install -y mongodb-org
+#+END_SRC
+
+* Windows
+#+BEGIN_SRC shell
+sc create MongoDB binPath= "C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe --service --config=D:\MongoDB\etc\mongo.conf" 
+#+END_SRC
+
+* 维护
+** 创建用户
+#+BEGIN_SRC javascript
+use admin
+db.createUser({user:"root",pwd:"sdBs!gDfe!2s!g7bF",roles:[{"role":"userAdminAnyDatabase","db":"admin"}]})  
+db.auth("root","sdBs!gDfe!2s!g7bF")
+db.createUser({user:"mongouser",pwd:"sdBs!gDfe!2s!g7bF",roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}]})  
+#+END_SRC
+
+
+** 数据库备份(单库)
+#+BEGIN_SRC shell
+mongodump --host localhost --port 27017  --gzip --archive=archive.tar.gz --db=Japanese_Center
+#+END_SRC
+
+** 数据库还原(单库)
+#+BEGIN_SRC shell
+mongorestore --host localhost --port 27017 --gzip --archive=Japanese_Center.tar.gz --db=Japanese_Center
+#+END_SRC
+
+** 数据库备份(全库)
+#+BEGIN_SRC shell
+mongodump --host localhost --port 27017 --gzip --archive=archive.tar.gz
+#+END_SRC
+
+** 数据库还原(全库)
+#+BEGIN_SRC shell
+mongorestore --host localhost --port 27017 --gzip --archive=archive.tar.gz
+#+END_SRC
+
+** 数据库还原(全库，插入前删除)
+#+BEGIN_SRC shell
+mongorestore --host localhost --port 27017 --drop --gzip --archive=archive.tar.gz
+#+END_SRC
+
+** 导出
+#+BEGIN_SRC shell
+mongoexport -d GameLog -c PlayerConsume -q "{_id: {'$gt': ObjectId('5bd1e8800000000000000000'), '$lt': ObjectId('5bdf177f0000000000000000')}}" --type=csv --fields _id,Account,PlayerLevel,ResType,ResID,Count,SystemID,ActionID --out PlayerConsume.csv 
+mongoexport -d GameLog -c PlayerConsume -q '{ "_id" : ObjectId("5b18c3d79103fc406873e992")}' --type=csv --out PlayerConsume.csv  --fields _id,Account,PlayerLevel,ResType,ResID,Count,SystemID,ActionID
+mongoexport -d GameLog -c PlayerConsume -q "{ '_id' : ObjectId('5b18c3d79103fc406873e992')}" --type=csv --out PlayerConsume.csv  --fields _id,Account,PlayerLevel,ResType,ResID,Count,SystemID,ActionID
+#+END_SRC
+
+* ObjectId
+** 时间和ObjectId转换
+#+BEGIN_SRC javascript
+var startTime = Date.parse("2018-10-26 00:00:00");
+var endTime = Date.parse("2018-11-04 23:59:59");
+
+var objectIdFromDate = function (date) {
+	return Math.floor(date.getTime() / 1000).toString(16) + "0000000000000000";
+};
+var dateFromObjectId = function (objectId) {
+	return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
+};
+var startObjectId = objectIdFromDate(new Date(startTime));
+var endObjectId = objectIdFromDate(new Date(endTime));
+
+objectIdFromDate(new Date(Date.parse("2018-10-27 00:00:00")));
+#+END_SRC

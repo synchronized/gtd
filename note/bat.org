@@ -1,0 +1,43 @@
+** 时间格式化(yyyy-MM-dd HH:mm:ss)
+#+BEGIN_SRC bat
+echo %DATE:~0,4%-%DATE:~5,2%-%DATE:~8,2% %TIME:~0,2%:%TIME:~3,2%:%TIME:~6,2%
+#+END_SRC
+
+** 取得是运行的环境目录
+#+BEGIN_SRC bat
+%cd%
+#+END_SRC
+或者
+#+BEGIN_SRC bat
+!cd!
+#+END_SRC
+
+** 获取bat脚本文件所在的目录
+#+BEGIN_SRC bat
+%~dp0
+#+END_SRC
+
+** bat中的dirname, filename, basename
+#+BEGIN_SRC bat
+for /F "delims=" %%i in (%filepath%) do set dirname="%%~dpi" 
+for /F "delims=" %%i in (%filepath%) do set filename="%%~nxi"
+for /F "delims=" %%i in (%filepath%) do set basename="%%~ni"
+
+echo %dirname%
+echo %filename%
+echo %basename%
+#+END_SRC
+
+** 去掉字符串末尾的斜杠
+#+BEGIN_SRC bat
+if "%MAGICBOX:~-1%" == "\"  set  MAGICBOX=%MAGICBOX:~0,-1%
+#+END_SRC
+
+
+** 变量做加法
+#+BEGIN_SRC bat
+@set /A MSTAR_COUNT=%MSTAR_COUNT% + 1
+#+END_SRC
+
+** 函数
+

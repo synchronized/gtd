@@ -1,0 +1,25 @@
+** 设置网络策略
+#+BEGIN_SRC shell
+Get-NetConnectionProfile
+#+END_SRC
+
+#+BEGIN_SRC shell
+Set-NetConnectionProfile -NetworkCategory Private
+#+END_SRC
+
+#+BEGIN_SRC shell
+Set-NetConnectionProfile -NetworkCategory Public
+#+END_SRC
+
+** 设置允许非加密方式认证
+#+BEGIN_SRC shell
+Get-Item WSMan:\localhost\Service\AllowUnencrypted
+#+END_SRC
+
+#+BEGIN_SRC shell
+Set-Item WSMan:\localhost\Service\AllowUnencrypted True
+#+END_SRC
+
+#+BEGIN_SRC shell
+winrm set winrm/config/service `@`{AllowUnencrypted=`"`ttrue`"`}
+#+END_SRC
