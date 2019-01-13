@@ -1,4 +1,195 @@
+** 参考
+[[https://www.jianshu.com/p/3658c963d28b][supervisor 从安装到使用]]
 ** 安装
+*** ubuntu/debian
 #+BEGIN_SRC shell
-pip install supervisor
+sudo apt-get install supervisor
+#+END_SRC
+
+*** redhat
+#+BEGIN_SRC shell
+yum install supervisor
+#+END_SRC
+
+*** 源码安装
+#+BEGIN_SRC shell
+cd /usr/local/src
+wget https://pypi.python.org/packages/7b/17/88adf8cb25f80e2bc0d18e094fcd7ab300632ea00b601cbbbb84c2419eae/supervisor-3.3.2.tar.gz
+tar -zxvf supervisor-3.3.2.tar.gz
+cd supervisor-3.3.2
+python setup.py install #本地python版本为python2.7
+# python2.7 setup.py install #本地python版本为python3以上
+#+END_SRC
+
+源码安装没有自动生成配置文件,需要手动生成(下面的"/etc/supervisord.conf"可以换成你自己的路径
+#+BEGIN_SRC shell
+mkdir /etc/supervisor
+echo_supervisord_conf > /etc/supervisor/supervisord.conf
+#+END_SRC
+
+启动
+#+BEGIN_SRC shell
+supervisord -c /etc/supervisord.conf
+#+END_SRC
+
+注意如果使用包管理器安装,部分发行版本会直接在安装完成后自动启动,并且自动加入开机启动
+
+** 配置
+supervisor有两个比较重要的可执行文件supervisord 和 supervisorctl
+- supervisord是守护进程，真正提供服务的(类似与mysql数据库中的"mysqld")
+- supervisorctl 是控制程序，用来控制supervisord(类似与mysql数据库中的"mysql"程序)
+
+在运行supervisord服务的时候，需要指定supervisor 配置文件，如果没有指定，默认在一下目录寻找
+#+BEGIN_SRC shell
+$CWD/supervisord.conf
+$CWD/etc/supervisord.conf
+/etc/supervisord.conf
+/etc/supervisor/supervisord.conf (since Supervisor 3.3.0)
+../etc/supervisord.conf (Relative to the executable)
+../supervisord.conf (Relative to the executable)
+#+END_SRC
+注意: $CWD 是当前目录
+
+#+BEGIN_SRC config
+[unix_http_server]
+file=/tmp/supervisor.sock   ; UNIX 域套接字(socket)文件路径
+;chmod=0700                 ; socket 文件的文件权限，默认0700
+;chown=nobody:nogroup       ; socket 文件的用户和组
+;username=user              ; (default is no username (open server))
+;password=123               ; (default is no password (open server))
+
+;[inet_http_server]         ; http 服务器默认关闭
+;port=127.0.0.1:9001        ; (ip_address:port 是特殊的地址, *:port 是所有的ip地址)
+;username=user              ; (default is no username (open server))
+;password=123               ; (default is no password (open server))
+
+[supervisord]
+logfile=/tmp/supervisord.log ; (日志文件;默认 $CWD/supervisord.log)
+logfile_maxbytes=50MB        ; (日志文件大小,超过会rotate;默认 50MB,0表示不rotate)
+logfile_backups=10           ; (日志文件备份数量;默认 10;0表示不备份)
+loglevel=info                ; (日志级别;默认 info; 其他的还有: debug,warn,trace)
+pidfile=/tmp/supervisord.pid ; (pid文件;默认 supervisord.pid)
+nodaemon=false               ; (是否在前台启动;默认 false)
+minfds=1024                  ; (min. avail startup file descriptors;default 1024)
+minprocs=200                 ; (min. avail process descriptors;default 200)
+;umask=022                   ; (process file creation umask;default 022)
+
+[supervisorctl]
+serverurl=unix:///tmp/supervisor.sock ; UNIX 域套接字(socket)
+
+;[program:theprogramname]
+;command=/bin/cat              ; the program (relative uses PATH, can take args)
+;process_name=%(program_name)s ; process_name expr (default %(program_name)s)
+;numprocs=1                    ; number of processes copies to start (def 1)
+;directory=/tmp                ; directory to cwd to before exec (def no cwd)
+;umask=022                     ; umask for process (default None)
+;priority=999                  ; the relative start priority (default 999)
+;autostart=true                ; start at supervisord start (default: true)
+;autorestart=unexpected        ; whether/when to restart (default: unexpected)
+;startsecs=1                   ; number of secs prog must stay running (def. 1)
+;startretries=3                ; max # of serial start failures (default 3)
+;exitcodes=0,2                 ; 'expected' exit codes for process (default 0,2)
+;stopsignal=QUIT               ; signal used to kill process (default TERM)
+;stopwaitsecs=10               ; max num secs to wait b4 SIGKILL (default 10)
+;stopasgroup=false             ; send stop signal to the UNIX process group (default false)
+;killasgroup=false             ; SIGKILL the UNIX process group (def false)
+;user=chrism                   ; setuid to this UNIX account to run the program
+;redirect_stderr=true          ; redirect proc stderr to stdout (default false)
+;stdout_logfile=/a/path        ; stdout log path, NONE for none; default AUTO
+;stdout_logfile_maxbytes=1MB   ; max # logfile bytes b4 rotation (default 50MB)
+;stdout_logfile_backups=10     ; # of stdout logfile backups (default 10)
+;stdout_capture_maxbytes=1MB   ; number of bytes in 'capturemode' (default 0)
+;stdout_events_enabled=false   ; emit events on stdout writes (default false)
+;stderr_logfile=/a/path        ; stderr log path, NONE for none; default AUTO
+;stderr_logfile_maxbytes=1MB   ; max # logfile bytes b4 rotation (default 50MB)
+;stderr_logfile_backups=10     ; # of stderr logfile backups (default 10)
+;stderr_capture_maxbytes=1MB   ; number of bytes in 'capturemode' (default 0)
+;stderr_events_enabled=false   ; emit events on stderr writes (default false)
+;environment=A="1",B="2"       ; process environment additions (def no adds)
+;serverurl=AUTO                ; override serverurl computation (childutils)
+
+; The below sample eventlistener section shows all possible
+; eventlistener subsection values, create one or more 'real'
+; eventlistener: sections to be able to handle event notifications
+; sent by supervisor.
+
+;[eventlistener:theeventlistenername]
+;command=/bin/eventlistener    ; the program (relative uses PATH, can take args)
+;process_name=%(program_name)s ; process_name expr (default %(program_name)s)
+;numprocs=1                    ; number of processes copies to start (def 1)
+;events=EVENT                  ; event notif. types to subscribe to (req'd)
+;buffer_size=10                ; event buffer queue size (default 10)
+;directory=/tmp                ; directory to cwd to before exec (def no cwd)
+;umask=022                     ; umask for process (default None)
+;priority=-1                   ; the relative start priority (default -1)
+;autostart=true                ; start at supervisord start (default: true)
+;autorestart=unexpected        ; whether/when to restart (default: unexpected)
+;startsecs=1                   ; number of secs prog must stay running (def. 1)
+;startretries=3                ; max # of serial start failures (default 3)
+;exitcodes=0,2                 ; 'expected' exit codes for process (default 0,2)
+;stopsignal=QUIT               ; signal used to kill process (default TERM)
+;stopwaitsecs=10               ; max num secs to wait b4 SIGKILL (default 10)
+;stopasgroup=false             ; send stop signal to the UNIX process group (default false)
+;killasgroup=false             ; SIGKILL the UNIX process group (def false)
+;user=chrism                   ; setuid to this UNIX account to run the program
+;redirect_stderr=true          ; redirect proc stderr to stdout (default false)
+;stdout_logfile=/a/path        ; stdout log path, NONE for none; default AUTO
+;stdout_logfile_maxbytes=1MB   ; max # logfile bytes b4 rotation (default 50MB)
+;stdout_logfile_backups=10     ; # of stdout logfile backups (default 10)
+;stdout_events_enabled=false   ; emit events on stdout writes (default false)
+;stderr_logfile=/a/path        ; stderr log path, NONE for none; default AUTO
+;stderr_logfile_maxbytes=1MB   ; max # logfile bytes b4 rotation (default 50MB)
+;stderr_logfile_backups        ; # of stderr logfile backups (default 10)
+;stderr_events_enabled=false   ; emit events on stderr writes (default false)
+;environment=A="1",B="2"       ; process environment additions
+;serverurl=AUTO                ; override serverurl computation (childutils)
+
+; The below sample group section shows all possible group values,
+; create one or more 'real' group: sections to create "heterogeneous"
+; process groups.
+
+;[group:thegroupname]
+;programs=progname1,progname2  ; each refers to 'x' in [program:x] definitions
+;priority=999                  ; the relative start priority (default 999)
+
+; The [include] section can just contain the "files" setting.  This
+; setting can list multiple files (separated by whitespace or
+; newlines).  It can also contain wildcards.  The filenames are
+; interpreted as relative to this file.  Included files *cannot*
+; include files themselves.
+
+;[include]
+;files = relative/directory/*.ini
+#+END_SRC
+
+一个tomcat例子
+#+BEGIN_SRC config
+[program:tomcat]
+command=/opt/apache-tomcat-8.0.35/bin/catalina.sh run
+stdout_logfile=/opt/apache-tomcat-8.0.35/logs/catalina.out
+autostart=true
+autorestart=true
+startsecs=5
+priority=1
+stopasgroup=true
+killasgroup=true
+#+END_SRC
+
+#+BEGIN_SRC config
+[program:nginx]
+; directory to cwd to before exec (def no cwd)
+directory=/home/sunday/opt/nginx/
+; the program (relative uses PATH, can take args)
+command=/home/sunday/opt/nginx/sbin/nginx -g 'daemon off;'
+process_name=%(program_name)s ; process_name expr (default %(program_name)s)
+numprocs=1                    ; number of processes copies to start (def 1)
+umask=022                     ; umask for process (default None)
+priority=999                  ; the relative start priority (default 999)
+autostart=true                ; start at supervisord start (default: true)
+stopsignal=TERM               ; signal used to kill process (default TERM)
+stopwaitsecs=10               ; max num secs to wait b4 SIGKILL (default 10)
+user=root                     ; setuid to this UNIX account to run the program
+redirect_stderr=true          ; redirect proc stderr to stdout (default false)
+; stdout log path, NONE for none; default AUTO
+stdout_logfile=/home/sunday/opt/nginx/logs/supervisor.log
 #+END_SRC
