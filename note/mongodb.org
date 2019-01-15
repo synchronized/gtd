@@ -77,22 +77,14 @@ objectIdFromDate(new Date(Date.parse("2018-10-27 00:00:00")));
 * 常用
 ** 对集合条数排序
 #+BEGIN_SRC javascript
-var collList = db.getCollectionNames();
-var collCountList = [];
-for (var idx in collList) {
-    var collName = collList[idx];
-    var count = db.getCollection(collName).stats().count;
-    collCountList.push({
-        "name": collName,
-        "count": count
-    });
-}
-collCountList.sort(function(a, b) {
-    return b.count - a.count;
+var collectionNames = db.getCollectionNames(), stats = [];
+collectionNames.forEach(function (n) { 
+    stats.push(db[n].stats()); 
 });
-for (var idx in collCountList) {
-    var item = collCountList[idx];
-    printjson(item.name + "   " + item.count);
+stats = stats.sort(function(a, b) { 
+    return b['size'] - a['size']; 
+});
+for (var c in stats) { 
+    print(stats[c]['ns'] + ": " + stats[c]['size'] + " (" + stats[c]['storageSize'] + ")"); 
 }
-
 #+END_SRC
