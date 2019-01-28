@@ -78,13 +78,28 @@ objectIdFromDate(new Date(Date.parse("2018-10-27 00:00:00")));
 ** 对集合条数排序
 #+BEGIN_SRC javascript
 var collectionNames = db.getCollectionNames(), stats = [];
-collectionNames.forEach(function (n) { 
-    stats.push(db[n].stats()); 
+collectionNames.forEach(function (n) {
+  var item = {stat: db[n].stats(), name: n};
+  stats.push(item);
 });
-stats = stats.sort(function(a, b) { 
-    return b['size'] - a['size']; 
+stats = stats.sort(function(a, b) {
+  return b['stat']['size'] - a['stat']['size'];
 });
-for (var c in stats) { 
-    print(stats[c]['ns'] + ": " + stats[c]['size'] + " (" + stats[c]['storageSize'] + ")"); 
+stats = stats.slice(0, 15); //前15名(大小倒序)
+for (var c in stats) {
+  var item = stats[c];
+  var avai = item['stat']['wiredTiger']['block-manager']['file bytes available for reuse'];
+  var storageSize = item['stat']['storageSize'];
+  print(item['stat']['ns'] + ": " + item['stat']['size'] + " (" + storageSize + "," + avai + ")");
+}
+print("-------------- id format --------------");
+for (var s in stats) {
+  var item = stats[s];
+  var listData = db[item['name']].find({}, {_id:1}).limit(1).toArray();
+  if (listData.length <= 0) {
+    continue;
+  }
+  listData[0]['name'] = item['name'];
+  printjson(listData[0]);
 }
 #+END_SRC
