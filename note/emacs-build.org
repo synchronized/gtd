@@ -1,0 +1,67 @@
+* 参考
+https://chriszheng.science/2015/03/19/Chinese-version-of-Emacs-building-guideline/
+* 下载安装msys2
+
+* 暗转mingw工具链
+pacman -S base-devel mingw-w64-x86_64-toolchain \
+mingw-w64-x86_64-xpm-nox mingw-w64-x86_64-libtiff \
+mingw-w64-x86_64-giflib mingw-w64-x86_64-libpng \
+mingw-w64-x86_64-libjpeg-turbo mingw-w64-x86_64-librsvg \
+mingw-w64-x86_64-libxml2 mingw-w64-x86_64-gnutls
+
+* 下载emacs源码
+pacman -S git
+git clone git://git.sv.gnu.org/emacs.git
+
+* 编译emacs
+./autogen.sh
+PKG_CONFIG_PATH=/mingw64/lib/pkgconfig ./configure --host=x86_64-w64-mingw32 \
+--target=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --with-wide-int \
+--with-jpeg --with-xpm --with-png --with-tiff --with-rsvg --with-xml2 \
+--with-gnutls --without-imagemagick
+make
+make install prefix=/c/emacs
+
+* 复制dll
+cp /mingw64/bin/libwinpthread-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libXpm-noX*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libdbus-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libgomp-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libgcc_s_seh-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libglib-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libintl-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libiconv-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libgobject-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libffi-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libgdk_pixbuf-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libgio-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libgmodule-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/zlib*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/librsvg-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libcairo-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libcroco-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libpango-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libpangocairo-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libxml2-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libfontconfig-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libfreetype-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libpixman-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libpng*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libpangoft*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libpangowin32-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/liblzma-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libexpat-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libharfbuzz-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libgnutls-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libgnutlsxx-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libtiff-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libtiffxx-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libjpeg-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libgif-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libbz2-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libjbig-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libgmp-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libhogweed-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libnettle-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libp11-kit-*.dll /c/soft/emacs-build/bin
+cp /mingw64/bin/libtasn1-*.dll /c/soft/emacs-build/bin
