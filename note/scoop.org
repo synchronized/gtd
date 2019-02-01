@@ -1,0 +1,52 @@
+* 安装
+** 前置准备
+以管理员方式启动powershell, 安装模块:PSReadLine, PSFzf
+注意： 以下操作需要管理员权限
+#+BEGIN_SRC shell
+Install-Module -Name PSReadLine
+Install-Module -Name PSFzf
+[environment]::SetEnvironmentvariable("SCOOP", "<Your scoop path>", "Machine")
+#+END_SRC
+
+** 安装scoop
+以非管理员方式启动powershell 
+#+BEGIN_SRC shell
+iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+scoop install pshazz
+#+END_SRC
+
+** 安装修改powershell profile
+*** 查看profile地址
+#+BEGIN_SRC shell
+$profile
+#+END_SRC
+
+*** 一般会是下面的路径
+#+BEGIN_SRC shell
+C:\Users\<用户名>\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+#+END_SRC
+
+*** 修改内容为
+#+BEGIN_SRC shell
+try { 
+	$null = gcm pshazz -ea stop; 
+	pshazz init 'default'; 
+    Import-Module PSReadLine; 
+    Set-PSReadLineOption -EditMode Emacs; 
+    Remove-PSReadlineKeyHandler 'Ctrl+r';
+    Import-Module PSFzf;
+} catch { }
+#+END_SRC
+
+** 安装node
+#+BEGIN_SRC shell
+scoop install nvm
+
+nvm node_mirror https://npm.taobao.org/mirrors/node/
+nvm npm_mirror https://npm.taobao.org/mirrors/npm/
+
+nvm install latest
+nvm use <版本号>
+
+npm config set registry https://registry.npm.taobao.org
+#+END_SRC
