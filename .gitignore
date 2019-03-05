@@ -1,6 +1,8 @@
 latex/**/auto/
 latex/**/*.aux
-latex/**/*.fdb_latexmk
 latex/**/*.fls
 latex/**/*.log
 latex/**/*.pdf
+latex/**/*.fdb_latexmk
+latex/**/*.synctex.gz
+latex/**/*.build/
