@@ -5,4 +5,4 @@ latex/**/*.log
 latex/**/*.pdf
 latex/**/*.fdb_latexmk
 latex/**/*.synctex.gz
-latex/**/*.build/
+latex/**/*.build-latexmk/
