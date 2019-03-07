@@ -10,7 +10,6 @@ typedef struct sd_lstack_node {
 } sd_lstack_node_t;
 
 typedef struct sd_lstack {
-  sd_lstack_node_t *head;
   sd_lstack_node_t *top;
   int size;
 } sd_lstack_t;
@@ -23,17 +22,15 @@ int sd_lstack_init(sd_lstack_t *ls, int size) {
     return -1;
   }
   memset(ls, 0, sizeof(sd_lstack_t));
-  sd_lstack_node_t **t = &(ls->head);
   for (int i=0; i<size; i++) {
     sd_lstack_node_t *node = (sd_lstack_node_t*)malloc(sizeof(sd_lstack_node_t));
     if (!node) {
       return -2;
     }
     memset(node, 0, sizeof(sd_lstack_node_t));
-    *t = node;
+    node->next = ls->top;
     ls->top = node;
     ls->size++;
-    t = &(node->next);
   }
   return 0;
 }
@@ -47,12 +44,8 @@ int sd_lstack_push(sd_lstack_t *ls, int elt) {
     return -2;
   }
   memset(node, 0, sizeof(sd_lstack_node_t));
+  node->next = ls->top;
   node->data = elt;
-  sd_lstack_node_t **next = &(ls->head);
-  if (ls->top) {
-    next = &(ls->top->next);
-  }
-  *next = node;
   ls->top = node;
   return 0;
 }
@@ -65,14 +58,9 @@ int sd_lstack_pop(sd_lstack_t *ls, int *elt) {
     return -2; //empty
   }
 
-  sd_lstack_node_t **node = &(ls->head);
-  sd_lstack_node_t **last = &(ls->head);
-  for (; *node != ls->top; node = &((*node)->next)) {
-    last = node;
-  }
-  *elt = (*node)->data;
-  *node = NULL;
-  ls->top = *last;
+  sd_lstack_node_t *node = ls->top;
+  *elt = node->data;
+  ls->top = ls->top->next;
   return 0;
 }
 
@@ -81,11 +69,8 @@ void sd_lstack_display(sd_lstack_t *ls) {
     return;
   }
   printf("{size:%d, [", ls->size);
-  sd_lstack_node_t *node = ls->head;
-  if (ls->top) {
-    for (node = ls->head; node != ls->top; node = node->next) {
-      printf("%d => ", node->data);
-    }
+  sd_lstack_node_t *node = ls->top;
+  for (; node; node = node->next) {
     printf("%d => ", node->data);
   }
   printf("NULL]}\n");

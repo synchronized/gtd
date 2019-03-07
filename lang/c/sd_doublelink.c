@@ -10,7 +10,6 @@ typedef struct sd_dlink_node {
 
 typedef struct sd_dlink {
   sd_dlink_node_t *head;
-  int size;
 } sd_dlink_t;
 
 int sd_dlink_init(sd_dlink_t *dl, int size);
@@ -41,7 +40,6 @@ int sd_dlink_init(sd_dlink_t *dl, int size) {
     *t = node; //prev->next;
     prev = &node;
   }
-  dl->size = i;
   if (i!=size) {
     return -2; //malloc failed
   }
@@ -54,11 +52,15 @@ int sd_dlink_insert(sd_dlink_t *dl, int elt, int pos) {
     return -1; //dl invalid
   }
   int i=0;
-  sd_dlink_node_t **t = &(dl->head);
-  sd_dlink_node_t *prev = NULL;
+  sd_dlink_node_t dummyNode;
+  dummyNode.next = dl->head;
+  sd_dlink_node_t *prev = &dummyNode;
+  sd_dlink_node_t *curr = prev->next;
 
-  for (; i<pos && (*t); i++, t=&((*t)->next)) {
-    prev = (*t)->prev;
+  while (i<pos && curr) {
+    i++;
+    prev = curr;
+    curr = curr->next;
   }
   if (i!=pos) {
     return -2; //pos invalid
@@ -71,38 +73,42 @@ int sd_dlink_insert(sd_dlink_t *dl, int elt, int pos) {
   memset(node, 0, sizeof(sd_dlink_node_t));
   node->data = elt;
   node->prev = prev;
-  node->next = *t;
-  *t = node;
-  if (!node->next) {
-    node->next->prev = node;
+  node->next = curr;
+  prev->next = node;
+  if (!curr) {
+    curr->prev = node;
   }
+  dl->head = dummyNode.next;
   return 0;
 }
 
-int sd_dlink_update(sd_dlink_t *dl, int elt, int pos);
-int sd_dlink_delete(sd_dlink_t *dl, int pos);
 void sd_dlink_display(sd_dlink_t *dl) {
   if (!dl) {
     return;
   }
-  sd_dlink_node_t *t = dl->head;
-  printf("[");
-  for (; t; t=t->next) {
-    printf(" <-> {data: %d} <-> ", t->data);
+  sd_dlink_node_t *curr = dl->head;
+  printf("{[");
+  for (; curr; curr=curr->next) {
+    printf("{data: %d} <-> ", curr->data);
   }
-  printf("NULL]\n");
+  printf("NULL]}\n");
 }
 
 void sd_dlink_free(sd_dlink_t *dl) {
-  sd_dlink_node_t **t = &(dl->head);
-  while (*t) {
-    sd_dlink_node_t *tmp = *t;
-    sd_dlink_node_t *next = (*t)->next;
-    *t = tmp->next;
-    free(*t);
-    t=&(tmp->next);
+  sd_dlink_node_t dummyNode;
+  memset(&dummyNode, 0, sizeof(sd_dlink_t));
+  dummyNode.next = dl->head;
+  sd_dlink_node_t *curr = dl->head;
+  while (curr) {
+    sd_dlink_node_t *tmp = curr;
+    curr = curr->next;
+
+    tmp->prev = NULL;
+    tmp->next = NULL;
+    free(tmp);
   }
-  dl->size = 0;
+
+  dl->head = NULL;
 }
 
 int sd_dlink_test_init(sd_dlink_t *dl, int size) {
@@ -133,6 +139,10 @@ int main() {
   if (code) {
     return -1;
   }
+  sd_dlink_test_init(&dl, 11);
+  sd_dlink_test_init(&dl, 12);
+  sd_dlink_test_init(&dl, 13);
+  sd_dlink_test_init(&dl, 14);
   sd_dlink_test_free(&dl);
   return 0;
 }
