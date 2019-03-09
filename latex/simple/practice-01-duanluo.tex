@@ -1,0 +1,133 @@
+\documentclass{ctexart}
+
+\CTEXsetup[format={\bfseries}]{section}
+
+\begin{document}
+\section{Einstein}
+\ldots when Einstein introduced his formula
+\begin{equation}
+  e = m \cdot c^2 \; ,
+\end{equation}
+which is at the same time the most widely known
+and the least well understood physical formula.
+% Example 2
+\ldots from which follows Kirchoff’s current law:
+\begin{equation}
+  \sum_{k=1}^{n} I_k = 0 \; .
+\end{equation}
+Kirchhoff’s voltage law can be derived \ldots
+% Example 3
+\ldots which has several advantages.
+\begin{equation}
+  I_D = I_F - I_R
+\end{equation}
+is the core of a very different transistor model. \ldots
+
+\section{特殊字符}
+\subsection{保留符号}
+下面的这些字符是 LATEX 的保留字符，它们或在 LATEX 中有特定的用
+处，或不一定包含在所有的字库中。如果你直接在文本中使用它们，通常
+在排版结果中将不会得到这些字符，而且还会导致 LATEX 做一些你不希望
+发生的事情。 \\*
+\# \qquad
+\$ \qquad
+\% \qquad
+\^ \qquad
+\& \qquad
+\_ \qquad
+\{ \qquad
+\} \qquad
+\~ \qquad
+$\backslash$ 
+
+\\
+当然，这些字符前面加上反斜线，就可以在文本中得到它们。 \\*
+$\backslash$\# \qquad
+$\backslash$\$ \qquad
+$\backslash$\% \qquad
+$\backslash$\^ \qquad
+$\backslash$\& \qquad
+$\backslash$\_ \qquad
+$\backslash$\{ \qquad
+$\backslash$\} \qquad
+$\backslash$\~
+
+\subsection{简单\LaTeX{}命令}
+\today \\
+\TeX \\
+\LaTeX \\
+\LaTeXe 
+
+\subsection{引号}
+这是``双引号'' \qquad
+这是`单引号' \qquad
+`这是什么?'
+
+\subsection{破折号和连字号}
+daughter-in-law, X-rated\\
+pages 13--67\\
+yes---or no? \\
+$0$, $1$ and $-1$
+
+\subsection{波浪号}
+波浪号经常和网址用在一起。它在 LATEX 中，可用 \~ 产生，但其结
+果：却不是你真正想要的。试一下这个：\\
+http://www.baidu.com/\~{}bush \\
+http://www.baidu.com/$\sim$demo 
+
+\subsection{度的符号}
+在LATEX中如何排度的符号？ \\
+Its $-30\,^{\circ}\mathrm{C}$,
+I will soon start to
+super-conduct.
+
+\subsection{省略号}
+在打字机上，逗号或句号占据的空间和其他字母相等。在书籍印刷
+中，这些字符仅占据一点儿空间，并且与前一个字母贴得非常紧。所以不
+能只键入三个点来输出‘省略号’，因为间隔划分得不对。有一个专门的命令
+输出省略号。它称为($\backslash$ldots)
+
+\ldots
+
+\section{表格}
+tabular 环境能用来排印带有水平和铅直表线的漂亮表格。LATEX 自动
+确定每一列的宽度。\\
+命令\\
+\begin{tabular}{|l|}
+  \hline
+  \verb|\begin{tabular}{table spec}| \\
+  \hline
+\end{tabular}
+
+的参量 table spec 定义了表格的式样。用一个 l 产生左对齐的列，用一个 r
+产生右对齐的列，用一个 c 产生居中的列；用 p\{宽度值width\} 产生相应宽
+度、包含自动断行文本的列；| 产生铅直表线。
+
+\begin{tabular}{|l|r|}
+\hline
+7C0 & hexadecimal \\
+3700 & octal \\ \cline{2-2}
+11111000000 & binary \\
+\hline \hline
+1984 & decimal \\
+\hline
+\end{tabular}
+
+\begin{tabular}{|p{4.7cm}|}
+\hline
+Welcome to Boxy’s paragraph.
+We sincerely hope you’ll
+all enjoy the show. \\
+\hline
+\end{tabular}
+
+  \begin{tabular}{|c r @{.} l|}
+    \hline
+    Pi expression      & \multicolumn{2}{c}{Values} \\
+    $\pi$              & 3&1416 \\
+    $\pi^{\pi}$        & 36&46 \\
+    $(\pi^{\pi})^{\pi}$ & 80662&7 \\
+    \hline
+  \end{tabular}
+
+\end{document}

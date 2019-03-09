@@ -1,8 +1,11 @@
+**/a.out
 latex/**/auto/
 latex/**/*.aux
 latex/**/*.fls
 latex/**/*.log
 latex/**/*.pdf
+latex/**/*.dvi
+latex/**/*.toc
 latex/**/*.fdb_latexmk
 latex/**/*.synctex.gz
 latex/**/*.build-latexmk/
