@@ -1,0 +1,196 @@
+\documentclass{ctexart}
+\usepackage{changepage}
+\CTEXsetup[format={\bfseries}]{section}
+\begin{document}
+\section*{NAME}
+\begin{adjustwidth}{1cm}{0cm}
+\underline{xxd} - 转换二进制数据为16进制文本，或者从16进制文本转换到二进制数据
+\end{adjustwidth}
+
+\section*{SYNOPSIS}
+\begin{adjustwidth}{1cm}{0cm}
+xxd -h[elp] \\
+xxd [options] [infile [outfile]] \\
+xxd -r[evert] [options] [infile [outfile]]
+\end{adjustwidth}
+
+\section*{DESCRIPTION}
+\begin{adjustwidth}{1cm}{0cm}
+\underline{xxd} creates a hex dump of a given file or standard input.  It can
+also convert a hex dump back to its original binary form.  Like uuencode(1) and
+uudecode(1) it allows the transmission of binary data in a `mail-safe' ASCII
+representation, but has the advantage of decoding to standard output.  Moreover,
+it can be used to perform binary file patching. 
+\end{adjustwidth}
+
+\section*{OPTIONS}
+\begin{adjustwidth}{1cm}{0cm}
+If no \underline{infile} is given, standard input is read.  If
+\underline{infile} is specified as a `-' character, then input is taken from
+standard input.  If no \underline{outfile} is given (or a `-' character is in
+its place), results are sent to standard output. \\
+
+\noindent Note that a ``lazy'' parser is used which does not check for more than
+the first option letter, unless the option is followed by a parameter.  Spaces
+between a single option letter and its parameter are optional.  Parameters to
+options can be specified in decimal, hexadecimal or octal notation.  Thus -c8,
+-c 8, -c 010 and -cols 8 are all equivalent.  \\
+
+\noindent \underline{-a} | \underline{-autoskip} 
+\begin{adjustwidth}{1cm}{0cm}
+  toggle autoskip: A single '*' replaces nul-lines.  Default off. \\
+\end{adjustwidth}
+
+\noindent \underline{-b} | \underline{-bits} 
+\begin{adjustwidth}{1cm}{0cm}
+  Switch to bits (binary digits) dump, rather than hexdump.  This option writes
+  octets as eight digits "1"s and "0"s instead of a normal hexadecimal dump. Each
+  line is  preceded by a line number in hexadecimal and followed by an ascii (or
+  ebcdic) representation. The command line switches -r, -p, -i do not work with
+  this mode. \\
+\end{adjustwidth}
+
+\noindent \underline{-c} \underline{cols} | \underline{-cols} \underline{cols}
+\begin{adjustwidth}{1cm}{0cm}
+  format <cols> octets per line. Default 16 (-i: 12, -ps: 30, -b: 6). Max 256. \\
+\end{adjustwidth}
+
+\noindent \underline{-E} | \underline{-EBCDIC}
+\begin{adjustwidth}{1cm}{0cm}
+  Change the character encoding in the righthand column from ASCII to EBCDIC.
+  This does not change the hexadecimal representation. The option is meaningless
+  in combinations with -r, -p or -i. \\
+\end{adjustwidth}
+
+\noindent \underline{-e}
+\begin{adjustwidth}{1cm}{0cm}
+  Switch to little-endian hexdump.  This option treats byte groups as words in
+  little-endian byte order.  The default grouping of 4 bytes may  be  changed
+  using  -g.   This option only applies to hexdump, leaving the ASCII (or
+  EBCDIC) representation unchanged.  The command line switches -r, -p, -i do not
+  work with this mode.  \\
+\end{adjustwidth}
+
+\noindent \underline{-g} \underline{bytes} | \underline{-groupsize} \underline{bytes}
+\begin{adjustwidth}{1cm}{0cm}
+  separate  the  output  of  every <bytes> bytes (two hex characters or eight
+  bit-digits each) by a whitespace.  Specify -g 0 to suppress grouping.  <Bytes>
+  defaults to 2 in normal mode, 4 in little-endian mode and 1 in bits mode.
+  Grouping does not apply to postscript or include style. \\
+\end{adjustwidth}
+
+\noindent \underline{-h} | \underline{-help}
+\begin{adjustwidth}{1cm}{0cm}
+  print a summary of available commands and exit.  No hex dumping is performed. \\
+\end{adjustwidth}
+
+\noindent \underline{-i} | \underline{-include}
+\begin{adjustwidth}{1cm}{0cm}
+  output in C include file style. A complete static array definition is written
+  (named after the input file), unless xxd reads from stdin. \\
+\end{adjustwidth}
+
+\noindent \underline{-l} \underline{len} | \underline{-len} \underline{len}
+\begin{adjustwidth}{1cm}{0cm}
+              stop after writing <len> octets. \\
+\end{adjustwidth}
+
+\noindent \underline{-o} \underline{offset}
+\begin{adjustwidth}{1cm}{0cm}
+  add <offset> to the displayed file position. \\
+\end{adjustwidth}
+
+\noindent \underline{-p} | \underline{-ps} | \underline{-postscript} |
+\underline{-plain}
+\begin{adjustwidth}{1cm}{0cm}
+  output in postscript continuous hexdump style. Also known as plain hexdump
+  style. \\
+\end{adjustwidth}
+
+\noindent \underline{-r} | \underline{-revert}
+\begin{adjustwidth}{1cm}{0cm}
+  reverse operation: convert (or patch) hexdump into binary.  If not writing to
+  stdout, xxd writes into its output file without truncating it. Use the
+  combination -r  -p  to read plain hexadecimal dumps without line number
+  information and without a particular column layout. Additional Whitespace and
+  line-breaks are allowed anywhere. \\
+\end{adjustwidth}
+
+\noindent \underline{-seek} \underline{offset}
+\begin{adjustwidth}{1cm}{0cm}
+  When used after -r: revert with <offset> added to file positions found in
+  hexdump. \\
+\end{adjustwidth}
+
+\noindent \underline{-s} \underline{[+][-]seek}
+\begin{adjustwidth}{1cm}{0cm}
+  start at <seek> bytes abs. (or rel.) infile offset.  + indicates that the seek
+  is relative to the current stdin file position (meaningless when not reading
+  from stdin).  - indicates that the seek should be that many characters from
+  the end of the input (or if combined with +: before the current stdin file
+  position).  Without -s  option,  xxd starts at the current file position. \\
+\end{adjustwidth}
+
+\noindent \underline{-u}
+\begin{adjustwidth}{1cm}{0cm}
+  use upper case hex letters. Default is lower case. \\
+\end{adjustwidth}
+
+\noindent \underline{-v} | \underline{-version}
+\begin{adjustwidth}{1cm}{0cm}
+  show version string. \\
+\end{adjustwidth}
+\end{adjustwidth}
+
+\section*{CAVEATS}
+\begin{adjustwidth}{1cm}{0cm}
+\underline{xxd}  \underline{-r}  has  some  builtin  magic while evaluating line
+number information.  If the output file is seekable, then the linenumbers at the
+start of each hexdump line may be out of order, lines may be missing, or
+overlapping. In these cases xxd will lseek(2) to the next position. If the
+output file is not seekable, only gaps  are  allowed,  which  will  be filled by
+null-bytes. \\ 
+
+\noindent \underline{xxd} \underline{-r} never generates parse errors. Garbage
+is silently skipped. \\  
+
+\noindent When  editing hexdumps, please note that \underline{xxd}
+\underline{-r} skips everything on the input line after reading enough columns
+of hexadecimal data (see option -c). This also means, that changes to the
+printable ascii (or ebcdic) columns are always ignored. Reverting a plain (or
+postscript) style hexdump with xxd -r -p does not depend on the correct  number
+of  columns. Here anything that looks like a pair of hex-digits is interpreted.
+\\ 
+
+\noindent Note the difference between \\
+\% xxd -i file \\
+and \\
+\% xxd -i < file \\
+
+\noindent \underline{xxd} \underline{-s} \underline{+seek} may be different from
+\underline{xxd} \underline{-s} \underline{seek}, as lseek(2) is used to
+``rewind'' input.  A `+' makes a difference if the input source is stdin, and if
+stdin's file position is not at the start of the file by the time xxd is started
+and given its input.  The following examples may help to clarify (or further
+confuse!)$\cdots$ \\ 
+
+\noindent Rewind stdin before reading; needed because the `cat' has already read
+to the end of stdin. \\   
+\% sh -c ``cat > plain\_copy; xxd -s 0 > hex\_copy'' < file \\
+
+\noindent Hexdump from file position 0x480 (=1024+128) onwards.  The `+' sign
+means "relative to the current position", thus the `128' adds to the 1k where dd
+left off. \\ 
+\% sh -c ``dd of=plain\_snippet bs=1k count=1; xxd -s +128 > hex\_snippet'' <
+file \\ 
+
+\noindent Hexdump from file position 0x100 ( = 1024-768) on. \\
+\underline{\% sh -c ``dd of=plain\_snippet bs=1k count=1; xxd -s +-768 >
+  hex\_snippet'' < file} \\ 
+
+\noindent However, this is a rare situation and the use of `+' is rarely needed.
+The author prefers to monitor the effect of xxd with strace(1) or truss(1),
+whenever -s is used. 
+\end{adjustwidth}
+
+\end{document}

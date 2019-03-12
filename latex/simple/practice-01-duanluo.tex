@@ -1,6 +1,7 @@
 \documentclass{ctexart}
 
 \CTEXsetup[format={\bfseries}]{section}
+\usepackage{tcolorbox}
 
 \begin{document}
 \section{Einstein}
@@ -40,8 +41,8 @@ is the core of a very different transistor model. \ldots
 \~ \qquad
 $\backslash$ 
 
-\\
 当然，这些字符前面加上反斜线，就可以在文本中得到它们。 \\*
+
 $\backslash$\# \qquad
 $\backslash$\$ \qquad
 $\backslash$\% \qquad
@@ -89,13 +90,24 @@ super-conduct.
 
 \ldots
 
+\subsection{注音符号和特殊字符}
+\LaTeX 支持来自许多语言中的注音符号和特殊字符。表 2.1 就字母 o 列
+出了所有的注音符号。对于其他字母也自然有效。\\
+在字母 i 和 j 上标一个注音符号，它的点儿必须去掉。这个可由 $\backslash$i 和
+$\backslash$j 做到。
+\\
+H\^otel, na\"\i ve, \’el\‘eve,\\
+sm\o rrebr\o d, !‘Se\~norita!,\\
+Sch\"onbrunner Schlo\ss{}
+Stra\ss e
+
 \section{表格}
 tabular 环境能用来排印带有水平和铅直表线的漂亮表格。LATEX 自动
 确定每一列的宽度。\\
 命令\\
 \begin{tabular}{|l|}
   \hline
-  \verb|\begin{tabular}{table spec}| \\
+  % \verb-\begin{tabular}{table spec}- \\
   \hline
 \end{tabular}
 
@@ -113,6 +125,7 @@ tabular 环境能用来排印带有水平和铅直表线的漂亮表格。LATEX 
 \hline
 \end{tabular}
 
+
 \begin{tabular}{|p{4.7cm}|}
 \hline
 Welcome to Boxy’s paragraph.
@@ -121,13 +134,140 @@ all enjoy the show. \\
 \hline
 \end{tabular}
 
-  \begin{tabular}{|c r @{.} l|}
-    \hline
-    Pi expression      & \multicolumn{2}{c}{Values} \\
-    $\pi$              & 3&1416 \\
-    $\pi^{\pi}$        & 36&46 \\
-    $(\pi^{\pi})^{\pi}$ & 80662&7 \\
-    \hline
-  \end{tabular}
+\begin{tabular}{|c r @{.} l|}
+  \hline
+  Pi expression      & \multicolumn{2}{c}{Values} \\
+  $\pi$              & 3&1416 \\
+  $\pi^{\pi}$        & 36&46 \\
+  $(\pi^{\pi})^{\pi}$ & 80662&7 \\
+  \hline
+\end{tabular}
+
+\section{环境}
+\subsection{Itemize, Enumerate, and Description}
+itemize 环境用于简单的列表，enumerate 环境用于带序号的列表，description
+环境用于带描述的列表。
+\flushleft
+\begin{enumerate}
+\item You can mix the list
+environments to your taste:
+\begin{itemize}
+\item But it might start to
+look silly.
+\item[-] With a dash.
+\end{itemize}
+\item Therefore remember:
+\begin{description}
+\item[Stupid] things will not
+become smart because they are
+in a list.
+\item[Smart] things, though, can be
+presented beautifully in a list.
+\end{description}
+\end{enumerate}
+
+\subsection{Flushleft, Flushright, and Center}
+flushleft 和 flushright 环境分别产生靠左排列和靠右排列的段
+落。center 环境产生居中的文本。如果你不输入命令 $\backslash\backslash$ 指定断行点，\LaTeX
+将自行决定。
+\fbox{%
+  \parbox{\textwidth}{%
+    \begin{flushleft}
+      This text is\\ left-aligned.
+      \LaTeX{} is not trying to make
+      each line the same length.
+    \end{flushleft}
+  }%
+}
+\fbox{%
+  \parbox{\textwidth}{%
+    \begin{flushright}
+      This text is right-\\aligned.
+      \LaTeX{} is not trying to make
+      each line the same length.
+    \end{flushright}
+  }%
+}
+\fbox{%
+  \parbox{\textwidth}{%
+    \begin{center}
+      At the centre\\of the earth
+    \end{center}
+  }%
+}
+
+\begin{tcolorbox}
+This is another \textbf{tcolorbox}.
+\tcblower
+Here, you see the lower part of the box.
+\end{tcolorbox}
+
+\subsection{Quote, Quotation, and Verse}
+quote 环境对重要断语和例子的引用很重要。
+\fbox{%
+  \parbox{\textwidth}{%
+    A typographical rule of thumb
+    for the line length is:
+    \begin{quote}
+      On average, no line should
+      be longer than 66 characters.
+    \end{quote}
+    This is why \LaTeX{} pages have
+    such large borders by default and
+    also why multicolumn print is
+    used in newspapers.
+  }%
+}
+
+有两个类似的环境：quotation 和 verse 环境。quotation 环境用于
+超过几段的较长引用，因为它对段落进行缩进。verse 环境用于诗歌，在诗
+歌中断行很重要。在一行的末尾用 \\ 断行，在每一段后留一空行。
+\fbox{%
+  \parbox{\textwidth}{%
+    I know only one English poem by
+    heart. It is about Humpty Dumpty.
+    \begin{flushleft}
+      \begin{quotation}
+        Humpty Dumpty sat on a wall:\\
+        Humpty Dumpty had a great fall.\\
+        All the King’s horses and all
+        the King’s men\\
+        Couldn’t put Humpty together
+        again.
+      \end{quotation}
+    \end{flushleft}
+  }%
+}
+
+\fbox{%
+  \parbox{\textwidth}{%
+    I know only one English poem by
+    heart. It is about Humpty Dumpty.
+    \begin{flushleft}
+      \begin{verse}
+        Humpty Dumpty sat on a wall:\\
+        Humpty Dumpty had a great fall.\\
+        All the King’s horses and all
+        the King’s men\\
+        Couldn’t put Humpty together
+        again.
+      \end{verse}
+    \end{flushleft}
+  }%
+}
+
+\subsection{fbox}
+\fbox{%
+  \parbox{\textwidth}{%
+    % \begin{center}
+      aaa\\
+      bbb
+    % \end{center}
+  }%
+}
+
+\section{边框}
+\subsection{tcolorbox}
+
 
 \end{document}

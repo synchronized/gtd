@@ -16,13 +16,13 @@ sc create MongoDB binPath= "C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe -
 ** 创建用户
 #+BEGIN_SRC javascript
 use admin
-db.createUser({user:"root",pwd:"sdBs!gDfe!2s!g7bF",roles:[{"role":"userAdminAnyDatabase","db":"admin"}]})  
-db.auth("root","sdBs!gDfe!2s!g7bF")
-db.createUser({user:"mongouser",pwd:"sdBs!gDfe!2s!g7bF",roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}, {"role":"userAdminAnyDatabase","db":"admin"}]})  
+db.createUser({user:"root",pwd:"<password>",roles:[{"role":"userAdminAnyDatabase","db":"admin"}]})  
+db.auth("root","<password>")
+db.createUser({user:"mongouser",pwd:"<password>",roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}, {"role":"userAdminAnyDatabase","db":"admin"}]})  
 
 db.updateUser("mongouser", {roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}, {"role":"userAdminAnyDatabase","db":"admin"}]})  
 
-db.updateUser("mongouser", {pwd: "OOQNpRFIMvSa7g"})
+db.updateUser("mongouser", {pwd: "<password>"})
 #+END_SRC
 
 

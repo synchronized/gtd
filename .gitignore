@@ -1,4 +1,5 @@
 **/a.out
+note/**/auto/
 latex/**/auto/
 latex/**/*.aux
 latex/**/*.fls
@@ -8,4 +9,4 @@ latex/**/*.dvi
 latex/**/*.toc
 latex/**/*.fdb_latexmk
 latex/**/*.synctex.gz
-latex/**/*.build-latexmk/
+**/*.build-latexmk/
