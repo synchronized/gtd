@@ -26,7 +26,7 @@ static struct node* create_node(int val)
     return NULL;
   }
   pnode->val = val;
-  pnode->next = next;
+  pnode->next = NULL;
   return pnode;
 }
 
@@ -49,7 +49,7 @@ static struct node* push(int val)
   struct node *pnode = create_node(val);
   pnode->next = phead;
   phead = pnode;
-  count++;
+  //count++;
   return phead;
 }
 
@@ -71,7 +71,7 @@ static int pop()
 // 返回链表的表头节点的值
 static int peek()
 {
-  if (!head)
+  if (!phead)
     {
       printf("peek failed! link is empty!\n");
       return -1;
@@ -85,5 +85,76 @@ static int size() {
     return 0;
   }
   int count = 0;
+  struct node *pnode = phead;
 
+  while (pnode != NULL)
+    {
+      pnode = pnode->next;
+      count++;
+    }
+  return count;
+}
+
+static int is_empty()
+{
+  return phead==NULL;
+}
+
+static void print_single_link()
+{
+  if (is_empty())
+    {
+      printf("stack is empty\n");
+      return;
+    }
+
+  printf("stack size()=%d\n", size());
+
+  struct node *pnode = phead;
+  struct node *ptmp = NULL;
+
+  while (pnode != NULL) {
+    ptmp = pnode;
+    printf("    %d\n", pnode->val);
+    pnode = pnode->next;
+  }
+
+  //while (phead != NULL) {
+  //  printf("    %d\n", phead->val);
+  //  pnode = phead;
+  //  phead = phead->next;
+  //  free(pnode);
+  //}
+}
+
+void main()
+{
+  int tmp = 0;
+
+  // 将10, 20, 30 依次推入栈中
+  push(10);
+  push(20);
+  push(30);
+
+  print_single_link();    // 打印栈
+
+  // 将“栈顶元素”赋值给tmp，并删除“栈顶元素”
+  tmp = pop();
+  printf("tmp=%d\n", tmp);
+  //print_single_link();    // 打印栈
+
+  // 只将“栈顶”赋值给tmp，不删除该元素.
+  tmp = peek();
+  printf("tmp=%d\n", tmp);
+  print_single_link();    // 打印栈
+
+  destroy_single_link();
+
+  push(40);
+  print_single_link();    // 打印栈
+
+  // 销毁栈
+  destroy_single_link();
+
+  print_single_link();    // 打印栈
 }

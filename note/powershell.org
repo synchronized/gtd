@@ -23,3 +23,74 @@ Set-Item WSMan:\localhost\Service\AllowUnencrypted True
 #+BEGIN_SRC shell
 winrm set winrm/config/service `@`{AllowUnencrypted=`"`ttrue`"`}
 #+END_SRC
+
+** 升级powershell(需要重启)
+#+BEGIN_SRC shell
+$url = "https://raw.githubusercontent.com/jborean93/ansible-windows/master/scripts/Upgrade-PowerShell.ps1"
+$file = "$env:temp\Upgrade-PowerShell.ps1"
+$username = "Administrator"
+$password = "<Your Administrator Password>"
+
+(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force
+
+# version can be 3.0, 4.0 or 5.1
+&$file -Version 5.1 -Username $username -Password $password -Verbose
+#+END_SRC
+
+** 设置Winm(需要管理员运行)
+#+BEGIN_SRC shell
+$url = "https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"
+$file = "$env:temp\ConfigureRemotingForAnsible.ps1"
+
+(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
+
+powershell.exe -ExecutionPolicy ByPass -File $file
+#+END_SRC
+
+** 安装模块(需要管理员运行)
+#+BEGIN_SRC shell
+Install-Module -Name PSReadLine
+Install-Module -Name PSFzf
+#+END_SRC
+
+** 安装Scoop
+#+BEGIN_SRC shell
+function Set-EnvironmentVariable
+{
+    param
+    (
+        [string]
+        [Parameter(Mandatory)]
+        $Name,
+
+        [string]
+        [AllowEmptyString()]
+        [Parameter(Mandatory)]
+        $Value,
+
+        [System.EnvironmentVariableTarget]
+        [Parameter(Mandatory)]
+        $Target
+    )
+
+    [Environment]::SetEnvironmentVariable($Name, $Value, $Target)
+}
+Set-EnvironmentVariable -Name SCOOP -Value "d:/sunday/scoop" -Target User
+iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+scoop install pshazz
+scoop install gow
+
+#+END_SRC
+
+设置powershell启动文件"$profile"
+#+BEGIN_SRC shell
+try { 
+    $null = gcm pshazz -ea stop; 
+    pshazz init 'default' 
+    Import-Module PSReadLine; 
+    Set-PSReadLineOption -EditMode Emacs; 
+    Remove-PSReadlineKeyHandler 'Ctrl+r';
+    Import-Module PSFzf;
+} catch { }
+#+END_SRC

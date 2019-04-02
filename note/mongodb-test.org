@@ -1,0 +1,38 @@
+* 创建用户
+#+BEGIN_SRC javascript
+db.createUser({user:"test1",pwd:"123456",roles:[{"role":"readAnyDatabase","db":"admin"}]}) 
+db.createUser({user:"test2",pwd:"123456",roles:[{"role":"readWriteAnyDatabase","db":"admin"}]})  ok
+db.createUser({user:"test3",pwd:"123456",roles:[{"role":"dbAdminAnyDatabase","db":"admin"}]}) 
+db.createUser({user:"test4",pwd:"123456",roles:[{"role":"clusterAdmin","db":"admin"}]}) 
+db.createUser({user:"test5",pwd:"123456",roles:[{"role":"backup","db":"admin"}]}) 
+db.createUser({user:"test6",pwd:"123456",roles:[{"role":"restore","db":"admin"}]})  insert
+db.createUser({user:"sunday",pwd:"123456",roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}, {"role":"userAdminAnyDatabase","db":"admin"}]})  
+#+END_SRC
+
+db.test.find({}).toArray()
+
+db.test.insert({id: 10001})
+db.test.update({id: 10001}, {$set: {username: "test2"}})
+db.test.remove({id: 10001})
+
+db.test.insert({id: 10002})
+db.test.update({id: 10002}, {$set: {username: "test2"}})
+db.test.remove({id: 10002})
+
+db.test.insert({id: 10003})
+db.test.update({id: 10003}, {$set: {username: "test3"}})
+db.test.remove({id: 10003})
+
+db.test.insert({id: 10004})
+db.test.update({id: 10004}, {$set: {username: "test4"}})
+db.test.remove({id: 10004})
+
+db.test.insert({id: 10005})
+db.test.update({id: 10005}, {$set: {username: "test5"}})
+db.test.remove({id: 10005})
+
+db.test.insert({id: 10006})
+db.test.update({id: 10006}, {$set: {username: "test6"}})
+db.test.remove({id: 10006})
+
+db.updateUser("mongouser", {roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}]})  
