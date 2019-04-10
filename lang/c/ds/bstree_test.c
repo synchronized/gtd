@@ -2,7 +2,7 @@
  * C 语言: 二叉查找树
  *
  * @author sunday
- * @date 2019/04/02
+ * @date 2019-04-02
  */
 
 #include <stdio.h>
