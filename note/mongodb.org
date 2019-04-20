@@ -18,7 +18,7 @@ sc create MongoDB binPath= "C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe -
 use admin
 db.createUser({user:"root",pwd:"<password>",roles:[{"role":"userAdminAnyDatabase","db":"admin"}]})  
 db.auth("root","<password>")
-db.createUser({user:"mongouser",pwd:"<password>",roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}, {"role":"userAdminAnyDatabase","db":"admin"}]})  
+db.createUser({user:"mongouser",pwd:"<password>",roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}, {"role":"restore","db":"admin"}]})  
 
 db.updateUser("mongouser", {roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}]})  
 
