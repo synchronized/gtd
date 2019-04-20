@@ -245,7 +245,7 @@ asciinode * ascii_tree_build_recursive(asciictx *ctx, void *t)
   node = malloc(sizeof(asciinode));
   ctx->build_handler(t, node->label, &left, &right);
   node->left = ascii_tree_build_recursive(ctx, left);
-  node->right = ascii_tree_build_recursive(ctx, left);
+  node->right = ascii_tree_build_recursive(ctx, right);
 
   if (node->left != NULL)
     {
