@@ -1,5 +1,5 @@
-#ifndef _AVL_TREE_PRINT_H
-#define _AVL_TREE_PRINT_H
+#ifndef _ASCII_TREE_PRINT_H
+#define _ASCII_TREE_PRINT_H
 
 /**
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -16,9 +16,11 @@
  * which contains list of nodes, and node structure is this
  */
 
+/**
+ * get left children, right children, fill buffer
+ */
+typedef void (*ascii_tree_build_handler)(void *t, char *buf, void **left, void **right);
 
-#include "avltree.h"
-
-void ascii_tree_print_from_avltree(avltree * t);
+void ascii_tree_print(void *t, ascii_tree_build_handler cb);
 
 #endif
