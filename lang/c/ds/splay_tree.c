@@ -85,7 +85,49 @@ splaynode* splaytree_maximum(splaynode *tree) {
  *      c-2 "键值为key的节点"的后继节点不存在的话，则意味着，key比树中任何键值都大，那么此时，将最大节点旋转为根节点。
  */
 splaynode* splaytree_splay(splaynode *tree, splaytype key) {
+  splaynode N, *l, *r, *c;
+
   if (tree == NULL) return NULL;
+
+  N.left = N.right = NULL;
+  l = r = &N;
+
+  for (;;) {
+    if (key < tree->key) {
+      if (tree->left == NULL) break;
+      if (key < tree->left->key) {
+        c = tree->left;                  // 01, rotate right
+        tree->left = c->right;
+        c->right = tree;
+        tree = c;
+        if (tree->left == NULL) break;
+      }
+      r->left = tree;                    // 02, link right
+      r = tree;
+      tree = tree->left;
+    } else if (key > tree->key) {
+      if (tree->right == NULL) break;
+      if (key > tree->right->key) {
+        c = tree->right;                 // 03, rotate left
+        tree->right = c->left;
+        c->left = tree;
+        tree = c;
+        if (tree->right == NULL) break;
+      }
+      l->right = tree;                   // 04, link left
+      l = tree;
+      tree = tree->right;
+    } else {
+      break;
+    }
+  }
+
+  l->right = tree->left;
+  r->left = tree->right;
+  tree->left = N.right;
+  tree->right = N.left;
+
+  return tree;
 }
 
 static splaynode* splaytree_create_node(splaytype key, splaynode *left, splaynode *right) {
