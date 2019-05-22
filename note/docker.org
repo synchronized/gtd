@@ -1,3 +1,82 @@
+** 安装
+*** CentOS
+**** 卸载旧版本
+Older versions of Docker were called docker or docker-engine. If these are installed, uninstall them, along with associated dependencies.
+#+BEGIN_SRC shell
+sudo yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine
+#+END_SRC
+**** 安装依赖库
+Install required packages. yum-utils provides the yum-config-manager utility, and device-mapper-persistent-data and lvm2 are required by the devicemapper storage driver.
+#+BEGIN_SRC shell
+sudo yum install -y yum-utils \
+  device-mapper-persistent-data \
+  lvm2
+#+END_SRC
+
+**** 安装稳定版本
+Use the following command to set up the stable repository.
+#+BEGIN_SRC shell
+sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+#+END_SRC
+
+*** Debian
+**** 卸载旧版本
+Older versions of Docker were called docker, docker.io , or docker-engine. If these are installed, uninstall them:
+#+BEGIN_SRC shell
+sudo apt-get remove docker docker-engine docker.io containerd runc
+#+END_SRC
+
+**** 安装apt支持https的包
+Install packages to allow apt to use a repository over HTTPS:
+#+BEGIN_SRC shell
+sudo apt-get update
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg2 \
+    software-properties-common
+#+END_SRC
+
+**** 添加docker公钥
+Add Docker’s official GPG key:
+#+BEGIN_SRC shell
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+#+END_SRC
+Verify that you now have the key with the fingerprint 9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88, by searching for the last 8 characters of the fingerprint.
+#+BEGIN_SRC shell
+$ sudo apt-key fingerprint 0EBFCD88
+
+pub   4096R/0EBFCD88 2017-02-22
+      Key fingerprint = 9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88
+uid                  Docker Release (CE deb) <docker@docker.com>
+sub   4096R/F273FCD8 2017-02-22
+#+END_SRC
+
+**** 添加版本库
+Use the following command to set up the stable repository. To add the nightly or test repository, add the word nightly or test (or both) after the word stable in the commands below. Learn about nightly and test channels.
+#+BEGIN_SRC shell
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/debian \
+   $(lsb_release -cs) \
+   stable"
+#+END_SRC
+
+**** 安装docker
+#+BEGIN_SRC shell
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+#+END_SRC
+
 ** 迁移存储目录
 *** 查看当前目录
 #+BEGIN_SRC shell
@@ -10,4 +89,15 @@ sudo systemctl stop docker
 mkdir -p /data/docker
 mv /var/lib/docker /data/docker/var
 ln -s /data/docker/var /var/lib/docker
+#+END_SRC
+
+** 加速
+#+BEGIN_SRC shell
+sudo mv /etc/docker/daemon.json /etc/docker/daemon.json.bak
+cat <<EOF | sudo tee -a /etc/docker/daemon.json
+{
+  "registry-mirrors": ["http://8f8ead5c.m.daocloud.io"]
+}
+EOF
+sudo systemctl restart docker
 #+END_SRC
