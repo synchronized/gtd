@@ -77,6 +77,12 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 #+END_SRC
 
+** 安装docker-compose
+#+BEGIN_SRC shell
+sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+#+END_SRC
+
 ** 迁移存储目录
 *** 查看当前目录
 #+BEGIN_SRC shell
