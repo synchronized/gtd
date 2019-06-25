@@ -96,12 +96,21 @@ stats = stats.sort(function(a, b) {
   return b['stat']['size'] - a['stat']['size'];
 });
 stats = stats.slice(0, 15); //前15名(大小倒序)
+var result = [];
 for (var c in stats) {
   var item = stats[c];
   var avai = item['stat']['wiredTiger']['block-manager']['file bytes available for reuse'];
   var storageSize = item['stat']['storageSize'];
-  print(item['stat']['ns'] + ": " + item['stat']['size'] + " (" + storageSize + "," + avai + ")");
+  var totalIndexSize = item['stat']['totalIndexSize'];
+  result.push({
+    'ns':  item['stat']['ns'],
+    'size':  item['stat']['size'],
+    'avai': avai,
+    'storageSize': storageSize,
+    'totalIndexSize': totalIndexSize,
+  })
 }
+result
 print("-------------- id format --------------");
 for (var s in stats) {
   var item = stats[s];
