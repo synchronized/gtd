@@ -132,20 +132,103 @@ splaynode* splaytree_splay(splaynode *tree, splaytype key) {
 
 static splaynode* splaytree_create_node(splaytype key, splaynode *left, splaynode *right) {
   splaynode *node = (splaynode*)malloc(sizeof(splaynode));
+  if (node == NULL) {
+    return NULL;
+  }
   node->key = key;
   node->left = left;
   node->right = right;
   return node;
 }
 
-// 将结点插入到伸展树中，并返回根节点
-splaynode* splaytree_insert(splaynode *tree, splaytype key) {
-  if (tree == NULL) {
-    return splaytree_create_node(key, NULL, NULL);
-  } else if (key < tree->key) {
-    tree->left = splaytree_insert(tree->left, key);
+/*
+ * 将结点插入到伸展树中(不旋转)
+ *
+ * 参数说明：
+ *     tree 伸展树的根结点
+ *     z 插入的结点
+ * 返回值：
+ *     根节点
+ */
+splaynode* splaytree_insert_node(splaynode *tree, splaynode* z) {
+  splaynode *y = NULL;
+  splaynode *x = tree;
+
+  while(x != NULL) {
+    y = x;
+    if (z->key < x->key) {
+      x = x->left;
+    } else if (z->key > x->key) {
+      x = x->right;
+    } else {
+      printf("不允许插入相同节点(%d)!\n", z->key);
+      // 释放申请的节点，并返回tree。
+      return tree;
+    }
+  }
+
+  if (y == NULL) {
+    tree = z;
+  } else if (z->key < y->key) {
+    y->left = z;
   } else {
-    tree->right = splaytree_insert(tree->right, key);
+    y->right = z;
   }
   return tree;
+}
+
+/*
+ * 新建结点(key)，然后将其插入到伸展树中，并将插入节点旋转为根节点
+ *
+ * 参数说明：
+ *     tree 伸展树的根结点
+ *     key 插入结点的键值
+ * 返回值：
+ *     根节点
+ */
+splaynode* splaytree_insert(splaynode *tree, splaytype key) {
+  // 如果新建结点失败，则返回。
+  splaynode *node = splaytree_create_node(key, NULL, NULL);
+  if (node == NULL) {
+    return tree;
+  }
+  // 插入节点
+  tree = splaytree_insert_node(tree, node);
+  // 将节点(key)旋转为根节点
+  return splaytree_splay(tree, key);
+}
+
+// 删除结点(key为节点的值)，并返回根节点
+splaynode* splaytree_delete(splaynode *tree, splaytype key) {
+  splaynode *node = NULL;
+  if (splaytree_search(tree, key) == NULL) {
+    return tree;
+  }
+  // 将key对应的节点旋转为根节点。
+  tree = splaytree_splay(tree, key);
+  if (tree->left != NULL) {
+    // 将"tree的前驱节点"旋转为根节点
+    node = splaytree_splay(tree->left, key);
+    // 移除tree节点
+    node->right = tree->right;
+  } else {
+    node = tree->right;
+  }
+  free(tree);
+  return node;
+}
+
+// 销毁伸展树
+void splaytree_destroy(splaynode *tree) {
+  if (tree == NULL) {
+    return;
+  }
+
+  if (tree->left != NULL) {
+    splaytree_destroy(tree->left);
+  }
+  if (tree->right != NULL) {
+    splaytree_destroy(tree->right);
+  }
+  free(tree);
 }

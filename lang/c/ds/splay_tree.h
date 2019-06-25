@@ -39,8 +39,5 @@ splaynode* splaytree_delete(splaynode *tree, splaytype key);
 // 销毁伸展树
 void splaytree_destroy(splaynode *tree);
 
-// 打印伸展树
-void splaytree_print(splaynode *tree, splaytype key, int direction);
-
 
 #endif
