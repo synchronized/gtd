@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 #include "rbtree.h"
 
@@ -10,38 +11,48 @@ static bool rbtree_is_black(struct rbtree_node *node);
 static void rbtree_set_red(struct rbtree_node *node);
 static void rbtree_set_black(struct rbtree_node *node);
 
-static void rbtree_destory_node(struct rbtree_node *node);
 static int rbtree_insert_node(struct rbtree_root *root, struct rbtree_node *node);
+static void rbtree_destroy_node(struct rbtree_node *node);
 static void rbtree_delete_node(struct rbtree_root *root, struct rbtree_node *node);
 static void rbtree_preorder_node(struct rbtree_node *node);
 static void rbtree_inorder_node(struct rbtree_node *node);
 static void rbtree_postorder_node(struct rbtree_node *node);
+static void rbtree_destroy_node(struct rbtree_node *node);
+static void rbtree_insert_fixup(struct rbtree_root *root, struct rbtree_node *node);
+static void rbtree_delete_fixup(struct rbtree_root *root, struct rbtree_node *node, struct rbtree_node *p);
+static struct rbtree_node *rbtree_minimum_node(struct rbtree_node *tree);
+static struct rbtree_node *rbtree_maximum_node(struct rbtree_node *tree);
 static struct rbtree_node *rbtree_search_node(struct rbtree_node *node, rbtree_type key);
-static void rbtree_destory_node(struct rbtree_node *node);
-struct rbtree_node *rbtree_create_node(
+static struct rbtree_node *rbtree_create_node(
                                        rbtree_type key,
                                        struct rbtree_node* left,
                                        struct rbtree_node* right,
                                        struct rbtree_node* parent);
 
-static void rbtree_insert_fixup(struct rbtree_root *root, struct rbtree_node *node);
-static void rbtree_delete_fixup(struct rbtree_root *root, struct rbtree_node *node, struct rbtree_node *p);
 
 // 创建红黑树，返回"红黑树的根"！
 struct rbtree_root *rbtree_create() {
   struct rbtree_root *root = (struct rbtree_root*)malloc(sizeof(struct rbtree_root));
+  rbtree_init(root);
   if (root == NULL) {
     perror("红黑树创建失败");
   }
   return root;
 }
 
+void rbtree_init(struct rbtree_root *root) {
+  if (root == NULL) {
+    return;
+  }
+  memset(root, 0, sizeof(struct rbtree_root *));
+}
+
 // 销毁红黑树
-void rbtree_destory(struct rbtree_root *root) {
+void rbtree_destroy(struct rbtree_root *root) {
   if (root == NULL){
     return;
   }
-  rbtree_destory_node(root->node);
+  rbtree_destroy_node(root->node);
 }
 
 // 将结点插入到红黑树中。插入成功，返回0；失败返回-1。
@@ -107,8 +118,42 @@ struct rbtree_node *rbtree_search_iterative(struct rbtree_root *root, rbtree_typ
   return node;
 }
 
+/**
+ * 最大结点
+ * @param tree 要查找的树
+ * @param key 输出参数-结果
+ */
+int rbtree_minimum(struct rbtree_root *root, int *key) {
+  if (root == NULL) {
+    return -1;
+  }
+  struct rbtree_node *node = rbtree_minimum_node(root->node);
+  if (node == NULL) {
+    return -1;
+  }
+  *key = node->key;
+  return 0;
+}
+
+/**
+ * 最大结点
+ * @param tree 要查找的树
+ * @param key 输出参数-结果
+ */
+int rbtree_maximum(struct rbtree_root *root, int *key) {
+  if (root == NULL) {
+    return -1;
+  }
+  struct rbtree_node *node = rbtree_maximum_node(root->node);
+  if (node == NULL) {
+    return -1;
+  }
+  *key = node->key;
+  return 0;
+}
+
 // 创建红黑树-结点
-struct rbtree_node *rbtree_create_node(
+static struct rbtree_node *rbtree_create_node(
                                        rbtree_type key,
                                        struct rbtree_node* left,
                                        struct rbtree_node* right,
@@ -125,12 +170,12 @@ struct rbtree_node *rbtree_create_node(
 }
 
 // 销毁红黑树-单个结点
-static void rbtree_destory_node(struct rbtree_node *node) {
+static void rbtree_destroy_node(struct rbtree_node *node) {
   if (node == NULL) {
     return;
   }
-  rbtree_destory_node(node->left);
-  rbtree_destory_node(node->right);
+  rbtree_destroy_node(node->left);
+  rbtree_destroy_node(node->right);
 }
 
 static void rbtree_preorder_node(struct rbtree_node *node) {
@@ -161,8 +206,11 @@ static void rbtree_postorder_node(struct rbtree_node *node) {
 }
 
 static struct rbtree_node *rbtree_search_node(struct rbtree_node *node, rbtree_type key) {
-  if (node == NULL || key == node->key) {
+  if (node == NULL) {
     return NULL;
+  }
+  if (key == node->key) {
+    return node;
   }
   if (key < node->key) {
     return rbtree_search_node(node->left, key);
@@ -263,7 +311,9 @@ static int rbtree_insert_node(struct rbtree_root *root, struct rbtree_node *node
   // 1. 将红黑树当作一颗二叉查找树，将节点添加到二叉查找树中。
   while (x != NULL) {
     y = x;
-    if (node->key < x->key) {
+    int a = node->key;
+    int b = x->key;
+    if (a < b) {
       x = x->left;
     } else {
       x = x->right;
@@ -284,7 +334,7 @@ static int rbtree_insert_node(struct rbtree_root *root, struct rbtree_node *node
   }
 
   // 2. 设置当前结点为红色
-  node->color = RB_TREE_RED;
+  node->color = RBTREE_RED;
 
   // 3. 将它重新修正为一颗二叉查找树
   rbtree_insert_fixup(root, node);
@@ -425,7 +475,7 @@ static void rbtree_insert_fixup(struct rbtree_root *root, struct rbtree_node *no
 /**
  * 最小结点
  */
-static struct rbtree_node *rbtree_minimum(struct rbtree_node *tree) {
+static struct rbtree_node *rbtree_minimum_node(struct rbtree_node *tree) {
   if (tree == NULL) {
     return NULL;
   }
@@ -440,7 +490,7 @@ static struct rbtree_node *rbtree_minimum(struct rbtree_node *tree) {
 /**
  * 最大结点
  */
-static struct rbtree_node *rbtree_maximum(struct rbtree_node *tree) {
+static struct rbtree_node *rbtree_maximum_node(struct rbtree_node *tree) {
   if (tree == NULL) {
     return NULL;
   }
@@ -460,7 +510,7 @@ static struct rbtree_node *rbtree_predecessor(struct rbtree_node *node) {
     return NULL;
   }
   if (node->left) {
-    return rbtree_maximum(node->left);
+    return rbtree_maximum_node(node->left);
   }
 
   struct rbtree_node *x = node;
@@ -480,7 +530,7 @@ static struct rbtree_node *rbtree_successor(struct rbtree_node *node) {
     return NULL;
   }
   if (node->right) {
-    return rbtree_minimum(node->right);
+    return rbtree_minimum_node(node->right);
   }
 
   struct rbtree_node *x = node;
@@ -549,7 +599,7 @@ static void rbtree_delete_node1(struct rbtree_root *root, struct rbtree_node *no
     replace->left = node->left;
     node->left->parent = replace;
 
-    if (color == RB_TREE_BLACK) {
+    if (color == RBTREE_BLACK) {
       rbtree_delete_fixup(root, child, parent);
     }
     free(node);
@@ -578,7 +628,7 @@ static void rbtree_delete_node1(struct rbtree_root *root, struct rbtree_node *no
     }
   }
 
-  if (color == RB_TREE_BLACK) {
+  if (color == RBTREE_BLACK) {
     rbtree_delete_fixup(root, child, parent);
   }
   free(node);
@@ -623,7 +673,7 @@ static void rbtree_delete_node(struct rbtree_root *root, struct rbtree_node *nod
     node->key = replace->key;
   }
 
-  if (replace->color == RB_TREE_BLACK) {
+  if (replace->color == RBTREE_BLACK) {
     rbtree_delete_fixup(root, child, parent);
   }
   free(replace);
@@ -807,7 +857,7 @@ static void rbtree_delete_fixup(struct rbtree_root *root, struct rbtree_node *no
  */
 static int rbtree_get_color(struct rbtree_node *node) {
   if (node == NULL) {
-    return RB_TREE_BLACK;
+    return RBTREE_BLACK;
   }
   return node->color;
 }
@@ -829,7 +879,7 @@ static void rbtree_set_color(struct rbtree_node *node, int color) {
  * @return 是否是红色
  */
 static bool rbtree_is_red(struct rbtree_node *node) {
-  return rbtree_get_color(node) == RB_TREE_RED;
+  return rbtree_get_color(node) == RBTREE_RED;
 }
 
 /**
@@ -838,7 +888,7 @@ static bool rbtree_is_red(struct rbtree_node *node) {
  * @return 是否是黑色
  */
 static bool rbtree_is_black(struct rbtree_node *node) {
-  return rbtree_get_color(node) == RB_TREE_BLACK;
+  return rbtree_get_color(node) == RBTREE_BLACK;
 }
 
 /**
@@ -846,7 +896,7 @@ static bool rbtree_is_black(struct rbtree_node *node) {
  * @param node 要设置的结点
  */
 static void rbtree_set_red(struct rbtree_node *node) {
-  rbtree_set_color(node, RB_TREE_RED);
+  rbtree_set_color(node, RBTREE_RED);
 }
 
 /**
@@ -854,5 +904,5 @@ static void rbtree_set_red(struct rbtree_node *node) {
  * @param node 要设置的结点
  */
 static void rbtree_set_black(struct rbtree_node *node) {
-  rbtree_set_color(node, RB_TREE_BLACK);
+  rbtree_set_color(node, RBTREE_BLACK);
 }
