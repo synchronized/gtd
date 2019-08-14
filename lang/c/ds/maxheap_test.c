@@ -45,14 +45,14 @@ void main()
     }
   }
 
-  printf("\n== 最 小 堆: \n");
+  printf("\n== 最 大 堆: \n");
   maxheap_print(&max_heap);
 
   i=15;
   ret = maxheap_insert(&max_heap, i);
   printf("maxheap_insert(&max_heap, %d) == %d", i, ret);
   printf("\n== 添加元素: %d", i);
-  printf("\n== 最 小 堆: \n");
+  printf("\n== 最 大 堆: \n");
   maxheap_print(&max_heap);
 
   i=10;
@@ -61,6 +61,6 @@ void main()
     printf("maxheap_remove failed ret:%d\n", ret);
   }
   printf("\n== 删除元素: %d", i);
-  printf("\n== 最 小 堆: \n");
+  printf("\n== 最 大 堆: \n");
   maxheap_print(&max_heap);
 }
