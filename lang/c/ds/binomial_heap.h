@@ -24,7 +24,7 @@ struct binomial_heap_node* binomial_heap_delete(struct binomial_heap_node *heap,
 void binomial_heap_update(struct binomial_heap_node *heap, binomial_key oldkey, binomial_key newkey);
 
 // 合并二项堆：将h1, h2合并成一个堆，并返回合并后的堆
-struct binomial_heap_node* binomial_heap_union(struct binomial_heap_node *h1, binomial_heap_node *h2);
+struct binomial_heap_node* binomial_heap_union(struct binomial_heap_node *h1, struct binomial_heap_node *h2);
 
 // 查找：在二项堆中查找键值为key的节点
 struct binomial_heap_node* binomial_heap_search(struct binomial_heap_node *heap, binomial_key key);
