@@ -1,0 +1,195 @@
+package main
+
+import (
+	"math"
+	"simple_soccer/common"
+)
+
+//这可以用来改变球员的踢腿精度。
+//在踢球之前，用球的位置和球的目标作为参数来调用它。
+func AddNoiseToKick(ctx SoccerContext, ballPos, ballTarget Vector2d) Vector2d {
+
+	//TODO
+	var displacement double = (Pi - Pi*ctx.Config().PlayerKickingAccuracy) * RandomClamped()
+
+	var toTarget Vector2d = ballTarget.OpMinus(ballPos)
+
+	toTarget = common.Vec2DRotateAroundOrigin(toTarget, displacement)
+
+	return toTarget + BallPos
+}
+
+//足球
+type SoccerBall struct {
+	*MovingEntity
+	ctx           *SoccerContext //上下文
+	oldPos        Vector2d       //上次记录的位置
+	pOwner        *PlayerBase    //控球人员(或者守门员)
+	pitchBoundary []*Wall2d      //球场边界
+}
+
+func NewSoccerBall(
+	ctx *SoccerContext,
+	pos Vector2d, ballSize float64, mass float64, walls []*Wall2d) *SoccerBall {
+	return &SoccerBall{
+		MovingEntity: common.NewMovingEntity(
+			pos,
+			ballSize,
+			Vector2d(0, 0),
+			-1.0, //max speed unused
+			Vector2d(0, 1),
+			mass,
+			Vector2d(1.0, 1.0), //scale unused
+			0,                  //max turn rate unused
+			0,                  //max force unused
+		),
+		ctx:           ctx,
+		pOwner:        nil,
+		pitchBoundary: walls,
+	}
+}
+
+//检测球与边界的碰撞
+func (sb *SoccerBall) TestCollisionWithWalls(walls []*Wall2d) {
+	var idxClosest = -1
+	var velNormal Vector2d = *sb.Velocity().Normalize()
+	var intersectionPoint Vector2d
+	var collisionPoint Vector2d
+	var distToIntersection float64 = common.MaxFloat
+
+	//遍历每面墙并计算球是否相交。
+	//如果是，则将索引存储到最近的相交墙中
+	for w := 0; w < len(walls); w++ {
+		//假设发生碰撞，如果球继续其当前航向，则计算球上会撞到墙的点。
+		//这只是墙的法向（反方向）乘以球的半径，再加上球的中心（它的位置）
+		var thisCollisionPoint = sb.Pos().OpMinus(walls[w].Normal().OpMultiply(sb.BRadius()))
+		if WhereIsPoint(thisCollisisonPoint, walls[w].From(), walls[w].Normal()) == common.Plane_backside {
+			var distToWall float64 = common.DistanceToRayPlaneIntersection(
+				thisCollisisonPoint,
+				walls[w].Normal(),
+				walls[w].From(),
+				walls[w].Normal(),
+			)
+			intersectionPoint = thisCollisionPoint.OpAdd(walls[w].Normal().OpMultiply(distToWall))
+		} else {
+			var distToWall float64 = common.DistanceToRayPlaneIntersection(
+				thisCollisionPoint,
+				velNormal,
+				walls[w].Form(),
+				walls[w].Normal(),
+			)
+			intersectionPoint = thisCollisionPoint.OpAdd(velNormal.OpMultiply(distToWall))
+		}
+
+		//检查以确保交点实际位于线段上
+		var onLineSegment = false
+		if common.LineIntersection2D(
+			walls[w].Form(),
+			walls[w].To(),
+			thisCollisionPoint.OpMinus(walls[w].Normal().OpMultiply(20.0)),
+			thisCollisionPoint.OpAdd(walls[w].Normal().OpMultiply(20.0)),
+		) {
+			onLineSegment = true
+		}
+
+		//注意，现在没有测试与线段末端的碰撞，请检查碰撞点是否在速度向量的范围内。
+		//[以距离平方计算以避免sqrt]如果这是迄今为止发现的最接近的命中。
+		//如果是这样的话，意味着在这个时间步和下一个时间步之间的某个时候，球会与墙碰撞。
+		var distSq float64 = thisCollisionPoint.DistanceSq(intersectionPoint)
+		if distSq <= sb.Velocity().LengthSq() && distSq < distToIntersection && onLineSegment {
+			distToIntersection = distSq
+			idxClosest = w
+			//collisionPoint = IntersectionPoint
+		}
+	} //next wall
+
+	//为了避免计算精确的碰撞时间，我们可以在反射之前检查速度是否与壁面法向相反。
+	//这样可以防止出现过冲，球在完全重新进入比赛区域之前被反射回底线。
+	if idxClosest >= 0 && velNormal.Dot(walls[idxClosest].Normal()) < 0 {
+		sb.SetVelocity(sb.Velocity().Reflect(walls[idxClosest].Normal()))
+	}
+}
+
+//踢球
+func (sb *SoccerBall) Kick(direction Vector2d, force float64) {
+	direction.NormalizeAssign()
+	var acceleration Vector2d = *direction.OpMultiply(force).OpDivide(sb.Mass())
+	sb.SetVelocity(acceleration)
+}
+
+//给定一个力和通过的起点和重点定义的移动距离
+//该方法计算球经过这段距离需要花多久
+func (sb *SoccerBall) TimeToCoverDistance(from, to, force Vector2d) float64 {
+	//如果传球了，那么这将是球的下一步速度
+	//这里其实是瞬间加速度，在模型中认为球在受力时速度为0
+	var speed float64 = force / sb.Mass()
+
+	//使用公式计算to的速度
+	//v^2 = t^2 + 2ax a是摩擦力加速度
+	//先计算x(两点之间的距离)
+	var distance float64 = from.Distance(to)
+	var term float = speed*speed + 2*sb.Ctx().Config().Friction*distance
+	if term < 0 {
+		return -1.0
+	}
+
+	var toVelocity float64 = math.Sqrt(term)
+	//使用公式 t = (v - u)/a
+	return (toVelocity - speed) / sb.Ctx().Config().Friction
+}
+
+//计算给定时间后球的位置
+func (sb *SoccerBall) FuturePosition(time float64) Vector2d {
+	//使用公式: x = ut + 1/2at^2, x 是距离，a是摩擦力加速度, u为初始速度
+	//计算ut 项，这是向量
+	var ut Vector2d = sb.Velocity().OpMultiply(time)
+
+	//计算1/2at^2,这个是标量
+	var half_a_t_squared float64 = 0.5 * sb.Ctx().Config().Friction * time * time
+
+	//通过乘上速度的标准化向量(因为有方向),把标量转变为向量
+	var scalarToVector Vector2d = sb.Velocity().Normal().OpMultiply(half_a_t_squared)
+
+	//预测位置为球的位置加上这两项
+	return sb.Pos().OpAdd(ut).OpAdd(scalarToVector)
+}
+
+//被场上的球员或者守门员停球(控球)
+func (sb *SoccerBall) Trap(owner *PlayerBase) {
+	sb.SetVelocity(sb.Velocity().Zero())
+	sb.pOwner = owner
+}
+
+func (sb *SoccerBall) OldPos() Vector2d {
+	return sb.oldPos
+}
+
+func (sb *SoccerBall) Ctx() *SoccerContext {
+	return sb.ctx
+}
+
+//设置球的位置,并且设置速度为0
+func (sb *SoccerBall) PlaceAtPosition(newPos Vector2d) {
+	sb.SetPos(newPos)
+	sb.oldPos = sb.Pos()
+	sb.SetVelocity(sb.Velocity().Zero())
+}
+
+func (sb *SoccerBall) Update(timeElapsed float64) {
+	sb.oldPos = sb.Pos()
+	//Test for collisions
+	//碰撞检测(球和边界), 后面这里要改成出
+	sb.TestCollisionWithWalls(sb.pitchBoundary)
+
+	var velocity = sb.Velocity()
+	if velocity.LengthSq() > sb.Ctx().Config().Friction*sb.Ctx().Config().Friction {
+		var velocity = velocity.OpAdd(velocity.Normalize().OpMultiply(sb.Ctx().Config().Friction))
+		sb.SetVelocity(velocity)
+		sb.SetPos(sb.Pos().OpAdd(velocity))
+		sb.SetHeading(sb.Velocity().Normalize())
+	}
+}
+
+func (sb *SoccerBall) Render() {
+	//TODO
+}
