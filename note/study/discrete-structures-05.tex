@@ -1,0 +1,65 @@
+\documentclass{ctexart}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\title{离散数学 }
+\begin{document}
+\section{第5讲}
+\subsection{规律}
+\subsubsection{交换律}
+$A \cup B = B \cup A$
+
+$A \cap B = B \cap A$
+\subsubsection{结合律}
+$(A \cup B) \cup C = A \cup (B \cup C)$
+
+$(A \cap B) \cap C = A \cap (B \cap C)$
+\subsubsection{分配律}
+$A \cup (B \cap C) = (A \cap B) \cup (A \cap C)$
+
+$A \cap (B \cup C) = (A \cup B) \cap (A \cup C)$
+\subsubsection{同一律}
+$A \cup \varnothing = A $
+
+$A \cap U = A$
+\subsubsection{互补律}
+$A \cup \overline{A} = U$
+
+$A \cap \overline{A} = \varnothing$
+\subsubsection{幂等律}
+$A \cup A = A$
+
+$A \cap A = A$
+\subsubsection{上下界律}
+$A \cup U = u$
+
+$A \cap \varnothing = \varnothing$
+\subsubsection{吸收率}
+$A \cup (A \cap B) = A$
+
+$A \cap (A \cup B) = A$
+\subsubsection{对合律}
+$\overline{\overline{A}} = A$
+\subsubsection{零一律}
+$\overline{\varnothing} = U$
+
+$\overline{U} = \varnothing$
+\subsubsection{德摩根定律}
+$\overline{(A \cap B)} = \overline{A} \cup \overline{B}$
+
+$\overline{(A \cup B)} = \overline{A} \cap \overline{B}$
+\subsection{集合的集合}
+$\bigcup S = \{x|\mbox{对于某些}X \in S, x \in X\}$
+
+$\bigcap S = \{x|\mbox{对于所有}X \in S, x \in X\}$
+
+$S = \{A_1, A_2, A_3, \cdots, A_n\}$
+
+$\bigcup{S} = \bigcup\limits_{i=1}^{n} A_i$
+
+$\bigcap{S} = \bigcap\limits_{i-1}^{n} A_i$
+
+$\bigcup{S} = \bigcup\limits_{i=1}^{\infty} A_i$
+
+$\bigcap{S} = \bigcap\limits_{i=1}^{\infty} A_i$
+\end{document}
