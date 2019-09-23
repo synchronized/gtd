@@ -4,51 +4,49 @@ import (
 	"math"
 )
 
+//Arrive makes use of these to determine how quickly a vehicle
+//should decelerate to its target
+//到达利用这些来确定车辆应该以多快的速度减速到目标位置
 const (
 	Deceleration_Slow   = 3
-	Deceleration_normal = 2
-	Deceleration_fast   = 1
+	Deceleration_Normal = 2
+	Deceleration_Fast   = 1
 )
 
+type BehaviorType int
+
 const (
-	BehaviorType_none               = 0x00000
-	BehaviorType_seek               = 0x00002
-	BehaviorType_flee               = 0x00004
-	BehaviorType_arrive             = 0x00008
-	BehaviorType_wander             = 0x00010
-	BehaviorType_cohesion           = 0x00020
-	BehaviorType_separation         = 0x00040
-	BehaviorType_allignment         = 0x00080
-	BehaviorType_obstacle_avoidance = 0x00100
-	BehaviorType_wall_avoidance     = 0x00200
-	BehaviorType_follow_path        = 0x00400
-	BehaviorType_pursuit            = 0x00800
-	BehaviorType_evade              = 0x01000
-	BehaviorType_interpose          = 0x02000
-	BehaviorType_hide               = 0x04000
-	BehaviorType_flock              = 0x08000
-	BehaviorType_offset_pursuit     = 0x10000
+	BehaviorType_None       BehaviorType = 0x0000
+	BehaviorType_Seek       BehaviorType = 0x0001
+	BehaviorType_Arrive     BehaviorType = 0x0002
+	BehaviorType_Separation BehaviorType = 0x0004
+	BehaviorType_Pursuit    BehaviorType = 0x0008
+	BehaviorType_Interpose  BehaviorType = 0x0010
 )
 
 type SteeringBehaviors struct {
-	bSeek       bool //靠近
-	bFlee       bool //远离
-	bArrive     bool //到达
-	bSeparation bool //分离
+	pPlayer *PlayerBase
+	pBall   *SoccerBakk
+	//the steering force created by the combined effect of all
+	//the selected behaviors
+	vSteeringForce common.Vector2d
+	//the current target (usually the ball or predicted ball position)
+	vTarget common.Vector2d
+	//the distance the player tries to interpose from the target
+	//玩家试图插入目标的距离
+	dInterposeDist float64
+	//multipliers.
+	dMultSeparation float64
+	//how far it can 'see'
+	dViewDistance float64
+	//binary flags to indicate whether or not a behavior should be active
+	iFlags int
+	//used by group behaviors to tag neighbours
+	bTagged bool
 
-	pVehicle       *Vehicle
-	vSteeringForce Vector2d
-	pTargetAgent1  *Vehicle
-	pTargetAgent2  *Vehicle
-	vTarget        Vector2d
-	dBoxLength     float64
-
-	vWanderTarget   Vector2d //一个点被限制在半径为dWanderRadius的圆圈上
-	dWanderRadius   float64  //徘徊-wander圈的半径
-	dWanderDistance float64  //wander圈的出现在智能体前面的距离
-	dWanderTitter   float64  //每秒加到目标的随即位移的最大值
-
-	vFeelers []int
+	//a vertex buffer to contain the feelers rqd for dribbling
+	//一个顶点缓冲区，用于包含用于运球的触角rqd
+	aAntenna []common.Vector2d
 }
 
 func NewSteeringBehaviors(player *PlayerBase, pitch *SoccerPitch, ball *SoccerBall) *SteeringBehaviors {
@@ -155,7 +153,7 @@ func (sb *SteeringBehaviors) ObstracleAvoidance(obstracle []IBaseGameEntity) Vec
 	//跟踪最近的相交的障碍物(CIB)
 	var closestIntersectingObstacle common.IBaseGameEntity
 	//跟踪CIB距离
-	var distToClosestIP float64 = 9999999999999 //max double
+	var distToClosestIP float64 = common.MaxFloat64 //max double
 	//记录被转化的CIB局部坐标
 	var localPosOfClosestObstacle Vector2d
 	for _, curOb := range abstracle {
@@ -226,7 +224,7 @@ func (sb *SteeringBehaviors) WallAvoidance(walls []Wall2d) Vector2d {
 	createFeelers()
 
 	var distToThisIP float64 = 0.0
-	var distToClosestIP float64 = 9999999999999999
+	var distToClosestIP float64 = common.MaxFloat64
 
 	//保存walls 的向量的索引
 	var closestWall int = -1

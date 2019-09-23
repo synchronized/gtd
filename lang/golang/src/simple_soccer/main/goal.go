@@ -13,12 +13,12 @@ type Goal struct {
 	iNumGoalsScored int //检测到进球将它++
 }
 
-func NewGoal(left, right Vector2d) *Goal {
+func NewGoal(left, right, facing Vector2d) *Goal {
 	return &Goal{
 		vLeftPost:       left,
 		vRightPost:      right,
 		vCenter:         left.OpAdd(right).OpDivide(2.0),
-		vFacing:         right.OpMinus(left).Normalize().Perp(),
+		vFacing:         facing,
 		iNumGoalsScored: 0,
 	}
 }

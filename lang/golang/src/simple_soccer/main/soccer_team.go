@@ -9,7 +9,7 @@ import (
 type TeamColor int
 
 const (
-	TeamColor_Redk TeamColor = 1
+	TeamColor_Red  TeamColor = 1
 	TeamColor_Blue TeamColor = 2
 )
 
@@ -592,6 +592,10 @@ func (st *SoccerTeam) Name() string {
 	} else {
 		return "Blue"
 	}
+}
+
+func (st *SoccerTeam) Ctx() *SoccerContext {
+	return st.ctx
 }
 
 /*------ 状态机 -------*/

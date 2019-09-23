@@ -6,6 +6,15 @@ type Wall2d struct {
 	vN Vector2d
 }
 
+func NewWall2d(from, to Vector2d) *Wall2d {
+	var w = &Wall2d{
+		vA: from,
+		vB: to,
+	}
+	w.CalculateNormal()
+	return w
+}
+
 func (w *Wall2d) CalculateNormal() {
 	var temp Vecotr2d = *w.vA.OpMinus(w.vB).Normalize()
 	w.vN.X = -temp.Y

@@ -2,20 +2,23 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"simple_soccer/common"
 )
 
-var StateWait common.IState
-var StateChaseBall common.IState
-var StateDribble common.IState
-var StateReturnToHomeRegion common.IState
-var StateWait common.IState
-var StateKickBall common.IState
-var StateReceiveBall common.IState
-var StateSupportAttacker common.IState
+var (
+	StateGlobalPlayerState  common.IState
+	StateChaseBall          common.IState
+	StateDribble            common.IState
+	StateReturnToHomeRegion common.IState
+	StateWait               common.IState
+	StateKickBall           common.IState
+	StateReceiveBall        common.IState
+	StateSupportAttacker    common.IState
+)
 
 func init() {
-	StateWait = NewPlayerStateWait()
+	StateGlobalPlayerState = NewGlobalPlayerState()
 	StateChaseBall = NewPlayerStateChaseBall()
 	StateDribble = NewPlayerStateDribble()
 	StateReturnToHomeRegion = NewPlayerStateReturnToHomeRegion()
@@ -26,16 +29,18 @@ func init() {
 }
 
 //----------------------------------------------------
-//角色等待
-type PlayerStateWait struct {
+//全局状态
+type GlobalPlayerState struct {
 	common.State
 }
 
-func NewPlayerStateWait() *PlayerStateWait {
-	return &PlayerStateWait{}
+func NewGlobalPlayerState() *GlobalPlayerState {
+	return &GlobalPlayerState{}
 }
 
-func (psw *PlayerStateWait) Execute(entity interface{}) {
+func (psg *GlobalPlayerState) Enter(entity interface{}) {}
+
+func (psg *GlobalPlayerState) Execute(entity interface{}) {
 	var player = entity.(*FieldPlayer)
 	if player.BallWithinReceivingRange() && player.IsControllingPlayer() {
 		player.SetMaxSpeed(player.Ctx().Config().PlayerMaxSpeedWithBall)
@@ -44,7 +49,9 @@ func (psw *PlayerStateWait) Execute(entity interface{}) {
 	}
 }
 
-func (psw *PlayerStateWait) OnMessage(entity interface{}, msg *common.Telegram) {
+func (psg *GlobalPlayerState) Exit(entity interface{}) {}
+
+func (psg *GlobalPlayerState) OnMessage(entity interface{}, msg *common.Telegram) {
 	var player = entity.(*FieldPlayer)
 	switch msg.Msg {
 	case Msg_ReceiveBall:
@@ -149,6 +156,59 @@ func NewPlayerStateDribble() *PlayerStateDribble {
 	return &PlayerStateDribble{}
 }
 
+func (psd *PlayerStateDribble) Enter(entity interface{}) {
+	var player = entity.(*FieldPlayer)
+	//let the team know this player is controlling
+	//让team知道当前球员是控球者
+	player.Team().SetControllingPlayer(playerr)
+	Debug_State("Player [%d] enters dribble state[运球]", player.Id())
+}
+
+func (psd *PlayerStateDribble) Execute(entity interface{}) {
+	var player = entity.(*FieldPlayer)
+	var dot float64 = player.Team().HomeGoal().Facing().Dot(player.Heading())
+	//if the ball is between the player and the home goal, it needs to swivel
+	// the ball around by doing multiple small kicks and turns until the player
+	//is facing in the correct direction
+	//如果球在球员和主球之间，
+	//它需要通过多次小踢和转身来旋转球，
+	//直到球员朝向正确的方向
+	if dot < 0 {
+		//the player's heading is going to be rotated by a small amount (Pi/4)
+		//and then the ball will be kicked in that direction
+		//球员的头球将被旋转一小部分（π/4），然后球将被踢向那个方向
+		var direction common.Vector2d = player.Heading()
+
+		//calculate the sign (+/-) of the angle between the player heading and the
+		//facing direction of the goal so that the player rotates around in the
+		//correct direction
+		//计算球员头球和球门朝向之间角度的符号（+/-），使球员以正确的方向旋转
+		var angle float64 = common.QuarterPi * -1 *
+			player.Team().HomeGoal().Facing().Sign(player.Heading())
+
+		common.Vec2DRotateAroundOrigin(direction, angle)
+
+		//this value works well whjen the player is attempting to control the
+		//ball and turn at the same time
+		//当球员试图控制球并同时转身时，这个值很有效
+		const double KickingForce = 0.8
+
+		player.Ball().Kick(direction, KickingForce)
+	} else {
+		//kick the ball down the field
+		player.Ball().Kick(player.Team().HomeGoal().Facing(),
+			player.Ctx().Config().MaxDribbleForce)
+	}
+
+	//the player has kicked the ball so he must now change state to follow it
+	//球员踢了球，所以现在必须改变状态才能跟上
+	player.GetFSM().ChangeState(StateChaseBall)
+
+	return
+}
+
+func (psd *PlayerStateDribble) Exit(entity interface{}) {}
+
 //----------------------------------------------------
 //返回默认位置
 type PlayerStateReturnToHomeRegion struct {
@@ -180,7 +240,7 @@ func (psr *PlayerStateReturnToHomeRegion) Execute(entity interface{}) {
 		if player.IsClosestTeamMemberToBall() &&
 			player.Team().Receiver() == nil &&
 			!player.Pitch().GoalKeeperHasBall() {
-			player.GetFSM().ChangeState(StateChseBall)
+			player.GetFSM().ChangeState(StateChaseBall)
 			return
 		}
 	}
@@ -284,13 +344,111 @@ func (psk *PlayerStateKickBall) Enter(entity interface{}) {
 	Debug_State("Player [%d] enters kick state[踢球]", player.Id())
 }
 
-func (psk *PlayerStateKickBall) Enter(entity interface{}) {
+func (psk *PlayerStateKickBall) Execute(entity interface{}) {
 	var player = entity.(*FieldPlayer)
 	//calculate the dot product of the vector pointing to the ball
 	//and the player's heading
+	//计算玩家与球位置的点和玩家朝向的点积
 	var toBall Vector2d = player.Pos().OpMinus(player.Ball().Pos())
 	var dot float64 = player.Heading().Dot(*toBall.Normalize())
+
+	//cannot kick the ball if the goalkeeper is in possession or if it is
+	//behind the player or if there is already an assigned receiver. So just
+	//continue chasing the ball
+	//如果守门员控球，或者球在球员身后，
+	//或者已经有指定的接球员，则不能踢球。所以继续追球
+	if player.Team().Receiver() != null ||
+		player.Pitch().GoalKeeperHasBall() ||
+		dot < 0 {
+		Debug_State("Goaly has ball / ball behind player")
+		player.GetFSM().ChangeState(StateChaseBall)
+		return
+	}
+	/* 尝试射门 */
+
+	//if a shot is possible, this vector will hold the position along the
+	//opponent's goal line the player should aim for.
+	//如果一次射门是可能的，这个向量将保持球员应该瞄准的对手的球门线上的位置
+	var ballTarget Vector2d
+
+	//the dot product is used to adjust the shooting force. The more
+	//directly the ball is ahead, the more forceful the kick
+	//点积用于调整射击力。球越直，踢得越有力
+	var power float64 = dot * player.Ctx().Config().MaxShootingForce
+
+	//if it is determined that the player could score a goal from this position
+	//OR if he should just kick the ball anyway, the player will attempt
+	//to make the shot
+	//如果确定球员可以从这个位置进一球，或者他应该踢这个球，那么球员将尝试射门
+	var ok bool
+	ok, ballTarget = player.Team().CanShoot(player.Ball().Pos(), power)
+	if ok || rand.Float64() < player.Ctx().Config().ChancePlayerAttemptsPotShot {
+		Debug_State("player [%d] attempts a shot at [%d, %d]",
+			player.Id(), ballTarget.X, ballTarget.Y)
+
+		//add some noise to the kick. We don't want players who are
+		//too accurate! The amount of noise can be adjusted by altering
+		//Prm.PlayerKickingAccuracy
+		//给踢腿加些噪音。我们不想要太精确的球员！可以通过改变 config.PlayerKickingAccuracy来调节噪声量。
+		ballTarget = AddNoiseToKick(player.Ball().Pos(), ballTarget)
+
+		//this is the direction the ball will be kicked in
+		//这是踢球的方向
+		var kickDirection Vector2d = ballTarget - player.Ball().Pos()
+		player.Ball().Kick(kickDirection, power)
+
+		//change state
+		player.GetFSM().ChangeState(StateWait)
+		player.FindSupport()
+		return
+	}
+
+	/* Attempt a pass to a player */
+	/* 传球 */
+
+	//if a receiver is found this will point to it
+	//这个记录找到的传球 球员
+	var receiver *PlayerBase
+	power = player.Ctx().Config().MaxPassingForce * dot
+
+	//test if there are any potential candidates available to receive a pass
+	//测试是否有任何潜在候选球员可以接受传球
+	var isFind bool
+	isFind, receiver, ballTarget = oplayer.Team().FindPass(player, power, player.Ctx().Config().MinPassDist)
+	if player.IsThreatened() && isFind {
+		//添加一些噪声
+		ballTarget = AddNoiseToKick(player.Ball().Pos(), ballTarget)
+		var kickDirection common.Vector2d = ballTarget.OpMinus(player.Ball().Pos())
+
+		player.Ball().Kick(kickDirection, power)
+
+		Debug_State("Player [%d] passes the ball with force [%f] to player [%d] Target is [%f, %f]",
+			player.Id(), power, receiver.Id(), ballTarget.X, ballTarget.Y)
+
+		//let the receiver know a pass is coming
+		//让传球者知道
+		player.Ctx().Dispatcher().DispatchMsg(SEND_MSG_IMMEDIATELY,
+			player.Id(),
+			receiver.Id(),
+			Msg_ReceiveBall,
+			&BallTarget)
+
+		//the player should wait at his current position unless instruced
+		//otherwise
+		//球员应该等待在当前的位置,除非移动了
+		player.GetFSM().ChangeState(StateWait)
+		player.FindSupport()
+		return
+	} else {
+		//cannot shoot or pass, so dribble the ball upfield
+		//不能射门,就向对方球门运球
+		player.FindSupport()
+
+		player.GetFSM().ChangeState(StateDribble)
+	}
 }
+
+func (psk *PlayerStateKickBall) Exit(entity interface{}) {}
 
 //----------------------------------------------------
 //接球
@@ -300,6 +458,74 @@ type PlayerStateReceiveBall struct {
 
 func NewPlayerStateReceiveBall() *PlayerStateReceiveBall {
 	return &PlayerStateReceiveBall{}
+}
+
+func (psk *PlayerStateReceiveBall) Enter(entity interface{}) {
+	var player = entity.(*FieldPlayer)
+	//let the team know this player is receiving the ball
+	//通知Team 当前球员开始 接球
+	player.Team().SetReceiver(player)
+	//this player is also now the controlling player
+	//同时当前球员也是控球员
+	player.Team().SetControllingPlayer(player)
+
+	//there are two types of receive behavior. One uses arrive to direct
+	//the receiver to the position sent by the passer in its telegram. The
+	//other uses the pursuit behavior to pursue the ball.
+	//This statement selects between them dependent on the probability
+	//ChanceOfUsingArriveTypeReceiveBehavior, whether or not an opposing
+	//player is close to the receiving player, and whether or not the receiving
+	//player is in the opponents 'hot region' (the third of the pitch closest
+	//to the opponent's goal
+	//有两种类型的接收行为。
+	//一种方法 是直接吧接收者的位置通过传球消息发送。
+	//另一种是利用追球行为来追球。
+	//这句话根据不同的概率来选择他们之间的关系。
+	//无论对方球员是否靠近对方球员，
+	//以及接球球员是否在对方的“热区”（距离对方球门最近的球场的三分之一)
+	var passThreatRadius float64 = 70.0
+
+	if player.InHotRegion() ||
+		rand.Float64() < player.Ctx().Config().ChanceOfUsingArriveTypeReceiveBehavior &&
+			!player.Team().IsOpponentWithRadius(player.Pos(), passThreatRadius) {
+		player.Steering().ArriveOn()
+
+		Debug_State("Player [%d] enters receive state (Using Arrive)", player.Id())
+
+	} else {
+		player.Sterring().PursuitOn()
+		Debug_State("Player [%d] enters receive state (Using Pursuit)", player.Id())
+	}
+}
+
+func (psk *PlayerStateReceiveBall) Execute(entity interface{}) {
+	//if the ball comes close enough to the player or if his team lose control
+	//he should change state to chase the ball
+	//如果球离球员足够近或者他的球队失去控制，他应该改变状态去追球
+	if player.BallWithinReceivingRang() || !player.Team().InControl() {
+		player.GetFSM().ChangeState(StateChaseBall)
+		return
+	}
+	if player.Steering().PursuitIsOn() {
+		player.Steering().SetTarget(player.Ball().Pos())
+	}
+
+	//if the player has 'arrived' at the steering target he should wait and
+	//turn to face the ball
+	//如果球员已经到达了steering目标，他应该等待并转身面对球
+	if player.AtTarget() {
+		player.Steering().ArriveOff()
+		player.Sterring().PursuitOff()
+		player.TrackBall()
+		player.SetVelocity(common.Vecotr2d{0, 0})
+	}
+
+}
+
+func (psk *PlayerStateReceiveBall) Exit(entity interface{}) {
+	player.Steering().ArriveOff()
+	player.Steering().PursuitOff()
+	player.Team().SetReceiver(nil)
 }
 
 //----------------------------------------------------
