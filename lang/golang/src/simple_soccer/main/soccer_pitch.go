@@ -20,6 +20,8 @@ type SoccerPitch struct {
 	bPaused            bool //暂停
 	cxClient           int
 	cyClient           int
+
+	allMembers []*PlayerBase //场上所有的角色
 }
 
 func NewSoccerPitch(ctx *SoccerContext, cx, cy int) *SoccerPitch {
@@ -77,6 +79,8 @@ func NewSoccerPitch(ctx *SoccerContext, cx, cy int) *SoccerPitch {
 	//make sure each team knows who their opponents are
 	sp.pRedTeam.SetOpponents(sp.pBlueTeam)
 	sp.pBlueTeam.SetOpponents(sp.pRedTeam)
+	sp.allMembers = append(sp.allMembers, sp.pRedTeam.Members()...)
+	sp.allMembers = append(sp.allMembers, sp.pBlueTeam.Members()...)
 
 	return sp
 }
@@ -154,6 +158,10 @@ func (sp *SoccerPitch) SetGameOn() {
 
 func (sp *SoccerPitch) SetGameOff() {
 	sp.bGameOn = false
+}
+
+func (sp *SoccerPitch) AllMembers() []*PlayerBase {
+	return sp.allMembers
 }
 
 //  this demo works on a fixed frame rate (60 by default) so we don't need

@@ -82,8 +82,8 @@ func (fp *FieldPlayer) Update() {
 
 	//如果需要，强制执行非穿透约束
 	if fp.Ctx().Config().BNonPenetrationConstraint {
-		//var players = AutoList<PlayerBase>::GetAllMembers()
-		//TODO EnforceNonPenetrationContraint(this, AutoList<PlayerBase>::GetAllMembers())
+		var players = fp.Pitch().AllMembers()
+		EnforceNonPenetrationContraint(this, players)
 	}
 }
 

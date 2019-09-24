@@ -114,9 +114,9 @@ func (v *Vector2d) Reflect(normalize *Vector2d) *Vector2d {
 	return &result
 }
 
-func (v *Vector2d) ReflectAssign(normalize *Vector2d) {
+func (v *Vector2d) ReflectAssign(normalize *Vector2d) *Vector2d {
 	//- normalize * v dot normalize * 2
-	v.OpAddAssign(normalize.Reverse().OpMultiply(v.Dot(normalize)).OpMultiply(2))
+	return v.OpAddAssign(normalize.Reverse().OpMultiplyAssign(v.Dot(normalize)).OpMultiplyAssign(2))
 }
 
 //操作+
@@ -148,27 +148,31 @@ func (v *Vector2d) OpDivide(v2 float64) *Vector2d {
 }
 
 //操作+=
-func (v *Vector2d) OpAddAssign(v2 *Vector2d) {
+func (v *Vector2d) OpAddAssign(v2 *Vector2d) *Vector2d {
 	v.X += v2.X
 	v.Y += v2.Y
+	return v
 }
 
 //操作-=
-func (v *Vector2d) OpMinusAssign(v2 *Vector2d) {
+func (v *Vector2d) OpMinusAssign(v2 *Vector2d) *Vector2d {
 	v.X -= v2.X
 	v.Y -= v2.Y
+	return v
 }
 
 //操作*=
-func (v *Vector2d) OpMultiplyAssign(v2 float64) {
+func (v *Vector2d) OpMultiplyAssign(v2 float64) *Vector2d {
 	v.X *= v2
 	v.Y *= v2
+	return v
 }
 
 //操作/=
-func (v *Vector2d) OpDivideAssign(v2 float64) {
+func (v *Vector2d) OpDivideAssign(v2 float64) *Vector2d {
 	v.X /= v2
 	v.Y /= v2
+	return v
 }
 
 //操作==

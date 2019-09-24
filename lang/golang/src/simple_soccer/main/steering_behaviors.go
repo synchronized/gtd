@@ -2,15 +2,18 @@ package main
 
 import (
 	"math"
+	"simple_soccer/common"
 )
 
 //Arrive makes use of these to determine how quickly a vehicle
 //should decelerate to its target
 //到达利用这些来确定车辆应该以多快的速度减速到目标位置
+type DecelerationType int //减速
+
 const (
-	Deceleration_Slow   = 3
-	Deceleration_Normal = 2
-	Deceleration_Fast   = 1
+	Deceleration_Slow   DecelerationType = 3
+	Deceleration_Normal DecelerationType = 2
+	Deceleration_Fast   DecelerationType = 1
 )
 
 type BehaviorType int
@@ -49,272 +52,295 @@ type SteeringBehaviors struct {
 	aAntenna []common.Vector2d
 }
 
-func NewSteeringBehaviors(player *PlayerBase, pitch *SoccerPitch, ball *SoccerBall) *SteeringBehaviors {
-	//TODO
-	return &SteeringBehaviors{}
-}
-
-//靠近,返回达到目标地点需要的力
-func (sb *SteeringBehaviors) Seek(target Vector2d) Vector2d {
-	var desiredVelocity = target.OpMinus(sb.pVehicle.Pos()).Normalize().OpMultiply(sb.pVehicle.MaxSpeed())
-	return desiredVelocity.OpMinus(sb.pVehicle.Velocity())
-}
-
-//离开,返回离开目标位置的力
-func (sb *SteeringBehaviors) Flee(target Vector2d) Vector2d {
-	var panicDistanceSq float64 = 100.0 * 100.0
-	if sb.pVehicle.Pos().DistanceSq(target) > panicDistanceSq {
-		return Vector2d{0.0, 0.0}
+func NewSteeringBehaviors(agent *PlayerBase, world *SoccerPitch, ball *SoccerBall) *SteeringBehaviors {
+	var sb = &SteeringBehaviors{
+		pPlayer:         agent,
+		iFlags:          0,
+		dMultSeparation: agent.Ctx().Config().SeparationCoefficient,
+		bTagged:         false,
+		dViewDistance:   agent.Ctx().Config().ViewDistance,
+		pBall:           ball,
+		dInterposeDist:  0.0,
+		aAntenna:        make([]common.Vector2d, 5),
 	}
-	var desiredVelocity = sb.pVehicle.Pos().OpMinus(target).Normalize().OpMultiply(sb.pVehicle.MaxSpeed())
-	return desiredVelocity.OpMinus(sb.pVehicle.Velocity())
+	return sb
 }
 
-//抵达
-func (sb *SteeringBehaviors) Arrive(target Vector2d, deceleration int) Vector2d {
-	var toTarget Vector2d = target - sb.pVehicle.Pos()
+//--------------------------private -------------------------------
+//this behavior moves the agent towards a target position
+//靠近 这个行为移动agent 到target位置
+func (sb *SteeringBehaviors) Seek(target common.Vector2d) common.Vecotr2d {
+	var toTarget common.Vector2d = target.OpMinus(sb.pPlayer.Pos())
+	var desiredVelocity *common.Vector2d = toTarget.Normalize().OpMultiply(sb.pPlayer.MaxSpeed())
+	return desiredVelocity.OpMinus(sb.pPlayer.Velocity())
+}
+
+//this behavior is similar to seek but it attempts to arrive
+//at the target with a zero velocity
+//抵达 这种行为类似于seek，但它试图以零速度到达目标
+func (sb *SteeringBehaviors) Arrive(Vector2D target, decel DecelerationType) common.Vecotr2d {
+	var toTarget common.Vector2d = target.OpMinus(sb.pPlayer.Pos)
 	var dist float64 = toTarget.Length()
-	//if dist > toTarget.AccuracyVal() {
+
 	if dist > 0 {
-		var decelerationTweaker floaot64 = 0.3
-		//给定预期的减速度
-		var speed float64 = dist / flaot64(deceleration) * decelerationTweaker
-		//确保不会超过最大值
-		speed = math.Min(speed, sb.pVehicle.MaxSpeed())
-		//处理和seek一样，除了不需要归一化ToTarget矢量
-		//因为已经计算了距离(dict)
-		var desiredVelocity Vector2d = toTarget.OpMultiply(speed).OpDivide(dict)
-		return desiredVelocity.OpMinus(sb.pVehicle.Velocity())
+		//because Deceleration is enumerated as an int, this value is required
+		//to provide fine tweaking of the deceleration..
+		var DecelerationTweaker float64 = 0.3
+
+		//calculate the speed required to reach the target given the desired
+		//deceleration
+		var speed float64 = dist / (float64(deceleration) * DecelerationTweaker)
+
+		//make sure the velocity does not exceed the max
+		speed = math.Min(speed, sb.pPlayer.MaxSpeed())
+
+		//from here proceed just like Seek except we don't need to normalize
+		//the ToTarget vector because we have already gone to the trouble
+		//of calculating its length: dist.
+		//从这里开始就像seek一样进行，只是我们不需要规范化目标向量，
+		//因为我们已经陷入了计算其长度dist的麻烦。
+		var desiredVelocity common.Vector2d = toTarget.OpMultiply(speed).OpDivide(dist)
+
+		return desiredVelocity.OpMinus(sb.pPlayer.Velocity())
 	}
-	return Vector2d{0.0, 0.0}
+	return common.Vector2d{0.0, 0.0}
 }
 
-//追逐
-func (sb *SteeringBehaviors) Pursuit(evader *Vehicle) Vector2d {
-	//如果逃避者在前方,而且面对者智能体
-	//那么我们可以正好靠近逃避着的当前位置
-	var toEvader Vector2d = evader.Pos().OpMinus(sb.pVehicle.Pos())
-	//点积在Normalize操作下就是夹角的余旋值
-	var relativeHeading float64 = sb.pVehicle.Heading().Dot(evader.Heading())
-	// acos(0.95) = 10 degs
-	if toEvader.Dot(sb.pVehicle.Heading()) > 0 && relativeHeading < -0.95 {
-		return sb.Seek(evader.Pos())
+//This behavior predicts where its prey will be and seeks
+//to that location
+//追逐 这种行为可以预测猎物的位置并寻找到那个位置
+func (sb *SteeringBehaviors) Pursuit(ball *SoccerBall) common.Vecotr2d {
+	var toBall common.Vector2d = ball.Pos().OpMinus(sb.pPlayer.Pos())
+
+	//the lookahead time is proportional to the distance between the ball
+	//and the pursuer;
+	//向前看的时间与球和追赶者之间的距离成正比；
+	var lookAheadTime float64 = 0.0
+	//TODO 精度
+	if ball.Speed() != 0.0 {
+		lookAheadTime = toBall.Length() / ball.Speed()
 	}
+	//calculate where the ball will be at this time in the future
+	//计算一下将来这个时候球会在哪里
+	sb.vTarget = ball.FuturePosition(lookAheadTime)
 
-	//预测逃避者的的位置
-	//预测的时间正比与距离，反比于速度
-	// var lookAheadTime float64 = toEvader.Length() / (sb.pVehicle.MaxSpeed() + evade.Speed())
-	var lookAheadTime float64 = TurnaroundTime(sb.pVehicle, evader.Pos())
-	//现在靠近逃避着的被预测位置
-	return Seek(evader.Pos().OpAdd(evader.Velocity().OpMultiply(lookAheadTime)))
-
+	//now seek to the predicted future position of the ball
+	//现在靠近预测的球的未来位置
+	return sb.Arrive(sb.vTarget, Deceleration_Fast)
 }
 
-//逃避
-func (sb *SteeringBehaviors) Evade(pursuer *Vehicle) Vector2d {
-	var toPursuer = pursuer.Pos().OpMinus(sb.pVehicle.Pos())
-	var lookAheadTime float64 = toPursuer.Length() / (sb.pVehicle.MaxSpeed() + evade.Speed())
-	return sb.Flee(pursuer.Pos().OpAdd(pursuer.Velocity().OpMultiply(lookAheadTime)))
-}
+//分离
+//this calculates a force repelling from the other neighbors
+//这计算了一个与其他邻居排斥的力
+func (sb *SteeringBehaviors) Separation() {
+	//iterate through all the neighbors and calculate the vector from the
+	var steeringForce *common.Vector2d
 
-//徘徊
-func (sb *SteeringBehaviors) Wander() Vector2d {
-	//增加一个小的随即向量到目标位置上
-	sb.vWanderTarget.OpAddAssign(Vector2d{
-		sb.dWanderJitter * RandomClamped(),
-		sb.dWanderJitter * RandomClamped(),
-	})
-	//投影到单位圆上
-	sb.vWanderTarget.Normalize()
-	//增加向量长度wangder半径，投影到wangder圆圈上
-	sb.vWanderTarget.OpMultiply(sb.dWanderRadius)
+	for _, curPlyr := range sb.pPlayer.Pitch().AllMembers() {
+		//make sure this agent isn't included in the calculations and that
+		//the agent is close enough
+		//确保agent未包含在计算中，并且agent足够接近
+		if curPlyr != sb.pPlayer && curPlyr.Steering().Tagged() {
+			var toAgent common.Vector2d = sb.pPlayer.Pos().OpMinus(curPlyr.Pos())
 
-	//移动目标到智能体前面的位置
-	var targetLocal Vector2d = sb.vWanderTarget.OpAdd(sb.dWanderDistance, 0)
-	//把目标投影到世界空间
-	var targetWorld Vector2d = common.PointToWorldSpace(
-		targetLocal,
-		sb.pVehicle.Heading(),
-		sb.pVehicle.Side(),
-		sb.pVehicle.Pos(),
-	)
-
-	//移动向它
-	return targetWorld.OpMinus(sb.pVehicle.Pos())
-}
-
-//避开障碍
-func (sb *SteeringBehaviors) ObstracleAvoidance(obstracle []IBaseGameEntity) Vector2d {
-	//检测盒长度正比于智能体的速度
-	//TODO config
-	sb.dBoxLength = Prm.MinDetectionBoxLength + sb.pVehicle.Speed()/sb.pVehicle.MaxSpeed()*Prm.MinDetectionBoxLength
-	//标记范围内的所有障碍物
-	sb.pVehicle.World().TagObstacleWithViewRange(sb.Vehicle, sb.dBoxLength)
-	//跟踪最近的相交的障碍物(CIB)
-	var closestIntersectingObstacle common.IBaseGameEntity
-	//跟踪CIB距离
-	var distToClosestIP float64 = common.MaxFloat64 //max double
-	//记录被转化的CIB局部坐标
-	var localPosOfClosestObstacle Vector2d
-	for _, curOb := range abstracle {
-		//如果被标记在范围内
-		if !curOb.IsTagged() {
-			continue
-		}
-		//计算这个障碍物的局部坐标的位置
-		var localPos Vector2d = common.PointToLocalSpace(curOb.Pos(),
-			sb.pVehicle.Heading(),
-			sb.pVehicle.Side(),
-			sb.pVehicle.Pos(),
-		)
-		//如果局部空间位置x为负,那么他在智能体后面
-		//(这种情况,他可以被忽略)
-		if localPos.X() <= 0 {
-			continue
-		}
-		//如果物体到x轴的距离小雨他的半径+检查盒宽度的一半时，
-		//那么可能相交
-		var expandedRadius float64 = curOb.BRandius() + sb.pVehicle.BRandius()
-		if math.Abs(localPos.Y()) >= expandedRadius {
-			continue
-		}
-		//现在做线/圆相交测试,圆周的中心是(cX,cY)
-		//相交的公式是x=cX +/- sqrt(r^2 - cY^2) 此时y=0
-		//我们只需要看x的最小正值,因为那是最近的相交点
-		var cX = localPos.X()
-		var cY = localPos.Y()
-
-		//我们值需要一次计算上面等式的开方
-		var sqrtPart float64 = math.Sqrt(expandedRadius*expandedRadius - cY*cY)
-		var ip float64 = cX - sqrtPart
-		if ip <= 0 {
-			ip = cX + sqrtPart
-		}
-
-		//测试是否是目前为止最近的
-		//如果是，记录这个障碍物和他的局部坐标
-		if ip < distToClosestIP {
-			distToClosestIP = ip
-			closestIntersectingObstacle = curOb
-			localPosOfClosestObstacle = localPos
+			//scale the force inversely proportional to the agents distance
+			//from its neighbor.
+			//将力按与代理距离成反比的方式缩放。
+			steeringForce.OpAddAssign(toAgent.Normalize().OpDivide(toAgent.Length()))
 		}
 	}
-
-	var steeringForce Vector2d
-	if closestIntersectingObstacle != nil {
-		//智能体离物体越近，操控力就应该越强
-		var multiplier float64 = 1.0 + (sb.dBoxLength-localPosOfClosestObstacle.X())/sb.dBoxLength
-		//计算侧向力
-		steeringForce.X = (closestIntersectingObstacle.BRadius() - localPosOfClosestObstacle.Y) * multiplier
-		//施加一个制动力,他正比于障碍物到交通工具的距离
-		var brakingWeight = 0.2
-		steeringForce.Y = (closestIntersectingObstacle.BRadius() - localPosOfClosestObstacle.X) * brakingWeight
-	}
-
-	//最后,把操控向量从局部空间转换到世界向量空间
-	return common.VectorToWorldSpace(steeringForce,
-		sb.pVehicle.Heading(),
-		sb.pVehicle.Side(),
-	)
-}
-
-//避开墙
-func (sb *SteeringBehaviors) WallAvoidance(walls []Wall2d) Vector2d {
-	//触须
-	createFeelers()
-
-	var distToThisIP float64 = 0.0
-	var distToClosestIP float64 = common.MaxFloat64
-
-	//保存walls 的向量的索引
-	var closestWall int = -1
-
-	var steeringForce Vector2d
-	var point Vector2d
-	var closestPoint Vector2d
-
-	for flr, feeler := range sb.vFeelers {
-		for w, wall := range walls {
-			var ok bool
-			ok, point, distToThisIP = LineIntersection2D(sb.pVehicle.Pos(), feeler, wall.From(), wall.To())
-			if ok {
-				//目前这是最近的？
-				if distToThisIp < distToClosestIP {
-					distToClosestIP = distToThisIp
-					closestWall = w
-					closestPoint = point
-				}
-			}
-		} //下一堵墙
-
-		//如果检测到一个相交点,那么计算出一个使其远离的力
-		if closestWall >= 0 {
-			//计算智能体吐出的位置会穿透墙的距离
-			var overShoot Vector2d = fleer - closestPoint
-			//在墙的发现方向 以overShoot 大小创建一个力
-			steeringForce = wall.Normal().OpMultiply(overShoot.Length())
-		}
-
-	} //下一个触须
-
 	return steeringForce
 }
 
-func (sb *SteeringBehaviors) createFeelers() {
-
+//this attempts to steer the agent to a position between the opponent
+//and the object
+//插入
+//试图引导agent到达opponent和object之间的位置
+func (sb *SteeringBehaviors) Interpose(ball *SoccerBall, target common.Vector2d, distFromTarget float64) {
+	var toTargetNormalize common.Vector2d = ball.Pos().OpMinus(target).Normalize()
+	return sb.Arrive(target.OpAdd(toTargetNormalize.OpMultiply(distFromTarget)), Deceleration_Normal)
 }
 
-//计算合成力
-func (sb *SteeringBehaviors) Calculate() Vector2d {
-	//TODO
+//finds any neighbours within the view radius
+//找到视野范围内的任何邻居(附近目标)
+func (sb *SteeringBehaviors) FindNeighbours() {
+	for _, curPlyr := range sb.Pitch().AllMembers() {
+		curPlyr.Steering().UnTag()
+
+		//work in distance squared to avoid sqrts
+		var to common.Vector2d = curPlyr.Pos - sb.pPlayer.Pos()
+		if to.LengthSq() < (sb.dViewDistance * sb.dViewDistance) {
+			curPlyr.Steering().Tag()
+		}
+	} //next
 }
 
-func (sb *SteeringBehaviors) ForwardComponent() Vector2d {
-	//TODO
+//this function tests if a specific bit of m_iFlags is set
+func (sb *SteeringBehaviors) On(bt BehaviorsType) bool {
+	return (sb.iFlags & bt) == bt
 }
 
-func (sb *SteeringBehaviors) SideComponent() Vector2d {
-	//TODO
+// This function calculates how much of its max steering force the
+// vehicle has left to apply and then applies that amount of the
+// force to add.
+// 此函数计算车辆剩余要施加的最大转向力的量，然后施加要添加的力的量。
+//累计“力” 注意:这里会修改sf
+func (sb *SteeringBehaviors) AccumulateForce(sf *common.Vector2d, forceToAdd common.Vector2d) (ok bool) {
+	//first calculate how much steering force we have left to use
+	//首先计算我们还剩多少转向力
+	var magnitudeSoFar float64 = sf.Length()
+	var magnitudeRemaining float64 = sb.pPlayer.MaxForce() - magnitudeSoFar
+	//return false if there is no more force left to use
+	if magnitudeRemaining <= 0.0 {
+		return false
+	}
+
+	//calculate the magnitude of the force we want to add
+	//计算增加的力的大小
+	var magnitudeToAdd float64 = forceToAdd.Length()
+
+	//now calculate how much of the force we can really add
+	//现在计算一下我们能加多少力
+	if magnitudeToAdd > magnitudeRemaining {
+		magnitudeToAdd = magnitudeRemaining
+	}
+
+	//add it to the steering force
+	sf.OpAddAssign(forceToAdd.NormalizeAssign().OpMultiplyAssign(magnitudeToAdd))
+	return true
 }
 
-func (sb *SteeringBehaviors) SetPath() {
-	//TODO
+//  this method calls each active steering behavior and acumulates their
+//  forces until the max steering force magnitude is reached at which
+//  time the function returns the steering force accumulated to that
+//  point
+// 此方法调用每个主动转向行为并累积其力，
+// 直到达到最大转向力大小，此时函数返回累积到该点的转向力
+func (sb *SteeringBehaviors) SumForces() common.Vector2d {
+	var force *common.Vector2d
+
+	//the soccer players must always tag their neighbors
+	sb.FindNeighbours()
+	if sb.On(BehaviorType_Separation) {
+		force.OpAddAssign(sb.Separation().OpMultiplyAssign(sb.dMultSeparation))
+		if !sb.AccumulateForce(&sb.vSteeringForce, force) {
+			return sb.vSteeringForce
+		}
+	}
+	if sb.On(BehaviorType_Seek) {
+		force.OpAddAssign(sb.Seek(sb.vTarget))
+		if !sb.AccumulateForce(&sb.vSteeringForce, force) {
+			return sb.vSteeringForce
+		}
+	}
+	if sb.On(BehaviorType_Arrive) {
+		force.OpAddAssign(sb.Arrive(sb.vTarget, Deceleration_Fast))
+		if !sb.AccumulateForce(&sb.vSteeringForce, force) {
+			return sb.vSteeringForce
+		}
+	}
+	if sb.On(BehaviorType_Pursuit) {
+		force.OpAddAssign(sb.Pursuit(sb.pBall))
+		if !sb.AccumulateForce(&sb.vSteeringForce, force) {
+			return sb.vSteeringForce
+		}
+	}
+	if sb.On(BehaviorType_Interpose) {
+		force.OpAddAssign(sb.Interpose(sb.pBall, sb.vTarget, sb.dInterposeDist))
+		if !sb.AccumulateForce(&sb.vSteeringForce, force) {
+			return sb.vSteeringForce
+		}
+	}
+	return sb.vSteeringForce
 }
 
-func (sb *SteeringBehaviors) SetTarget(val Vector2d) {
-	//TODO
+//--------------------------public -------------------------------
+//  calculates the overall steering force based on the currently active
+//  steering behaviors.
+// 根据当前激活的转向行为计算总转向力。
+func (sb *SteeringBehaviors) Calculate() common.Vector2d {
+	//reset the force
+	sb.vSteeringForce.Zero()
+
+	//this will hold the value of each individual steering force
+	sb.vSteeringForce = sb.SubForces()
+
+	//make sure the force doesn't exceed the vehicles maximum allowable
+	sb.vSteeringForce.Truncate(sb.pPlayer.MaxForce())
+	return sb.vSteeringForce
 }
 
-func (sb *SteeringBehaviors) SetTargetAgent1(val *Vehicle) {
-	//TODO
-}
-func (sb *SteeringBehaviors) SetTargetAgent2(val *Vehicle) {
-	//TODO
+//calculates the component of the steering force that is parallel
+//with the vehicle heading
+//计算与车辆航向平行的转向力分量
+func (sb *SteeringBehaviors) ForwardComponent() float64 {
+	return sb.pPlayer.Heading().Dot(sb.vSteeringForce)
 }
 
-func (sb *SteeringBehaviors) SeekOn() {
-	sb.bSeek = true
+//calculates the component of the steering force that is perpendicuar
+//with the vehicle heading
+//计算与车辆航向垂直的转向力分量
+func (sb *SteeringBehaviors) SideComponent() float64 {
+	return sb.pPlayer.Side().Dot(sb.vSteeringForce) * sb.pPlayer.MaxTurnRate()
 }
+
+func (sb *SteeringBehaviors) Force() common.Vector2d { return sb.vSteeringForce }
+
+func (sb *SteeringBehaviors) Target() common.Vector2d       { return sb.vTarget }
+func (sb *SteeringBehaviors) SetTarget(tar common.Vector2d) { sb.vTarget = tar }
+
+func (sb *SteeringBehaviors) InterposeDistance() float64        { return sb.dInterposeDist }
+func (sb *SteeringBehaviors) SetInterposeDistance(dist float64) { sb.dInterposeDist = dist }
+
+func (sb *SteeringBehaviors) Tagged() bool { return sb.bTagged }
+func (sb *SteeringBehaviors) Tag()         { sb.bTagged = true }
+func (sb *SteeringBehaviors) UnTag()       { sb.bTagged = false }
+
+func (sb *SteeringBehaviors) SeekOn()       { sb.iFlags |= BehaviorType_Seek }
+func (sb *SteeringBehaviors) ArriveOn()     { sb.iFlags |= BehaviorType_Arrive }
+func (sb *SteeringBehaviors) PursuitOn()    { sb.iFlags |= BehaviorType_Pursuit }
+func (sb *SteeringBehaviors) SeparationOn() { sb.iFlags |= BehaviorType_Separation }
+func (sb *SteeringBehaviors) InterposeOn(d float64) {
+	sb.iFlags |= BehaviorType_Interpose
+	sb.dInterposeDist = d
+}
+
 func (sb *SteeringBehaviors) SeekOff() {
-	sb.bSeek = false
-}
-func (sb *SteeringBehaviors) FleeOn() {
-	sb.bFlee = true
-}
-func (sb *SteeringBehaviors) FleeOff() {
-	sb.bFlee = false
-}
-func (sb *SteeringBehaviors) ArriveOn() {
-	sb.bArrive = true
+	if sb.On(BehaviorType_Seek) {
+		sb.iFlags ^= BehaviorType_Seek
+	}
 }
 func (sb *SteeringBehaviors) ArriveOff() {
-	sb.bArrive = false
+	if sb.On(BehaviorType_Arrive) {
+		sb.iFlags ^= BehaviorType_Arrive
+	}
 }
-
-func (sb *SteeringBehaviors) SeparationOn() {
-	sb.bSeparation = true
+func (sb *SteeringBehaviors) PursuitOff() {
+	if sb.On(BehaviorType_Pursuit) {
+		sb.iFlags ^= BehaviorType_Pursuit
+	}
 }
-
 func (sb *SteeringBehaviors) SeparationOff() {
-	sb.bSeparation = false
+	if sb.On(BehaviorType_Separation) {
+		sb.iFlags ^= BehaviorType_Separation
+	}
 }
+func (sb *SteeringBehaviors) InterposeOff() {
+	if sb.On(BehaviorType_Interpose) {
+		sb.iFlags ^= BehaviorType_Interpose
+	}
+}
+
+func (sb *SteeringBehaviors) SeekIsOn() bool       { return sb.On(BehaviorType_Seek) }
+func (sb *SteeringBehaviors) ArriveIsOn() bool     { return sb.On(BehaviorType_Arrive) }
+func (sb *SteeringBehaviors) PursuitIsOn() bool    { return sb.On(BehaviorType_Pursuit) }
+func (sb *SteeringBehaviors) SeparationIsOn() bool { return sb.On(BehaviorType_Separation) }
+func (sb *SteeringBehaviors) InterposeIsOn() bool  { return sb.On(BehaviorType_Interpose) }
+
+//renders visual aids and info for seeing how each behavior is
+//calculated
+//呈现视觉帮助和信息，以查看如何计算每个行为
+func (sb *SteeringBehaviors) RenderInfo() { /*TODO*/ }
+
+//助手
+func (sb *SteeringBehaviors) RenderAids() { /*TODO*/ }
