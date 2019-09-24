@@ -1,6 +1,10 @@
 package main
 
-import "github.com/go-init/init"
+import (
+	"fmt"
+
+	ini "gopkg.in/ini.v1"
+)
 
 type Config struct {
 	//MinDetectionBoxLength        float64 //检测盒长度
@@ -40,13 +44,14 @@ type Config struct {
 	NumSupportSpotsX int
 	NumSupportSpotsY int
 
+	//these values tweak the various rules used to calculate the support spots
 	Spot_PassSafeScore                    float64
 	Spot_CanScoreFromPositionScore        float64
 	Spot_DistFromControllingPlayerScore   float64
 	Spot_ClosenessToSupportingPlayerScore float64
 	Spot_AheadOfAttackerScore             float64
 
-	SupportSpotUpdateFreq float64
+	SupportSpotUpdateFreq int64
 
 	ChancePlayerAttemptsPotShot            float64
 	ChanceOfUsingArriveTypeReceiveBehavior float64
@@ -55,36 +60,67 @@ type Config struct {
 	BallMass float64
 	Friction float64
 
-	KeeperInBallRange     float64
-	PlayerInTargetRange   float64
-	PlayerKickingDistance float64
-	PlayerKickFrequency   float64
+	KeeperInBallRange   float64
+	KeeperInBallRangeSq float64
 
-	PlayerMass                float64
+	PlayerInTargetRange   float64
+	PlayerInTargetRangeSq float64
+
+	PlayerMass float64
+
+	//max steering force
 	PlayerMaxForce            float64
 	PlayerMaxSpeedWithBall    float64
 	PlayerMaxSpeedWithoutBall float64
 	PlayerMaxTurnRate         float64
 	PlayerScale               float64
 	PlayerComfortZone         float64
-	PlayerKickingAccuracy     float64
 
-	NumAttemptsToFindValidStrike int
+	PlayerKickingDistance   float64
+	PlayerKickingDistanceSq float64
+
+	PlayerKickFrequency int64 //毫秒
 
 	MaxDribbleForce  float64
 	MaxShootingForce float64
 	MaxPassingForce  float64
 
-	WithinRangeOfHome        float64
-	WithinRangeOfSupportSpot float64
+	PlayerComfortZoneSq float64
 
+	//in the range zero to 1.0. adjusts the amount of noise added to a kick,
+	//the lower the value the worse the players get
+	PlayerKickingAccuracy float64
+
+	//the number of times the SoccerTeam::CanShoot method attempts to find
+	//a valid shot
+	NumAttemptsToFindValidStrike int
+
+	//the distance away from the center of its home region a player
+	//must be to be considered at home
+	WithinRangeOfHome float64
+
+	//how close a player must get to a sweet spot before he can change state
+	WithinRangeOfSupportSpot   float64
+	WithinRangeOfSupportSpotSq float64
+
+	//the minimum distance a receiving player must be from the passing player
 	MinPassDist           float64
 	GoalkeeperMinPassDist float64
 
+	//this is the distance the keeper puts between the back of the net
+	//and the ball when using the interpose steering behavior
 	GoalKeeperTendingDistance float64
-	GoalKeeperInterceptRange  float64
-	BallWithinReceivingRange  float64
 
+	//when the ball becomes within this distance of the goalkeeper he
+	//changes state to intercept the ball
+	GoalKeeperInterceptRange   float64
+	GoalKeeperInterceptRangeSq float64
+
+	//how close the ball must be to a receiver before he starts chasing it
+	BallWithinReceivingRange   float64
+	BallWithinReceivingRangeSq float64
+
+	//these values control what debug info you can see
 	bStates                bool
 	bIDs                   bool
 	bSupportSpots          bool
@@ -95,17 +131,22 @@ type Config struct {
 
 	FrameRate int
 
-	SeparationCoefficient     float64
-	ViewDistance              float64
-	bNonPenetrationConstraint bool
+	SeparationCoefficient float64
+
+	//how close a neighbour must be before an agent perceives it
+	ViewDistance float64
+
+	//zero this to turn the constraint off
+	BNonPenetrationConstraint bool
 }
 
 func LoadConfig() *Config {
-	cfg, err := init.Load("params.ini")
+	cfg, err := ini.Load("params.ini")
 	if err != nil {
 		panic(err.Error())
 	}
 	var defaultSection = cfg.Section("")
+	fmt.Sprintf("defaultSection.Key(\"GoalWidth\"):, %#v", defaultSection.Key("GoalWidth"))
 	var config = &Config{
 		GoalWidth: defaultSection.Key("GoalWidth").MustFloat64(1.0),
 
@@ -118,7 +159,7 @@ func LoadConfig() *Config {
 		Spot_ClosenessToSupportingPlayerScore: defaultSection.Key("Spot_ClosenessToSupportingPlayerScore").MustFloat64(1.0),
 		Spot_AheadOfAttackerScore:             defaultSection.Key("Spot_AheadOfAttackerScore").MustFloat64(1.0),
 
-		SupportSpotUpdateFreq: defaultSection.Key("SupportSpotUpdateFreq").MustFloat64(1.0),
+		SupportSpotUpdateFreq: defaultSection.Key("SupportSpotUpdateFreq").MustInt64(1),
 
 		ChancePlayerAttemptsPotShot:            defaultSection.Key("ChancePlayerAttemptsPotShot").MustFloat64(1.0),
 		ChanceOfUsingArriveTypeReceiveBehavior: defaultSection.Key("ChanceOfUsingArriveTypeReceiveBehavior").MustFloat64(1.0),
@@ -130,7 +171,7 @@ func LoadConfig() *Config {
 		KeeperInBallRange:     defaultSection.Key("KeeperInBallRange").MustFloat64(1.0),
 		PlayerInTargetRange:   defaultSection.Key("PlayerInTargetRange").MustFloat64(1.0),
 		PlayerKickingDistance: defaultSection.Key("PlayerKickingDistance").MustFloat64(1.0),
-		PlayerKickFrequency:   defaultSection.Key("PlayerKickFrequency").MustFloat64(1.0),
+		PlayerKickFrequency:   defaultSection.Key("PlayerKickFrequency").MustInt64(1),
 
 		PlayerMass:                defaultSection.Key("PlayerMass").MustFloat64(1.0),
 		PlayerMaxForce:            defaultSection.Key("PlayerMaxForce").MustFloat64(1.0),
@@ -169,7 +210,7 @@ func LoadConfig() *Config {
 
 		SeparationCoefficient:     defaultSection.Key("SeparationCoefficient").MustFloat64(1.0),
 		ViewDistance:              defaultSection.Key("ViewDistance").MustFloat64(1.0),
-		bNonPenetrationConstraint: defaultSection.Key("bNonPenetrationConstraint").MustBool(false),
+		BNonPenetrationConstraint: defaultSection.Key("bNonPenetrationConstraint").MustBool(false),
 	}
 
 	config.BallWithinReceivingRangeSq = config.BallWithinReceivingRange * config.BallWithinReceivingRange

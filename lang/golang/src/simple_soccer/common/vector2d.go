@@ -7,16 +7,6 @@ const (
 	anticlockwise = -1
 )
 
-const (
-	MinDouble = 0.00001
-)
-
-var accuracy Accuracy
-
-func init() {
-	accuracy = func() float64 { return MinDouble }
-}
-
 type Vector2d struct {
 	X float64
 	Y float64
@@ -34,7 +24,7 @@ func (v *Vector2d) Zero() {
 
 //如果X，Y都为0返回True
 func (v *Vector2d) IsZero() bool {
-	return accuracy.Equal(v.X, 0.0) && accuracy.Equal(v.Y, 0.0)
+	return FloatEqual(v.X, 0.0) && FloatEqual(v.Y, 0.0)
 }
 
 //返回矢量的长度
@@ -47,7 +37,7 @@ func (v *Vector2d) LengthSq() float64 {
 }
 
 //矢量归一化
-func (v *Vector2d) Normalize() *Vecotr2d {
+func (v *Vector2d) Normalize() *Vector2d {
 	var result = *v
 	result.NormalizeAssign()
 	return &result
@@ -56,7 +46,7 @@ func (v *Vector2d) Normalize() *Vecotr2d {
 //矢量归一化并赋值
 func (v *Vector2d) NormalizeAssign() {
 	var length = v.Length()
-	if accuracy.Greater(length, 0.0) {
+	if FloatGreater(length, 0.0) {
 		v.X /= length
 		v.Y /= length
 	}
@@ -177,26 +167,10 @@ func (v *Vector2d) OpDivideAssign(v2 float64) *Vector2d {
 
 //操作==
 func (v *Vector2d) OpEqual(v2 *Vector2d) bool {
-	return accuracy.Equal(v.X, v2.X) && accuracy.Equal(v.Y, v2.Y)
+	return FloatEqual(v.X, v2.X) && FloatEqual(v.Y, v2.Y)
 }
 
 //操作!=
 func (v *Vector2d) OpNotEqual(v2 *Vector2d) bool {
 	return !v.OpEqual(v2)
-}
-
-func (v *Vector2d) Accuracy() Accuracy {
-	return accuracy
-}
-
-func (v *Vector2d) AccuracyVal() float64 {
-	return accuracy()
-}
-
-func (v *Vector2d) X() float64 {
-	return v.X
-}
-
-func (v *Vector2d) Y() float64 {
-	return v.Y
 }

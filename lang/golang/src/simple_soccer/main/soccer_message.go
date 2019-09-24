@@ -1,5 +1,7 @@
 package main
 
+import "simple_soccer/common"
+
 const (
 	Msg_ReceiveBall     common.MessageType = 1 //接球
 	Msg_PassToMe        common.MessageType = 2 //传球给我
@@ -20,8 +22,8 @@ func init() {
 	}
 }
 
-func MessageToString(int msg) string {
-	var result, ok = msgMap[int]
+func MessageToString(msg common.MessageType) string {
+	var result, ok = msgMap[msg]
 	if !ok {
 		return "INVALID MESSAGE!!"
 	}

@@ -9,7 +9,7 @@ package common
  * 给定一个二维的向量，位置、方向和尺度，
  * 此函数将二维向量转换为对象的世界空间
  */
-func WorldTransform(points []Vector2d, pos, forward, side, scale Vector2d) []Vector2d {
+func WorldTransform2(points []Vector2d, pos, forward, side, scale Vector2d) []Vector2d {
 	//copy the original vertices into the buffer about to be transformed
 	var TranVector2Ds = make([]Vector2d, len(points))
 	copy(TranVector2Ds, points)
@@ -23,7 +23,7 @@ func WorldTransform(points []Vector2d, pos, forward, side, scale Vector2d) []Vec
 	}
 
 	//rotate
-	matTransform.Rotate(forward, side)
+	matTransform.Rotate2(forward, side)
 
 	//and translate
 	matTransform.Translate(pos.X, pos.Y)
@@ -48,7 +48,7 @@ func WorldTransform(points []Vector2d, pos, forward, side Vector2d) []Vector2d {
 	var matTransform C2DMatrix
 
 	//rotate
-	matTransform.Rotate(forward, side)
+	matTransform.Rotate2(forward, side)
 
 	//and translate
 	matTransform.Translate(pos.X, pos.Y)
@@ -71,7 +71,7 @@ func PointToWorldSpace(point, AgentHeading, AgentSide, AgentPosition Vector2d) V
 	var matTransform C2DMatrix
 
 	//rotate
-	matTransform.Rotate(AgentHeading, AgentSide)
+	matTransform.Rotate2(AgentHeading, AgentSide)
 
 	//and translate
 	matTransform.Translate(AgentPosition.X, AgentPosition.Y)
@@ -86,15 +86,15 @@ func PointToWorldSpace(point, AgentHeading, AgentSide, AgentPosition Vector2d) V
 //
 //  Transforms a vector from the agent's local space into world space
 //------------------------------------------------------------------------
-func VectorToWorldSpace(vec, AgentHeading, AgentSide Vector2d) Vector2D {
+func VectorToWorldSpace(vec, AgentHeading, AgentSide Vector2d) Vector2d {
 	//make a copy of the point
-	var TransVec Vector2D = vec
+	var TransVec Vector2d = vec
 
 	//create a transformation matrix
 	var matTransform C2DMatrix
 
 	//rotate
-	matTransform.Rotate(AgentHeading, AgentSide)
+	matTransform.Rotate2(AgentHeading, AgentSide)
 
 	//now transform the vertices
 	matTransform.TransformVector2D(&TransVec)
@@ -105,16 +105,16 @@ func VectorToWorldSpace(vec, AgentHeading, AgentSide Vector2d) Vector2D {
 //--------------------- PointToLocalSpace --------------------------------
 //
 //------------------------------------------------------------------------
-func PointToLocalSpace(point, AgentHeading, AgentSide, AgentPosition Vector2d) Vector2D {
+func PointToLocalSpace(point, AgentHeading, AgentSide, AgentPosition Vector2d) Vector2d {
 
 	//make a copy of the point
-	var TransPoint Vector2D = point
+	var TransPoint Vector2d = point
 
 	//create a transformation matrix
 	var matTransform C2DMatrix
 
-	var Tx float64 = -AgentPosition.Dot(AgentHeading)
-	var Ty float64 = -AgentPosition.Dot(AgentSide)
+	var Tx float64 = -AgentPosition.Dot(&AgentHeading)
+	var Ty float64 = -AgentPosition.Dot(&AgentSide)
 
 	//create the transformation matrix
 	matTransform.SetM11(AgentHeading.X)
@@ -136,7 +136,7 @@ func PointToLocalSpace(point, AgentHeading, AgentSide, AgentPosition Vector2d) V
 func VectorToLocalSpace(vec, AgentHeading, AgentSide Vector2d) Vector2d {
 
 	//make a copy of the point
-	var TransPoint Vector2D = vec
+	var TransPoint Vector2d = vec
 
 	//create a transformation matrix
 	var matTransform C2DMatrix
@@ -190,7 +190,7 @@ func CreateWhiskers(NumWhiskers int, WhiskerLength, fov float64, facing, origin 
 	for w := 0; w < NumWhiskers; w++ {
 		//create the whisker extending outwards at this angle
 		temp = Vec2DRotateAroundOrigin(facing, angle)
-		whiskers[w] = origin.OpAdd(WhiskerLength.OpMultiply(temp))
+		whiskers[w] = *origin.OpAdd(temp.OpMultiply(WhiskerLength))
 
 		angle += SectorSize
 	}

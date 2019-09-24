@@ -37,21 +37,27 @@ func NewSupportSpotCalculator(numX, numY int, team *SoccerTeam) *SupportSpotCalc
 	//calculate the positions of each sweet spot, create them and
 	//store them in m_Spots
 	//计算每个最佳击球位置，创建它们并将它们存储在ssc.aSpots中
-	var heightOfSSRegion float64 = playerField.Height() * 0.8
-	var widthOfSSRegion float64 = playerField.Widht() * 0.9
-	var sliceX = widthOfSSRegion / numX
-	var sliceY = heightOfSSRegion / numY
+	var heightOfSSRegion float64 = playingField.Height() * 0.8
+	var widthOfSSRegion float64 = playingField.Width() * 0.9
+	var sliceX = widthOfSSRegion / float64(numX)
+	var sliceY = heightOfSSRegion / float64(numY)
 
 	var left float64 = playingField.Left() + (playingField.Width()-widthOfSSRegion)/2.0 + sliceX/2.0
-	var right flot64 = playingField.Right() - (playingField.Width()-widthOfSSRegion)/2.0 - sliceX/2.0
-	var top flot64 = playingField.Top() + (playingField.Height()-heightOfSSRegion)/2.0 + sliceY/2.0
+	var right float64 = playingField.Right() - (playingField.Width()-widthOfSSRegion)/2.0 - sliceX/2.0
+	var top float64 = playingField.Top() + (playingField.Height()-heightOfSSRegion)/2.0 + sliceY/2.0
 
 	for x := 0; x < (numX/2)-1; x++ {
 		for y := 0; y < numY; y++ {
-			if ssc.pTeam.Color() == TypeColor_Blue {
-				ssc.aSpots = append(ssc.aSpots, NewSupportSpot(common.Vector2d{left + x*sliceX, top + y*sliceY}, 0.0))
+			if ssc.pTeam.Color() == TeamColor_Blue {
+				ssc.aSpots = append(ssc.aSpots, NewSupportSpot(common.Vector2d{
+					left + float64(x)*sliceX,
+					top + float64(y)*sliceY,
+				}, 0.0))
 			} else {
-				ssc.aSpots = append(ssc.aSpots, NewSupportSpot(common.Vector2d{right - x*sliceX, top + y*sliceY}, 0.0))
+				ssc.aSpots = append(ssc.aSpots, NewSupportSpot(common.Vector2d{
+					right - float64(x)*sliceX,
+					top + float64(y)*sliceY,
+				}, 0.0))
 			}
 		}
 	}
@@ -62,7 +68,7 @@ func NewSupportSpotCalculator(numX, numY int, team *SoccerTeam) *SupportSpotCalc
 }
 
 //获取最佳主攻点
-func (ssc *SupportSpotCalculator) GetBastSupportingSpot() common.Vector2d {
+func (ssc *SupportSpotCalculator) GetBestSupportingSpot() common.Vector2d {
 	if ssc.pBestSupportingSpot != nil {
 		return ssc.pBestSupportingSpot.vPos
 	} else {
@@ -96,7 +102,7 @@ func (ssc *SupportSpotCalculator) DetermineBestSupportingPosition() common.Vecto
 		//to this position?
 		//1. 从球的位置到这个位置能安全传球吗？
 		if ssc.pTeam.IsPassSafeFromAllOpponents(
-			team.ControllingPlayer().Pos(),
+			*team.ControllingPlayer().Pos(),
 			curSpot.vPos,
 			nil,
 			team.Ctx().Config().MaxPassingForce) {
@@ -105,7 +111,8 @@ func (ssc *SupportSpotCalculator) DetermineBestSupportingPosition() common.Vecto
 
 		//Test 2. Determine if a goal can be scored from this position.
 		//确定这个位置是否可以得分。
-		if team.CanShoot(curSpot.vPos, team.Ctx().Config().MaxShootingForce) {
+		var ok, _ = team.CanShoot(curSpot.vPos, team.Ctx().Config().MaxShootingForce)
+		if ok {
 			curSpot.dScore += team.Ctx().Config().Spot_CanScoreFromPositionScore
 		}
 
@@ -114,9 +121,9 @@ func (ssc *SupportSpotCalculator) DetermineBestSupportingPosition() common.Vecto
 		//away than OptimalDistance pixels do not receive a score.
 		//计算这个位置离控制玩家有多远。越远，得分越高。
 		//任何比最佳距离像素更远的距离都不会得到分数。
-		if team.SupportingPlayer() {
+		if team.SupportingPlayer() != nil {
 			var optimalDistance float64 = 200.0
-			var dist float64 = team.ControllingPlayer().Pos().Distance(curSpot.vPos)
+			var dist float64 = team.ControllingPlayer().Pos().Distance(&curSpot.vPos)
 
 			var temp float64 = math.Abs(optimalDistance - dist)
 			if temp < optimalDistance {

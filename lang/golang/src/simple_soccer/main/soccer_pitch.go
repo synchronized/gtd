@@ -11,7 +11,7 @@ type SoccerPitch struct {
 	pRedGoal  *Goal       //红队球门
 	pBlueGoal *Goal       //蓝队球门
 
-	aWalls []*Wall2d //足球场的墙
+	aWalls []*common.Wall2d //足球场的墙
 
 	pPlayingArea       *Region
 	aRegions           []*Region
@@ -21,7 +21,7 @@ type SoccerPitch struct {
 	cxClient           int
 	cyClient           int
 
-	allMembers []*PlayerBase //场上所有的角色
+	allMembers []IPlayerBase //场上所有的角色
 }
 
 func NewSoccerPitch(ctx *SoccerContext, cx, cy int) *SoccerPitch {
@@ -34,8 +34,11 @@ func NewSoccerPitch(ctx *SoccerContext, cx, cy int) *SoccerPitch {
 		cxClient:           cx,
 		cyClient:           cy,
 	}
+	var cxf = float64(cx)
+	var cyf = float64(cy)
+
 	//define the playing area
-	sp.pPlayingArea = NewRegion(20, 20, cx-20, cy-20)
+	sp.pPlayingArea = NewRegion(20.0, 20.0, cxf-20.0, cyf-20.0, 0)
 	//create regions
 	sp.CreateRegions(
 		sp.pPlayingArea.Width()/float64(NumRegionsHorizontal),
@@ -44,13 +47,13 @@ func NewSoccerPitch(ctx *SoccerContext, cx, cy int) *SoccerPitch {
 	//create the goals
 	var goalWidth float64 = sp.ctx.Config().GoalWidth
 	sp.pRedGoal = NewGoal(
-		common.Vector2d{pPlayingArea.Left(), (cy - goalWidth) / 2},
-		common.Vector2d{pPlayingArea.Left(), cy - (cy-goalWidth)/2},
+		common.Vector2d{sp.pPlayingArea.Left(), (cyf - goalWidth) / 2},
+		common.Vector2d{sp.pPlayingArea.Left(), cyf - (cyf-goalWidth)/2},
 		common.Vector2d{1, 0})
 
 	sp.pBlueGoal = NewGoal(
-		common.Vector2d{pPlayingArea.Right(), (cy - goalWidth) / 2},
-		common.Vector2d{pPlayingArea.Right(), cy - (cy-goalWidth)/2},
+		common.Vector2d{sp.pPlayingArea.Right(), (cyf - goalWidth) / 2},
+		common.Vector2d{sp.pPlayingArea.Right(), cyf - (cyf-goalWidth)/2},
 		common.Vector2d{-1, 0})
 
 	//create the walls
@@ -58,23 +61,24 @@ func NewSoccerPitch(ctx *SoccerContext, cx, cy int) *SoccerPitch {
 	var topRight = common.Vector2d{sp.pPlayingArea.Right(), sp.pPlayingArea.Top()}
 	var bottomLeft = common.Vector2d{sp.pPlayingArea.Left(), sp.pPlayingArea.Bottom()}
 	var bottomRight = common.Vector2d{sp.pPlayingArea.Right(), sp.pPlayingArea.Bottom()}
-	sp.aWalls = append(sp.aWalls, NewWall2D(bottomLeft, sp.pRedGoal.RightPost()))
-	sp.aWalls = append(sp.aWalls, NewWall2D(sp.pRedGoal.LeftPost(), topLeft))
-	sp.aWalls = append(sp.aWalls, NewWall2D(topLeft, topRight))
-	sp.aWalls = append(sp.aWalls, NewWall2D(topRight, sp.pBlueGoal.LeftPost()))
-	sp.aWalls = append(sp.aWalls, NewWall2D(sp.pBlueGoal.RightPost(), bottomRight))
-	sp.aWalls = append(sp.aWalls, NewWall2D(bottomRight, bottomLeft))
+	sp.aWalls = append(sp.aWalls, common.NewWall2d(bottomLeft, *sp.pRedGoal.RightPost()))
+	sp.aWalls = append(sp.aWalls, common.NewWall2d(*sp.pRedGoal.LeftPost(), topLeft))
+	sp.aWalls = append(sp.aWalls, common.NewWall2d(topLeft, topRight))
+	sp.aWalls = append(sp.aWalls, common.NewWall2d(topRight, *sp.pBlueGoal.LeftPost()))
+	sp.aWalls = append(sp.aWalls, common.NewWall2d(*sp.pBlueGoal.RightPost(), bottomRight))
+	sp.aWalls = append(sp.aWalls, common.NewWall2d(bottomRight, bottomLeft))
 
 	//create the soccer ball
 	sp.pBall = NewSoccerBall(
-		common.Vector2d{float64(sp.cxClient) / 2.0, float64(sp.cyClient) / 2.0},
+		ctx,
+		common.Vector2d{cxf / 2.0, cyf / 2.0},
 		sp.ctx.Config().BallSize,
 		sp.ctx.Config().BallMass,
 		sp.aWalls)
 
 	//create the teams
-	sp.pRedTeam = NewSoccerTeam(ctx, sp.pRedGoal, sp, TeamColor_Red)
-	sp.pBlueTeam = NewSoccerTeam(ctx, sp.pBlueGoal, sp, TeamColor_Blue)
+	sp.pRedTeam = NewSoccerTeam(ctx, sp.pRedGoal, sp.pBlueGoal, sp, TeamColor_Red)
+	sp.pBlueTeam = NewSoccerTeam(ctx, sp.pBlueGoal, sp.pRedGoal, sp, TeamColor_Blue)
 
 	//make sure each team knows who their opponents are
 	sp.pRedTeam.SetOpponents(sp.pBlueTeam)
@@ -89,15 +93,15 @@ func (sp *SoccerPitch) Ctx() *SoccerContext {
 	return sp.ctx
 }
 
-func (sp *SoccerPitch) CreateRegions(idx int, width, height float64) *Region {
-	var idx int = len(sp.aRegions)
+func (sp *SoccerPitch) CreateRegions(width, height float64) {
+	var idx int = len(sp.aRegions) - 1
 	for col := 0; col < NumRegionsHorizontal; col++ {
 		for row := 0; row < NumRegionsVertical; row++ {
 			sp.aRegions[idx] = NewRegion(
-				sp.pPlayingArea.Left()+col*width,
-				sp.pPlayingArea.Top()+row*height,
-				sp.pPlayingArea.Left()+(col+1)*width,
-				sp.pPlayingArea.Top()+(row+1)*height,
+				sp.pPlayingArea.Left()+float64(col)*width,
+				sp.pPlayingArea.Top()+float64(row)*height,
+				sp.pPlayingArea.Left()+float64(col+1)*width,
+				sp.pPlayingArea.Top()+float64(row+1)*height,
 				idx,
 			)
 			idx--
@@ -113,18 +117,18 @@ func (sp *SoccerPitch) TogglePause() {
 	sp.bPaused = !sp.bPaused
 }
 
-func (sp *SoccerPitch) Paused() {
+func (sp *SoccerPitch) Paused() bool {
 	return sp.bPaused
 }
 
-func (sp *SoccerPitch) CxClient() {
+func (sp *SoccerPitch) CxClient() int {
 	return sp.cxClient
 }
-func (sp *SoccerPitch) CyClient() {
+func (sp *SoccerPitch) CyClient() int {
 	return sp.cyClient
 }
 
-func (sp *SoccerPitch) IsGoalKeeperHasBall() {
+func (sp *SoccerPitch) IsGoalKeeperHasBall() bool {
 	return sp.bGoalKeeperHasBall
 }
 
@@ -133,19 +137,15 @@ func (sp *SoccerPitch) SetGoalKeeperHasBall(b bool) {
 }
 
 func (sp *SoccerPitch) PlayingArea() *Region {
-	return sp.playingArea
+	return sp.pPlayingArea
 }
 
-func (sp *SoccerPitch) Walls() []*Wall2d {
-	return sp.walls
+func (sp *SoccerPitch) Walls() []*common.Wall2d {
+	return sp.aWalls
 }
 
 func (sp *SoccerPitch) Ball() *SoccerBall {
-	return sp.ball
-}
-
-func (sp *SoccerPitch) GetRegionFromIndex(idx int) *Region {
-	return regions[idx]
+	return sp.pBall
 }
 
 func (sp *SoccerPitch) IsGameOn() bool {
@@ -160,7 +160,7 @@ func (sp *SoccerPitch) SetGameOff() {
 	sp.bGameOn = false
 }
 
-func (sp *SoccerPitch) AllMembers() []*PlayerBase {
+func (sp *SoccerPitch) AllMembers() []IPlayerBase {
 	return sp.allMembers
 }
 
@@ -173,7 +173,7 @@ func (sp *SoccerPitch) Update() {
 		return
 	}
 
-	var tick int = 0
+	//var tick int = 0
 	//upadte the balls
 	sp.pBall.Update()
 
@@ -185,7 +185,7 @@ func (sp *SoccerPitch) Update() {
 	if sp.pBlueGoal.Scored(sp.pBall) || sp.pRedGoal.Scored(sp.pBall) {
 		sp.bGameOn = false
 		//reset the ball
-		sp.pBall.PlaceAtPostion(common.Vector2d{float64(sp.cxClient) / 2.0, float64(sp.cyClient) / 2.0})
+		sp.pBall.PlaceAtPosition(common.Vector2d{float64(sp.cxClient) / 2.0, float64(sp.cyClient) / 2.0})
 
 		//get the teams ready for kickoff
 		sp.pRedTeam.GetFSM().ChangeState(StatePrepareForKickOff)
@@ -195,4 +195,5 @@ func (sp *SoccerPitch) Update() {
 
 func (sp *SoccerPitch) Render() bool {
 	//TODO
+	return false
 }

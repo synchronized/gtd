@@ -1,5 +1,10 @@
 package main
 
+import (
+	"math/rand"
+	"simple_soccer/common"
+)
+
 //------------------------- Overlapped -----------------------------------
 //
 //  tests to see if an entity is overlapping any of a number of entities
@@ -12,9 +17,9 @@ func Overlapped(ob *PlayerBase, players []*PlayerBase, MinDistBetweenObstacles f
 
 	for _, player := range players {
 
-		var bOverlapped = TwoCirclesOverlapped(ob.Pos(),
+		var bOverlapped = common.TwoCirclesOverlapped2(*ob.Pos(),
 			ob.BRadius()+MinDistBetweenObstacles,
-			player.Pos(),
+			*player.Pos(),
 			player.BRadius())
 		if bOverlapped {
 			return true
@@ -41,7 +46,7 @@ func TagNeighbors(entity *PlayerBase, players []*PlayerBase, radius float64) {
 
 		//work in distance squared to avoid sqrts
 		//使用距离平方计算,以避免开方
-		var to Vector2D = player.Pos().OpMinus(entity.Pos())
+		var to common.Vector2d = *player.Pos().OpMinus(entity.Pos())
 
 		//the bounding radius of the other is taken into account by adding it
 		//to the range
@@ -67,12 +72,12 @@ func TagNeighbors(entity *PlayerBase, players []*PlayerBase, radius float64) {
 // 此函数检查实体之间是否存在重叠。
 // 如果存在，那么这些实体就会彼此远离
 //------------------------------------------------------------------------
-func EnforceNonPenetrationContraint(entity *PlayerBase, others []*PlayerBase) {
+func EnforceNonPenetrationContraint(entity IPlayerBase, others []IPlayerBase) {
 
 	//iterate through all entities checking for any overlap of bounding
 	//radii
 	//遍历所有实体，检查边界半径是否重叠
-	for _, pkayer := range others {
+	for _, player := range others {
 		//make sure we don't check against this entity
 		//确保不检查这个实体
 		if player == entity {
@@ -81,7 +86,7 @@ func EnforceNonPenetrationContraint(entity *PlayerBase, others []*PlayerBase) {
 
 		//calculate the distance between the positions of the entities
 		//计算距离
-		var toEntity Vector2D = entity.Pos() - player.Pos()
+		var toEntity common.Vector2d = *entity.Pos().OpMinus(player.Pos())
 
 		var distFromEachOther float64 = toEntity.Length()
 
@@ -94,8 +99,12 @@ func EnforceNonPenetrationContraint(entity *PlayerBase, others []*PlayerBase) {
 		if amountOfOverLap >= 0 {
 			//move the entity a distance away equivalent to the amount of overlap.
 			//将实体移到与重叠量相等的距离以外。
-			var moveAway Vector2d = ToEntity.OpDivide(distFromEachOther).OpMultiply(amountOfOverLap)
-			entity.SetPos(entity.Pos().OpAdd(moveAway))
+			var moveAway common.Vector2d = *toEntity.OpDivide(distFromEachOther).OpMultiply(amountOfOverLap)
+			entity.SetPos(*entity.Pos().OpAdd(&moveAway))
 		}
 	} //next entity
+}
+
+func RandFloat64Range(min, max float64) float64 {
+	return rand.Float64()*(max-min) + min
 }

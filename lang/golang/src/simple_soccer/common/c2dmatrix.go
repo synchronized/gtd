@@ -71,7 +71,7 @@ func (c2d *C2DMatrix) MatrixMultiply(mIn Matrix) {
 //注意： 这将改变vPoint
 func (c2d *C2DMatrix) TransformVector2Ds(vPoint []Vector2d) {
 	for i := 0; i < len(vPoint); i++ {
-		var tempX flaot64 = (c2d.matrix.m11 * vPoint[i].X) + (c2d.matrix.m21 * vPoint[i].Y) + (c2d.matrix.m31)
+		var tempX float64 = (c2d.matrix.m11 * vPoint[i].X) + (c2d.matrix.m21 * vPoint[i].Y) + (c2d.matrix.m31)
 		var tempY float64 = (c2d.matrix.m12 * vPoint[i].X) + (c2d.matrix.m22 * vPoint[i].Y) + (c2d.matrix.m32)
 
 		vPoint[i].X = tempX
@@ -82,7 +82,7 @@ func (c2d *C2DMatrix) TransformVector2Ds(vPoint []Vector2d) {
 //applies a 2D transformation matrix to a single Vector2D
 //将二维变换矩阵应用于单个矢量
 //注意： 这将改变vPoint
-func (c2d *C2DMatrix) TransformVector2D(vPoint *Vector2D) {
+func (c2d *C2DMatrix) TransformVector2D(vPoint *Vector2d) {
 
 	var tempX float64 = (c2d.matrix.m11 * vPoint.X) + (c2d.matrix.m21 * vPoint.Y) + (c2d.matrix.m31)
 	var tempY float64 = (c2d.matrix.m12 * vPoint.X) + (c2d.matrix.m22 * vPoint.Y) + (c2d.matrix.m32)
@@ -170,7 +170,7 @@ func (c2d *C2DMatrix) Rotate(rot float64) {
 }
 
 //create a rotation matrix from a 2D vector
-func (c2d *C2DMatrix) Rotate(fwd, side Vector2d) {
+func (c2d *C2DMatrix) Rotate2(fwd, side Vector2d) {
 	var mat Matrix
 
 	mat.m11 = fwd.X

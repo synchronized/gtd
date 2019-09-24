@@ -14,14 +14,20 @@ const (
 )
 
 const NumberPlayerVerts = 4
-const playerVerts []Vector2d = [NumberPlayerVerts]Vector2d{
-	Vector2d{-3, 8},
-	Vector2d{3, 10},
-	Vector2d{3, -10},
-	Vector2d{-3, -8},
+
+var playerVerts []*common.Vector2d
+
+func init() {
+	playerVerts = []*common.Vector2d{
+		common.NewVector2d(-3, 8),
+		common.NewVector2d(3, 10),
+		common.NewVector2d(3, -10),
+		common.NewVector2d(-3, -8),
+	}
 }
 
 type IPlayerBase interface {
+	common.IMovingEntity
 	IsThreatened() bool
 	TrackBall()
 	TrackTarget()
@@ -33,27 +39,26 @@ type IPlayerBase interface {
 	IsAheadOfAttacker() bool
 	AtTarget() bool
 	IsClosestTeamMemberToBall() bool
-	PositionInFrontOfPlayer(position Vector2d) bool
+	PositionInFrontOfPlayer(position common.Vector2d) bool
 	IsClosestPlayerOnPitchToBall() bool
 	IsControllingPlayer() bool
 	InHotRegion() bool
 	Role() RoleType
 	DistSqToBall() float64
 	SetDistSqToBall(val float64)
-	DisttoOppGoal() float64
+	DistToOppGoal() float64
 	DistToHomeGoal() float64
 	SetDefaultHomeRegion()
 	HomeRegion() *Region
-	SetHomeRegion()
+	SetHomeRegion(homeRegion int)
 	Ball() *SoccerBall
 	Pitch() *SoccerPitch
 	Steering() *SteeringBehaviors
 	Team() *SoccerTeam
-	GetBaseSupportingSpot() Vector2d
+	//GetBaseSupportingSpot() common.Vector2d
 }
 
 type PlayerBase struct {
-	IPlayerBase
 	*common.MovingEntity
 	ctx           *SoccerContext     //上下文
 	role          RoleType           //角色
@@ -63,27 +68,29 @@ type PlayerBase struct {
 	defaultRegion int
 	distSqToBall  float64 //和球的距离
 
-	playerVB      []*Vector2d //顶点
-	playerVBTrans []*Vector2d //顶点
+	playerVB      []*common.Vector2d //顶点
+	playerVBTrans []*common.Vector2d //顶点
 }
 
 func NewPlayerBase(
-	ctx *SoccerTeam,
+	ctx *SoccerContext,
+	id int, name string,
 	homeTeam *SoccerTeam,
 	homeRegion int,
-	heading, velocity Vector2d,
+	heading, velocity common.Vector2d,
 	mass, maxForce, maxSpeed, maxTurnRate, scale float64,
 	role RoleType,
 ) *PlayerBase {
 	var pb = &PlayerBase{
 		MovingEntity: common.NewMovingEntity(
-			homeTeam.Pitch().GetRegionFromIndex(homeRegion).Center(),
+			id, name,
+			*homeTeam.Pitch().GetRegionFromIndex(homeRegion).Center(),
 			scale*10.0,
 			velocity,
 			maxSpeed,
 			heading,
 			mass,
-			Vector2d{scale, sclae},
+			common.Vector2d{scale, scale},
 			maxTurnRate,
 			maxForce,
 		),
@@ -95,7 +102,7 @@ func NewPlayerBase(
 		distSqToBall:  common.MaxFloat,
 	}
 
-	for vtx, vertex := range playerVerts {
+	for _, vertex := range playerVerts {
 		pb.playerVB = append(pb.playerVB, vertex)
 		//
 		if math.Abs(vertex.X) > pb.BRadius() {
@@ -106,15 +113,15 @@ func NewPlayerBase(
 		}
 	}
 
-	pb.steering = NewSteeringBehaviors(pb, team.Pitch(), pb.Ball())
-	pb.Steering().SetTarget(team.Pitch().GetRegionFromIndex(homeRegion).Center())
+	pb.steering = NewSteeringBehaviors(pb, pb.Pitch(), pb.Ball())
+	pb.Steering().SetTarget(*pb.Pitch().GetRegionFromIndex(homeRegion).Center())
 	return pb
 }
 
 //如果在该玩家的舒适区内有对手，则返回true
 func (pb *PlayerBase) IsThreatened() bool {
 	for _, opp := range pb.Team().Opponents().Members() {
-		if pb.PositionInFrontOfPlayer(opp.Pos()) &&
+		if pb.PositionInFrontOfPlayer(*opp.Pos()) &&
 			pb.Pos().Distance(opp.Pos()) < pb.ctx.Config().PlayerComfortZoneSq {
 			return true
 		}
@@ -124,39 +131,39 @@ func (pb *PlayerBase) IsThreatened() bool {
 
 //设置球员的头球指向球
 func (pb *PlayerBase) TrackBall() {
-	pb.RotateHeadingToFacePosition(pb.Ball().Pos())
+	pb.RotateHeadingToFacePosition(*pb.Ball().Pos())
 }
 
 func (pb *PlayerBase) TrackTarget() {
-	pb.SetHeading(pb.Steering().Target().OpMinus(pb.Pos()))
+	pb.SetHeading(*pb.Steering().Target().OpMinus(pb.Pos()))
 }
 
 //确定离支持点最近的玩家，并向他发送消息，告诉他将状态更改为supportattacker
 func (pb *PlayerBase) FindSupport() {
 	if pb.Team().SupportingPlayer() == nil {
-		var bastSupportPly *PlayerBase = pb.Team().DetermineBestSupportingAttacker()
+		var bastSupportPly IPlayerBase = pb.Team().DetermineBestSupportingAttacker()
 		pb.Team().SetSupportingPlayer(bastSupportPly)
-		pb.ctx.Dispatcher.DispatchMsg(SEND_MSG_IMMEDIATELY,
-			ID(),
+		pb.ctx.Dispatcher().DispatchMsg(SEND_MSG_IMMEDIATELY,
+			pb.Id(),
 			pb.Team().SupportingPlayer().Id(),
 			Msg_SupportAttacker,
 			nil)
 	}
 
-	var bastSupportPly *PlayerBase = pb.Team().DetermineBestSupportingAttacker()
+	var bastSupportPly IPlayerBase = pb.Team().DetermineBestSupportingAttacker()
 
 	if bastSupportPly != nil && bastSupportPly != pb.Team().SupportingPlayer() {
 		if pb.Team().SupportingPlayer() != nil {
-			pb.ctx.Dispatcher.DispatchMsg(SEND_MSG_IMMEDIATELY,
+			pb.ctx.Dispatcher().DispatchMsg(SEND_MSG_IMMEDIATELY,
 				pb.Id(),
-				Team().SupportingPlayer().Id(),
+				pb.Team().SupportingPlayer().Id(),
 				Msg_GoHome,
 				nil)
 		}
 
-		pb.Team().SetSupportingPlayer(bestSupportPly)
+		pb.Team().SetSupportingPlayer(bastSupportPly)
 
-		pb.ctx.Dispatcher.DispatchMsg(SEND_MSG_IMMEDIATELY,
+		pb.ctx.Dispatcher().DispatchMsg(SEND_MSG_IMMEDIATELY,
 			pb.Id(),
 			pb.Team().SupportingPlayer().Id(),
 			Msg_SupportAttacker,
@@ -174,10 +181,10 @@ func (pb *PlayerBase) BallWithinReceivingRange() bool {
 	return pb.Pos().DistanceSq(pb.Ball().Pos()) < pb.ctx.Config().BallWithinReceivingRangeSq
 }
 func (pb *PlayerBase) InHomeRegion() bool {
-	if pb.Role() == RoleType_Keeper {
-		return pb.Pitch().GetRegionFormIndex(pb.homeRegion).Inside(pb.Pos, Region_Normal)
+	if pb.Role() == RoleType_GoalKeeper {
+		return pb.Pitch().GetRegionFromIndex(pb.homeRegion).Inside(*pb.Pos(), Region_Normal)
 	} else {
-		return pb.Pitch().GetRegionFormIndex(pb.homeRegion).Inside(pb.Pos, Region_Halfsize)
+		return pb.Pitch().GetRegionFromIndex(pb.homeRegion).Inside(*pb.Pos(), Region_Halfsize)
 	}
 }
 func (pb *PlayerBase) IsAheadOfAttacker() bool {
@@ -193,8 +200,8 @@ func (pb *PlayerBase) IsClosestTeamMemberToBall() bool {
 }
 
 //如果position在该玩家的视野范围内，则返回true
-func (pb *PlayerBase) PositionInFrontOfPlayer(position Vector2d) bool {
-	var toSubject Vector2d = position.OpMinus(pb.Pos())
+func (pb *PlayerBase) PositionInFrontOfPlayer(position common.Vector2d) bool {
+	var toSubject common.Vector2d = *position.OpMinus(pb.Pos())
 	if toSubject.Dot(pb.Heading()) > 0 {
 		return true
 	}
@@ -202,13 +209,13 @@ func (pb *PlayerBase) PositionInFrontOfPlayer(position Vector2d) bool {
 }
 func (pb *PlayerBase) IsClosestPlayerOnPitchToBall() bool {
 	return pb.IsClosestTeamMemberToBall() &&
-		pb.DistSqToBall() < pb.Team().OpponentsTeam().ClosestDistToBallSq()
+		pb.DistSqToBall() < pb.Team().Opponents().ClosestDistToBallSq()
 }
 func (pb *PlayerBase) IsControllingPlayer() bool {
-	return pb.Team().GetControllingPlayer() == pb
+	return pb.Team().ControllingPlayer() == pb
 }
 func (pb *PlayerBase) InHotRegion() bool {
-	return math.Abs(pb.Pos().Y-pb.Team().OpponentsGoal().Center().y) <
+	return math.Abs(pb.Pos().Y-pb.Team().OpponentsGoal().Center().Y) <
 		pb.Pitch().PlayingArea().Length()/3.0
 }
 func (pb *PlayerBase) Role() RoleType {
@@ -230,23 +237,28 @@ func (pb *PlayerBase) SetDefaultHomeRegion() {
 	pb.homeRegion = pb.defaultRegion
 }
 func (pb *PlayerBase) HomeRegion() *Region {
+	return pb.Pitch().GetRegionFromIndex(pb.homeRegion)
 }
 func (pb *PlayerBase) SetHomeRegion(val int) {
 	pb.homeRegion = val
 }
 func (pb *PlayerBase) Ball() *SoccerBall {
-	return pb.Patch().Ball()
+	return pb.Pitch().Ball()
 }
 func (pb *PlayerBase) Pitch() *SoccerPitch {
-	return pb.Team().Patch()
+	return pb.Team().Pitch()
 }
 func (pb *PlayerBase) Steering() *SteeringBehaviors {
 	return pb.steering
 }
 func (pb *PlayerBase) Team() *SoccerTeam {
-	return team
+	return pb.team
 }
 
 func (pb *PlayerBase) Ctx() *SoccerContext {
 	return pb.ctx
 }
+
+//func (pb *PlayerBase) GetBaseSupportingSpot() common.Vector2d {
+//
+//}

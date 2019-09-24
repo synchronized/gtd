@@ -14,13 +14,13 @@ type Regulator struct {
 
 func NewRegulator(NumUpdatesPerSecondRqd int64) *Regulator {
 	var nextUpdateTime int64 = 0
-	var dUpdatePeriod = -1
+	var dUpdatePeriod int64 = -1
 	if NumUpdatesPerSecondRqd > 0 {
-		dUpdatePeriod = 1000 / NumUpdatesPerSecondRqd
+		dUpdatePeriod = int64(1000) / NumUpdatesPerSecondRqd
 	} else if NumUpdatesPerSecondRqd == 0 {
 		dUpdatePeriod = 0
 	}
-	nextUpdateTime = time.Now().UnixNano()/1e6 + rand.Int63(1000)
+	nextUpdateTime = time.Now().UnixNano()/1e6 + rand.Int63n(1000)
 	return &Regulator{
 		dUpdatePeriod:  dUpdatePeriod,
 		nextUpdateTime: nextUpdateTime,
@@ -36,8 +36,8 @@ func (r *Regulator) IsReady() bool {
 	}
 
 	var currentTime = time.Now().UnixNano() / 1e6
-	if currentTime >= f.nextUpdateTime {
-		f.nextUpdateTime = currentTime + f.dUpdatePeriod + rand.Int63(updatePeriodVariator*2) - updatePeriodVariator
+	if currentTime >= r.nextUpdateTime {
+		r.nextUpdateTime = currentTime + r.dUpdatePeriod + rand.Int63n(updatePeriodVariator*2) - updatePeriodVariator
 		return true
 	}
 	return false

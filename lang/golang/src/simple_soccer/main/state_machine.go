@@ -1,18 +1,21 @@
 package main
 
 import (
-	"westworld/common"
+	"reflect"
+	"simple_soccer/common"
 )
 
 type StateMachine struct {
+	ctx           *SoccerContext
 	owner         interface{}
 	currentState  common.IState
 	previousState common.IState
 	globalState   common.IState
 }
 
-func NewStateMachine(owner interface{}) *StateMachine {
+func NewStateMachine(ctx *SoccerContext, owner interface{}) *StateMachine {
 	return &StateMachine{
+		ctx:           ctx,
 		owner:         owner,
 		currentState:  nil,
 		previousState: nil,
@@ -55,8 +58,11 @@ func (sm *StateMachine) Update() {
 func (sm *StateMachine) ChangeState(newState common.IState) {
 	sm.previousState = sm.currentState
 	if sm.currentState != nil {
+		Debug_State(sm.ctx, "exit state [%s]", reflect.TypeOf(newState).Kind().String())
 		sm.currentState.Exit(sm.owner)
 	}
+
+	Debug_State(sm.ctx, "enter state [%s]", reflect.TypeOf(newState).Kind().String())
 	sm.currentState = newState
 	sm.currentState.Enter(sm.owner)
 }

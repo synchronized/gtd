@@ -1,5 +1,5 @@
 package common
 
 type IMessageHandler interface {
-	HandleMessage(msg Telegram) bool
+	HandleMessage(msg *Telegram) bool
 }

@@ -1,6 +1,30 @@
-package main
+package common
 
 import "math"
+
+type IMovingEntity interface {
+	IBaseGameEntity
+	Velocity() *Vector2d
+	Heading() *Vector2d
+	Side() *Vector2d
+	Mass() float64
+	MaxSpeed() float64
+	MaxTurnRate() float64
+
+	SetVelocity(val Vector2d)
+	SetHeading(val Vector2d)
+	SetSide(val Vector2d)
+	SetMass(val float64)
+	SetMaxSpeed(val float64)
+	SetMaxTurnRate(val float64)
+	Speed() float64
+	SpeedSq() float64
+	MaxForce() float64
+	SetMaxForce(mf float64)
+	IsSpeedMaxedOut() bool
+
+	RotateHeadingToFacePosition(target Vector2d) bool
+}
 
 type MovingEntity struct {
 	BaseGameEntity
@@ -14,6 +38,7 @@ type MovingEntity struct {
 }
 
 func NewMovingEntity(
+	id int, name string,
 	position Vector2d,
 	radius float64,
 	velocity Vector2d,
@@ -27,27 +52,29 @@ func NewMovingEntity(
 	var me = &MovingEntity{
 		vVelocity:    velocity,
 		vHeading:     heading,
-		vSide:        heading.Perp(),
+		vSide:        *heading.Perp(),
 		dMass:        mass,
 		dMaxSpeed:    maxSpeed,
 		dMaxTurnRate: maxTurnRate,
 		dMaxForce:    maxForce,
 	}
+	me.SetId(id)
+	me.SetName(name)
 	me.SetPos(position)
 	me.SetBRadius(radius)
 	me.SetScale(scale)
 	return me
 }
 
-func (me *MovingEntity) Velocity() Vector2d {
-	return me.vVelocity
+func (me *MovingEntity) Velocity() *Vector2d {
+	return &me.vVelocity
 }
 
-func (me *MovingEntity) Heading() Vector2d {
-	return me.vHeading
+func (me *MovingEntity) Heading() *Vector2d {
+	return &me.vHeading
 }
-func (me *MovingEntity) Side() Vector2d {
-	return me.vSide
+func (me *MovingEntity) Side() *Vector2d {
+	return &me.vSide
 }
 
 func (me *MovingEntity) Mass() float64 {
@@ -101,16 +128,16 @@ func (me *MovingEntity) IsSpeedMaxedOut() bool {
 }
 
 func (me *MovingEntity) RotateHeadingToFacePosition(target Vector2d) bool {
-	var toTarget Vector2d = *target.OpMinus(me.Pos()).Normalize()
+	var toTarget *Vector2d = target.OpMinus(me.Pos()).Normalize()
 
-	var dot float64 = me.Heading().Dot(toTarget)
+	var dot float64 = me.vHeading.Dot(toTarget)
 	dot = math.Min(dot, 1)
 	dot = math.Max(dot, -1)
 
 	//return true if the player is facing the target
-	var angle = math.Acos(dot)
+	var angle float64 = math.Acos(dot)
 
-	if angle < 0.00001 {
+	if FloatSmaller(angle, 0.0) {
 		return true
 	}
 
@@ -120,9 +147,9 @@ func (me *MovingEntity) RotateHeadingToFacePosition(target Vector2d) bool {
 
 	var RotationMatrix C2DMatrix
 
-	RotationMatrix.Rotate(angle * me.vHeading.Sign(toTarget))
-	RotationMatrix.TransformVector2Ds(&me.vHeading)
-	RotationMatrix.TransformVector2Ds(&me.vVelocity)
+	RotationMatrix.Rotate(angle * float64(me.vHeading.Sign(toTarget)))
+	RotationMatrix.TransformVector2D(&me.vHeading)
+	RotationMatrix.TransformVector2D(&me.vVelocity)
 
 	//finally recreate m_vSide
 	me.vSide = *me.vHeading.Perp()

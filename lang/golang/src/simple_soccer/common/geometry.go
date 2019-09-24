@@ -1,5 +1,7 @@
 package common
 
+import "math"
+
 const pi float64 = 3.14159
 
 //给定一个平面和一条射线，这个函数返回沿射线的距离。如果射线平行，则返回负数
@@ -9,9 +11,9 @@ func DistanceToRayPlaneIntersection(
 	PlanePoint, //any point on the plane
 	PlaneNormal Vector2d) float64 {
 
-	var d float64 = -PlaneNormal.Dot(PlanePoint)
-	var numer float64 = PlaneNormal.Dot(RayOrigin) + d
-	var denom float64 = PlaneNormal.Dot(RayHeading)
+	var d float64 = -PlaneNormal.Dot(&PlanePoint)
+	var numer float64 = PlaneNormal.Dot(&RayOrigin) + d
+	var denom float64 = PlaneNormal.Dot(&RayHeading)
 
 	// normal is parallel to vector
 	if (denom < 0.000001) && (denom > -0.000001) {
@@ -37,8 +39,8 @@ const (
  * @param PlaneNormal 平面的法向量(???)
  */
 func WhereIsPoint(point, PointOnPlane, PlaneNormal Vector2d) Plane_Span_Type {
-	var dir Vector2d = PointOnPlane.OpMinus(point)
-	var d float64 = dir.Dot(PlaneNormal)
+	var dir Vector2d = *PointOnPlane.OpMinus(&point)
+	var d float64 = dir.Dot(&PlaneNormal)
 
 	//TODO 精度
 	if d < -0.000001 {
@@ -61,9 +63,9 @@ func WhereIsPoint(point, PointOnPlane, PlaneNormal Vector2d) Plane_Span_Type {
  */
 func GetRayCircleIntersect(RayOrigin, RayHeading, CircleOrigin Vector2d, radius float64) float64 {
 
-	var ToCircle Vector2d = CircleOrigin.OpMinus(RayOrigin)
+	var ToCircle Vector2d = *CircleOrigin.OpMinus(&RayOrigin)
 	var length float64 = ToCircle.Length()
-	var v float64 = ToCircle.Dot(RayHeading)
+	var v float64 = ToCircle.Dot(&RayHeading)
 	var d float64 = radius*radius - (length*length - v*v)
 
 	// If there was no intersection, return -1
@@ -84,11 +86,11 @@ func GetRayCircleIntersect(RayOrigin, RayHeading, CircleOrigin Vector2d, radius 
  * @param radius float64 圆的半径
  * @return 是否相交
  */
-func DoRayCircleIntersect(RayOrigin, RayHeading, CircleOrigin Vector2D, radius float64) bool {
+func DoRayCircleIntersect(RayOrigin, RayHeading, CircleOrigin Vector2d, radius float64) bool {
 
-	var ToCircle Vector2d = CircleOrigin.OpMinus(RayOrigin)
+	var ToCircle Vector2d = *CircleOrigin.OpMinus(&RayOrigin)
 	var length float64 = ToCircle.Length()
-	var v float64 = ToCircle.Dot(RayHeading)
+	var v float64 = ToCircle.Dot(&RayHeading)
 	var d float64 = radius*radius - (length*length - v*v)
 
 	// If there was no intersection, return -1
@@ -113,7 +115,7 @@ func DoRayCircleIntersect(RayOrigin, RayHeading, CircleOrigin Vector2D, radius f
  * @return T2 第二个焦点
  */
 func GetTangentPoints(C Vector2d, R float64, P Vector2d) (ok bool, T1, T2 Vector2d) {
-	var PmC Vector2d = P.OpMinus(C)
+	var PmC Vector2d = *P.OpMinus(&C)
 	var SqrLen float64 = PmC.LengthSq()
 	var RSqr float64 = R * R
 	if SqrLen <= RSqr {
@@ -147,7 +149,7 @@ func DistToLineSegment(A, B, P Vector2d) float64 {
 	var dotA float64 = (P.X-A.X)*(B.X-A.X) + (P.Y-A.Y)*(B.Y-A.Y)
 
 	if dotA <= 0 {
-		return A.Distance(P)
+		return A.Distance(&P)
 	}
 
 	//if the angle is obtuse between PB and AB is obtuse then the closest
@@ -155,14 +157,14 @@ func DistToLineSegment(A, B, P Vector2d) float64 {
 	var dotB float64 = (P.X-B.X)*(A.X-B.X) + (P.Y-B.Y)*(A.Y-B.Y)
 
 	if dotB <= 0 {
-		return B.Distance(P)
+		return B.Distance(&P)
 	}
 
 	//calculate the point along AB that is the closest to P
-	var Point Vector2d = A.OpAdd(B.OpMinus(A).OpMultiply(dotA).OpDivide(dotA + dotB))
+	var Point Vector2d = *A.OpAdd(B.OpMinus(&A).OpMultiply(dotA).OpDivide(dotA + dotB))
 
 	//calculate the distance P-Point
-	return P.Distance(Point)
+	return P.Distance(&Point)
 }
 
 //------------------------- DistToLineSegmentSq ----------------------------
@@ -176,7 +178,7 @@ func DistToLineSegmentSq(A, B, P Vector2d) float64 {
 	var dotA float64 = (P.X-A.X)*(B.X-A.X) + (P.Y-A.Y)*(B.Y-A.Y)
 
 	if dotA <= 0 {
-		return A.DistanceSq(P)
+		return A.DistanceSq(&P)
 	}
 
 	//if the angle is obtuse between PB and AB is obtuse then the closest
@@ -184,11 +186,11 @@ func DistToLineSegmentSq(A, B, P Vector2d) float64 {
 	var dotB float64 = (P.X-B.X)*(A.X-B.X) + (P.Y-B.Y)*(A.Y-B.Y)
 
 	if dotB <= 0 {
-		return B.DistanceSq(P)
+		return B.DistanceSq(&P)
 	}
 
 	//calculate the point along AB that is the closest to P
-	var Point Vector2d = A.OpAdd(B.OpMinus(A).OpMultiply(dotA).OpDivide(dotA + dotB))
+	var Point *Vector2d = A.OpAdd(B.OpMinus(&A).OpMultiply(dotA).OpDivide(dotA + dotB))
 
 	//calculate the distance P-Point
 	return P.DistanceSq(Point)
@@ -241,7 +243,7 @@ func LineIntersection2D1(A, B, C, D Vector2d) (intersection bool, dist float64) 
 
 	//平行
 	if Bot == 0 {
-		if isEqual(rTop, 0) && isEqual(sTop, 0) {
+		if FloatEqual(rTop, 0) && FloatEqual(sTop, 0) {
 			return true, 0
 		}
 		return false, 0
@@ -251,7 +253,7 @@ func LineIntersection2D1(A, B, C, D Vector2d) (intersection bool, dist float64) 
 	var s float64 = sTop / Bot
 
 	if (r > 0) && (r < 1) && (s > 0) && (s < 1) {
-		dist = A.Distance(B) * r
+		dist = A.Distance(&B) * r
 		return true, dist
 	} else {
 		return false, 0
@@ -283,9 +285,10 @@ func LineIntersection2D2(A, B, C, D Vector2d) (intersection bool, dist float64, 
 
 	if (r > 0) && (r < 1) && (s > 0) && (s < 1) {
 		intersection = true
-		dist = A.Distance(B) * r
-		point = A.OpAdd(B.OpMinus(A).OpMultiply(r))
-		return true
+		dist = A.Distance(&B) * r
+		point = *A.OpAdd(B.OpMinus(&A).OpMultiply(r))
+		intersection = true
+		return
 	} else {
 		return
 	}
@@ -296,10 +299,10 @@ func LineIntersection2D2(A, B, C, D Vector2d) (intersection bool, dist float64, 
 //  tests two polygons for intersection. *Does not check for enclosure*
 //------------------------------------------------------------------------
 //多边形碰撞判断*不检查是否包含*
-func ObjectIntersection2D(object1, Object2 []Vector2d) {
+func ObjectIntersection2D(object1, object2 []Vector2d) bool {
 	//test each line segment of object1 against each segment of object2
 	for r := 0; r < len(object1)-1; r++ {
-		for t = 0; t < len(object2)-1; t++ {
+		for t := 0; t < len(object2)-1; t++ {
 			if LineIntersection2D(object2[t], object2[t+1], object1[r], object1[r+1]) {
 				return true
 			}
@@ -394,7 +397,7 @@ func TwoCirclesIntersectionPoints(x1, y1, r1, x2, y2, r2 float64) (intersection 
 	//of the line which connects the intersection points.
 	//现在计算从每个圆的中心到连接交点的线的中心的距离。
 	var a float64 = (r1 - r2 + (d * d)) / (2 * d)
-	var b float64 = (r2 - r1 + (d * d)) / (2 * d)
+	// var b float64 = (r2 - r1 + (d * d)) / (2 * d)
 
 	//MAYBE A TEST FOR EXACT OVERLAP?
 
@@ -430,7 +433,7 @@ func TwoCirclesIntersectionPoints(x1, y1, r1, x2, y2, r2 float64) (intersection 
 //求员相交的区域
 func TwoCirclesIntersectionArea(x1, y1, r1, x2, y2, r2 float64) float64 {
 	//first calculate the intersection points
-	var intersection, iX1, iY1, iX2, iY2 = TwoCirclesIntersectionPoints(x1, y1, r1, x2, y2, r2)
+	var intersection, _, _, _, _ = TwoCirclesIntersectionPoints(x1, y1, r1, x2, y2, r2)
 
 	if !intersection {
 		return 0.0 //no overlap
@@ -463,7 +466,7 @@ func TwoCirclesIntersectionArea(x1, y1, r1, x2, y2, r2 float64) float64 {
 //  given the radius, calculates the area of a circle
 //-----------------------------------------------------------------------
 //圆的面积
-func CircleArea(radius float64) double {
+func CircleArea(radius float64) float64 {
 	return pi * radius * radius
 }
 
@@ -472,8 +475,8 @@ func CircleArea(radius float64) double {
 //  returns true if the point p is within the radius of the given circle
 //------------------------------------------------------------------------
 //判断点是否 在圆里面
-func PointInCircle(Pos Vector2d, radius double, p Vector2D) bool {
-	var DistFromCenterSquared float64 = p.OpMinus(Pos).LengthSq()
+func PointInCircle(Pos Vector2d, radius float64, p Vector2d) bool {
+	var DistFromCenterSquared float64 = p.OpMinus(&Pos).LengthSq()
 
 	if DistFromCenterSquared < (radius * radius) {
 		return true
@@ -513,28 +516,28 @@ func LineSegmentCircleIntersection(A, B Vector2d, P Vector2d, radius float64) bo
 // 如果未找到交点，则返回false
 func GetLineSegmentCircleClosestIntersectionPoint(
 	A, B, pos Vector2d, radius float64) (ipFound bool, intersectionPoint Vector2d) {
-	var toBNorm Vector2d = B.OpMinus(A).Normalize()
+	var toBNorm Vector2d = *B.OpMinus(&A).Normalize()
 
 	//move the circle into the local space defined by the vector B-A with origin
 	//at A
-	var LocalPos Vector2D = PointToLocalSpace(pos, toBNorm, toBNorm.Perp(), A)
+	var LocalPos Vector2d = PointToLocalSpace(pos, toBNorm, *toBNorm.Perp(), A)
 
 	//if the local position + the radius is negative then the circle lays behind
 	//point A so there is no intersection possible. If the local x pos minus the
 	//radius is greater than length A-B then the circle cannot intersect the
 	//line segment
-	if (LocalPos.x+radius >= 0) &&
-		((LocalPos.x-radius)*(LocalPos.x-radius) <= Vec2DDistanceSq(B, A)) {
+	if (LocalPos.X+radius >= 0) &&
+		((LocalPos.X-radius)*(LocalPos.X-radius) <= B.DistanceSq(&A)) {
 
 		//if the distance from the x axis to the object's position is less
 		//than its radius then there is a potential intersection.
-		if math.Aabs(LocalPos.y) < radius {
+		if math.Abs(LocalPos.Y) < radius {
 			//now to do a line/circle intersection test. The center of the
 			//circle is represented by A, B. The intersection points are
 			//given by the formulae x = A +/-sqrt(r^2-B^2), y=0. We only
 			//need to look at the smallest positive value of x.
-			var a float64 = LocalPos.x
-			var b float64 = LocalPos.y
+			var a float64 = LocalPos.X
+			var b float64 = LocalPos.Y
 
 			var ip float64 = a - math.Sqrt(radius*radius-b*b)
 
@@ -544,7 +547,7 @@ func GetLineSegmentCircleClosestIntersectionPoint(
 
 			ipFound = true
 
-			IntersectionPoint = A + toBNorm*ip
+			intersectionPoint = *A.OpAdd(&toBNorm).OpMultiply(ip)
 		}
 	}
 

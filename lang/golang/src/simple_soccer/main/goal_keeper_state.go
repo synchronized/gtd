@@ -30,15 +30,18 @@ func (gks *GlobalKeeperState) Enter(entity interface{})   {}
 func (gks *GlobalKeeperState) Execute(entity interface{}) {}
 func (gks *GlobalKeeperState) Exit(entity interface{})    {}
 
-func (gks *GlobalKeeperState) OnMessage(entity interface{}, msg *Telegram) {
+func (gks *GlobalKeeperState) OnMessage(entity interface{}, msg *common.Telegram) bool {
 	var keeper = entity.(*GoalKeeper)
 	switch msg.Msg {
 	case Msg_GoHome:
 		keeper.SetDefaultHomeRegion()
 		keeper.GetFSM().ChangeState(StateReturnHome)
+		return true
 	case Msg_ReceiveBall:
 		keeper.GetFSM().ChangeState(StateInterceptBall)
+		return true
 	}
+	return false
 }
 
 //---------------------------------------------------------
@@ -60,7 +63,7 @@ func (kst *KeeperStateTendGoal) Enter(entity interface{}) {
 }
 
 func (kst *KeeperStateTendGoal) Execute(entity interface{}) {
-	var keeper = entity.(*GoalKeeper)
+	//var keeper = entity.(*GoalKeeper)
 }
 
 //---------------------------------------------------------
@@ -77,7 +80,7 @@ func (ksi *KeeperStateInterceptBall) Enter(entity interface{}) {
 	var keeper *GoalKeeper = entity.(*GoalKeeper)
 	keeper.Steering().PursuitOn()
 
-	Debug_State("Goaly [%d] enters InterceptBall", keeper.Id())
+	Debug_State(keeper.Ctx(), "Goaly [%d] enters InterceptBall", keeper.Id())
 }
 
 func (ksi *KeeperStateInterceptBall) Execute(entity interface{}) {
@@ -88,7 +91,7 @@ func (ksi *KeeperStateInterceptBall) Execute(entity interface{}) {
 	//he should keep trying to intercept it.
 	//如果守门员移动到远离球门的地方，他应该回到自己的主场，
 	//除非他是离球最近的球员，在这种情况下，他应该继续尝试拦截球。
-	if keeper.TooFarFromGoalMouth() && !keeper.IsclosestPlayerOnPitchToBall() {
+	if keeper.TooFarFromGoalMouth() && !keeper.IsClosestPlayerOnPitchToBall() {
 		keeper.GetFSM().ChangeState(StateReturnHome)
 	}
 
@@ -97,7 +100,7 @@ func (ksi *KeeperStateInterceptBall) Execute(entity interface{}) {
 	//如果球落在守门员的手的射程内，他就把球截住，放回原处
 	if keeper.BallWithinKeeperRange() {
 		keeper.Ball().Trap()
-		keeper.Patch().SetGoalKeeperHasBall(true)
+		keeper.Pitch().SetGoalKeeperHasBall(true)
 		keeper.GetFSM().ChangeState(StatePutBallBackInPlay)
 		return
 	}
@@ -134,25 +137,25 @@ func (ksp *KeeperStatePutBallBackInPlay) Enter(entity interface{}) {
 	//let the team know that the keeper is in control
 	//让Team知道守门员控制了球
 	keeper.Team().SetControllingPlayer(keeper)
-	keeper.TEam().Opponents().ReturnAllFieldPlayersToHome()
+	keeper.Team().Opponents().ReturnAllFieldPlayersToHome()
 	keeper.Team().ReturnAllFieldPlayersToHome()
 }
 
 func (ksp *KeeperStatePutBallBackInPlay) Execute(entity interface{}) {
 	var keeper *GoalKeeper = entity.(*GoalKeeper)
-	var receiver *PlayerBase
+	var receiver IPlayerBase
 	var ballTarget common.Vector2d
 
 	//test if there are players further forward on the field we might
 	//be able to pass to. If so, make a pass.
 	//测试是否有球员在球场上更进一步，我们可能可以通过。如果是的话，传球。
-	if keeper.Team().FindPass(
+	var ok bool
+	ok, receiver, ballTarget = keeper.Team().FindPass(
 		keeper,
-		receiver,
-		ballTarget,
 		keeper.Ctx().Config().MaxPassingForce,
 		keeper.Ctx().Config().GoalkeeperMinPassDist,
-	) {
+	)
+	if ok {
 		//传球
 		keeper.Ball().Kick(*ballTarget.OpMinus(keeper.Ball().Pos()).Normalize(),
 			keeper.Ctx().Config().MaxPassingForce)
@@ -171,7 +174,7 @@ func (ksp *KeeperStatePutBallBackInPlay) Execute(entity interface{}) {
 
 		//go back to tending the goal
 		//返回tending状态
-		player.GetFSM().ChangeState(StateTendGoal)
+		keeper.GetFSM().ChangeState(StateTendGoal)
 		return
 
 	}

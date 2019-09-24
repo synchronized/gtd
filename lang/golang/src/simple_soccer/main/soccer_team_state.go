@@ -19,7 +19,7 @@ func init() {
 //----------------------------------------------------
 //公共方法
 
-func changePlayerHomeRegions(team *SoccerTeam, NewRegions [TeamSize]int) {
+func changePlayerHomeRegions(team *SoccerTeam, NewRegions []int) {
 	for plyr := 0; plyr < TeamSize; plyr++ {
 		team.SetPlayerHomeRegion(plyr, NewRegions[plyr])
 	}
@@ -37,12 +37,12 @@ func NewTeamStateAttacking() *TeamStateAttacking {
 
 func (tsa *TeamStateAttacking) Enter(entity interface{}) {
 	var team = entity.(*SoccerTeam)
-	Debug_State("[%s] entering Attacking state", team.Name())
+	Debug_State(team.Ctx(), "[%s] entering Attacking state", team.Name())
 
 	//these define the home regions for this state of each of the players
 	//定义了每个玩家的这个状态的home regions
-	var BlueRegions = [TeamSize]int{1, 12, 14, 6, 4}
-	var RedRegions = [TeamSize]int{16, 3, 5, 9, 13}
+	var BlueRegions = []int{1, 12, 14, 6, 4}
+	var RedRegions = []int{16, 3, 5, 9, 13}
 
 	//set up the player's home regions
 	//设置球员的homeRegion
@@ -73,7 +73,7 @@ func (tsa *TeamStateAttacking) Execute(entity interface{}) {
 	team.DetermineBestSupportingPosition()
 }
 
-func (tsa *TeamStateAttacking) Execute(entity interface{}) {
+func (tsa *TeamStateAttacking) Exit(entity interface{}) {
 	var team = entity.(*SoccerTeam)
 	//there is no supporting player for defense
 	//防守没有助攻的球员
@@ -92,10 +92,10 @@ func NewTeamStateDefending() *TeamStateDefending {
 
 func (tsd *TeamStateDefending) Enter(entity interface{}) {
 	var team = entity.(*SoccerTeam)
-	Debug_State("[%s] entering Defending state", team.Name())
+	Debug_State(team.Ctx(), "[%s] entering Defending state", team.Name())
 
-	const BlueRegions = [TeamSize]int{1, 6, 8, 3, 5}
-	const RedRegions = [TeamSize]int{16, 9, 11, 12, 14}
+	var BlueRegions = []int{1, 6, 8, 3, 5}
+	var RedRegions = []int{16, 9, 11, 12, 14}
 
 	//set up the player's home regions
 	//设置各个球员的home region
@@ -139,7 +139,7 @@ func (tsp *TeamStatePrepareForKickOff) Enter(entity interface{}) {
 	//重置各个角色的指针
 	team.SetControllingPlayer(nil)
 	team.SetSupportingPlayer(nil)
-	team.SetReceiverPlayer(nil)
+	team.SetReceiving(nil)
 	team.SetPlayerClosestToBall(nil)
 
 	//对每个球员发送 Msg_GoHome消息
@@ -148,11 +148,12 @@ func (tsp *TeamStatePrepareForKickOff) Enter(entity interface{}) {
 
 func (tsp *TeamStatePrepareForKickOff) Execute(entity interface{}) {
 	var team = entity.(*SoccerTeam)
-	if team.AllPlayersAtHOme() && team.Opponents().AllPlayersAtHome() {
+	if team.AllPlayersAtHome() && team.Opponents().AllPlayersAtHome() {
 		team.GetFSM().ChangeState(StateDefending)
 	}
 }
 
 func (tsp *TeamStatePrepareForKickOff) Exit(entity interface{}) {
-	team.Patch().SetGameOn()
+	var team = entity.(*SoccerTeam)
+	team.Pitch().SetGameOn()
 }

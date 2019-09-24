@@ -19,16 +19,16 @@ type SoccerTeam struct {
 	pStateMachine *StateMachine  //状态机
 	color         TeamColor      //队伍颜色
 
-	members        []*PlayerBase //队员
+	members        []IPlayerBase //队员
 	pPitch         *SoccerPitch  //球场
 	pOpponentsGoal *Goal         //对方球门
 	pHomeGoal      *Goal         //己方球门
 	pOpponentsTeam *SoccerTeam   //对方球队
 
-	pReceivingPlayer     *PlayerBase //接球队员
-	pPlayerClosestToBall *PlayerBase //离球最近的队员
-	pControllingPlayer   *PlayerBase //控球队员
-	pSupportingPlayer    *PlayerBase //接应球员
+	pReceivingPlayer     IPlayerBase //接球队员
+	pPlayerClosestToBall IPlayerBase //离球最近的队员
+	pControllingPlayer   IPlayerBase //控球队员
+	pSupportingPlayer    IPlayerBase //接应球员
 
 	dDistSqToBallOfClosestPlayer float64 //己方离球最近的球员于球的距离
 
@@ -38,7 +38,7 @@ type SoccerTeam struct {
 func NewSoccerTeam(
 	ctx *SoccerContext,
 	homeGoal,
-	opponentsGoal Goal,
+	opponentsGoal *Goal,
 	pitch *SoccerPitch,
 	color TeamColor,
 ) *SoccerTeam {
@@ -59,7 +59,7 @@ func NewSoccerTeam(
 		dDistSqToBallOfClosestPlayer: 0.0,
 	}
 
-	st.pStateMachine = NewStateMachine(st)
+	st.pStateMachine = NewStateMachine(ctx, st)
 	st.pStateMachine.SetCurrentState(StateDefending)
 	st.pStateMachine.SetPreviousState(StateDefending)
 	st.pStateMachine.SetGlobalState(nil)
@@ -72,13 +72,15 @@ func NewSoccerTeam(
 }
 
 func (st *SoccerTeam) CreateMembers() {
-	if st.Color() == blue {
+	if st.Color() == TeamColor_Blue {
 		//goalkeeper
-		st.members = append(st.members, NewGoalKeeper(this,
+		st.members = append(st.members, NewGoalKeeper(st.ctx,
+			1, "1号",
+			st,
 			1,
 			StateTendGoal,
-			Vector2D(0, 1),
-			Vector2D(0.0, 0.0),
+			common.Vector2d{0, 1},
+			common.Vector2d{0.0, 0.0},
 			st.ctx.Config().PlayerMass,
 			st.ctx.Config().PlayerMaxForce,
 			st.ctx.Config().PlayerMaxSpeedWithoutBall,
@@ -86,11 +88,13 @@ func (st *SoccerTeam) CreateMembers() {
 			st.ctx.Config().PlayerScale))
 
 		//create the players
-		st.members = append(st.members, NewFieldPlayer(this,
+		st.members = append(st.members, NewFieldPlayer(st.ctx,
+			2, "2号",
+			st,
 			6,
 			StateWait,
-			Vector2D(0, 1),
-			Vector2D(0.0, 0.0),
+			common.Vector2d{0, 1},
+			common.Vector2d{0.0, 0.0},
 			st.ctx.Config().PlayerMass,
 			st.ctx.Config().PlayerMaxForce,
 			st.ctx.Config().PlayerMaxSpeedWithoutBall,
@@ -98,11 +102,13 @@ func (st *SoccerTeam) CreateMembers() {
 			st.ctx.Config().PlayerScale,
 			RoleType_Attacker))
 
-		st.members = append(st.members, NewFieldPlayer(this,
+		st.members = append(st.members, NewFieldPlayer(st.ctx,
+			3, "3号",
+			st,
 			8,
 			StateWait,
-			Vector2D(0, 1),
-			Vector2D(0.0, 0.0),
+			common.Vector2d{0, 1},
+			common.Vector2d{0.0, 0.0},
 			st.ctx.Config().PlayerMass,
 			st.ctx.Config().PlayerMaxForce,
 			st.ctx.Config().PlayerMaxSpeedWithoutBall,
@@ -110,11 +116,13 @@ func (st *SoccerTeam) CreateMembers() {
 			st.ctx.Config().PlayerScale,
 			RoleType_Attacker))
 
-		st.members = append(st.members, NewFieldPlayer(this,
+		st.members = append(st.members, NewFieldPlayer(st.ctx,
+			4, "4号",
+			st,
 			3,
 			StateWait,
-			Vector2D(0, 1),
-			Vector2D(0.0, 0.0),
+			common.Vector2d{0, 1},
+			common.Vector2d{0.0, 0.0},
 			st.ctx.Config().PlayerMass,
 			st.ctx.Config().PlayerMaxForce,
 			st.ctx.Config().PlayerMaxSpeedWithoutBall,
@@ -122,11 +130,13 @@ func (st *SoccerTeam) CreateMembers() {
 			st.ctx.Config().PlayerScale,
 			RoleType_Defender))
 
-		st.members = append(st.members, NewFieldPlayer(this,
+		st.members = append(st.members, NewFieldPlayer(st.ctx,
+			5, "5号",
+			st,
 			5,
 			StateWait,
-			Vector2D(0, 1),
-			Vector2D(0.0, 0.0),
+			common.Vector2d{0, 1},
+			common.Vector2d{0.0, 0.0},
 			st.ctx.Config().PlayerMass,
 			st.ctx.Config().PlayerMaxForce,
 			st.ctx.Config().PlayerMaxSpeedWithoutBall,
@@ -137,11 +147,13 @@ func (st *SoccerTeam) CreateMembers() {
 	} else {
 
 		//goalkeeper
-		st.members = append(st.members, NewGoalKeeper(this,
+		st.members = append(st.members, NewGoalKeeper(st.ctx,
+			11, "11号",
+			st,
 			16,
 			StateTendGoal,
-			Vector2D(0, -1),
-			Vector2D(0.0, 0.0),
+			common.Vector2d{0, -1},
+			common.Vector2d{0.0, 0.0},
 			st.ctx.Config().PlayerMass,
 			st.ctx.Config().PlayerMaxForce,
 			st.ctx.Config().PlayerMaxSpeedWithoutBall,
@@ -149,11 +161,13 @@ func (st *SoccerTeam) CreateMembers() {
 			st.ctx.Config().PlayerScale))
 
 		//create the players
-		st.members = append(st.members, NewFieldPlayer(this,
+		st.members = append(st.members, NewFieldPlayer(st.ctx,
+			12, "12号",
+			st,
 			9,
 			StateWait,
-			Vector2D(0, -1),
-			Vector2D(0.0, 0.0),
+			common.Vector2d{0, -1},
+			common.Vector2d{0.0, 0.0},
 			st.ctx.Config().PlayerMass,
 			st.ctx.Config().PlayerMaxForce,
 			st.ctx.Config().PlayerMaxSpeedWithoutBall,
@@ -161,11 +175,13 @@ func (st *SoccerTeam) CreateMembers() {
 			st.ctx.Config().PlayerScale,
 			RoleType_Attacker))
 
-		st.members = append(st.members, NewFieldPlayer(this,
+		st.members = append(st.members, NewFieldPlayer(st.ctx,
+			13, "13号",
+			st,
 			11,
 			StateWait,
-			Vector2D(0, -1),
-			Vector2D(0.0, 0.0),
+			common.Vector2d{0, -1},
+			common.Vector2d{0.0, 0.0},
 			st.ctx.Config().PlayerMass,
 			st.ctx.Config().PlayerMaxForce,
 			st.ctx.Config().PlayerMaxSpeedWithoutBall,
@@ -173,11 +189,13 @@ func (st *SoccerTeam) CreateMembers() {
 			st.ctx.Config().PlayerScale,
 			RoleType_Attacker))
 
-		st.members = append(st.members, NewFieldPlayer(this,
+		st.members = append(st.members, NewFieldPlayer(st.ctx,
+			14, "14号",
+			st,
 			12,
 			StateWait,
-			Vector2D(0, -1),
-			Vector2D(0.0, 0.0),
+			common.Vector2d{0, -1},
+			common.Vector2d{0.0, 0.0},
 			st.ctx.Config().PlayerMass,
 			st.ctx.Config().PlayerMaxForce,
 			st.ctx.Config().PlayerMaxSpeedWithoutBall,
@@ -185,11 +203,13 @@ func (st *SoccerTeam) CreateMembers() {
 			st.ctx.Config().PlayerScale,
 			RoleType_Defender))
 
-		st.members = append(st.members, NewFieldPlayer(this,
+		st.members = append(st.members, NewFieldPlayer(st.ctx,
+			15, "15号",
+			st,
 			14,
 			StateWait,
-			Vector2D(0, -1),
-			Vector2D(0.0, 0.0),
+			common.Vector2d{0, -1},
+			common.Vector2d{0.0, 0.0},
 			st.ctx.Config().PlayerMass,
 			st.ctx.Config().PlayerMaxForce,
 			st.ctx.Config().PlayerMaxSpeedWithoutBall,
@@ -209,11 +229,11 @@ func (st *SoccerTeam) CalculateClosestPlayerToBall() {
 	var closestSoFar float64 = common.MaxFloat
 	for _, player := range st.members {
 		//计算玩家到球 距离的平方
-		var dist float64 = player.Pos().DistanceSq(st.Patch().Ball().Pos())
+		var dist float64 = player.Pos().DistanceSq(st.Pitch().Ball().Pos())
 		player.SetDistSqToBall(dist)
 		if dist < closestSoFar {
 			closestSoFar = dist
-			st.PlayerClosestToBall = player
+			st.pPlayerClosestToBall = player
 		}
 	}
 
@@ -223,9 +243,9 @@ func (st *SoccerTeam) CalculateClosestPlayerToBall() {
 //向所有玩家发送信息，立即返回其home region
 func (st *SoccerTeam) ReturnAllFieldPlayersToHome() {
 	for _, player := range st.members {
-		if player.Role != RoleType_Keeper {
+		if player.Role() != RoleType_GoalKeeper {
 			st.ctx.Dispatcher().DispatchMsg(
-				MSG_SEND_MSG_IMMEDIATELY,
+				SEND_MSG_IMMEDIATELY,
 				1,
 				player.Id(),
 				Msg_GoHome,
@@ -245,9 +265,9 @@ func (st *SoccerTeam) ReturnAllFieldPlayersToHome() {
  *
  */
 func (st *SoccerTeam) CanShoot(ballPos common.Vector2d, power float64) (ok bool, shotTarget common.Vector2d) {
-	var numAttempts int = st.ctx.Config()().NumAttemptsToFindValidStrike
+	var numAttempts int = st.ctx.Config().NumAttemptsToFindValidStrike
 	for i := 0; i < numAttempts; i++ {
-		shotTarget = st.pOpponentsGoal.Center()
+		shotTarget = *st.pOpponentsGoal.Center()
 		var minYVal float64 = st.pOpponentsGoal.LeftPost().Y + st.Pitch().Ball().BRadius()
 		var maxYVal float64 = st.pOpponentsGoal.RightPost().Y - st.Pitch().Ball().BRadius()
 		shotTarget.Y = rand.Float64()*(maxYVal-minYVal) + minYVal
@@ -255,12 +275,12 @@ func (st *SoccerTeam) CanShoot(ballPos common.Vector2d, power float64) (ok bool,
 		//确保用给定的力量击球足以使球越过球门线。
 		var time float64 = st.Pitch().Ball().TimeToCoverDistance(ballPos, shotTarget, power)
 		if time >= 0 {
-			if st.isPassSafeFromAllOpponents(ballPos, shotTarget, nil, power) {
-				return true
+			if st.IsPassSafeFromAllOpponents(ballPos, shotTarget, nil, power) {
+				return true, shotTarget
 			}
 		}
 	}
-	return false
+	return false, shotTarget
 }
 
 /**
@@ -269,10 +289,10 @@ func (st *SoccerTeam) CanShoot(ballPos common.Vector2d, power float64) (ok bool,
  * “receiver”和传递的位置将返回到引用“passtarget”中
  */
 func (st *SoccerTeam) FindPass(
-	passer *PlayerBase,
+	passer IPlayerBase,
 	power float64,
 	minPassingDistance float64,
-) (canFind bool, receiver *PlayerBase, passTarget common.Vector2d) {
+) (canFind bool, receiver IPlayerBase, passTarget common.Vector2d) {
 	var closestToGoalSoFar float64 = common.MaxFloat
 	for _, player := range st.members {
 		//传球者和本球员的距离
@@ -310,11 +330,11 @@ func (st *SoccerTeam) FindPass(
  */
 func (st *SoccerTeam) GetBestPassToReceiver(
 	passer,
-	receiver *PlayerBase,
+	receiver IPlayerBase,
 	power float64,
 ) (ok bool, passTarget common.Vector2d) {
 	//首先，计算如果接球者静止不动，球到达接球者所需的时间
-	var time float64 = st.Pitch().Ball().TimeToCoverDistance(st.Patch().Ball().Pos(), receiver.Pos(), power)
+	var time float64 = st.Pitch().Ball().TimeToCoverDistance(*st.Pitch().Ball().Pos(), *receiver.Pos(), power)
 	if time < 0 {
 		return
 	}
@@ -324,19 +344,19 @@ func (st *SoccerTeam) GetBestPassToReceiver(
 	interceptRange *= scalingFactor
 
 	//现在计算传球目标，这些目标位于球到接球方射程圆切线的截距处。
-	var ok, ip1, ip2 = common.GetTangentPoints(receiver.Pos(), interceptRange, st.Pitch().Ball().Pos())
-	if !ok {
+	var ok1, ip1, ip2 = common.GetTangentPoints(*receiver.Pos(), interceptRange, *st.Pitch().Ball().Pos())
+	if !ok1 {
 		//TODO 这里没有处理返回值(只有在半径为interceptRange的圆内才会返回false)
 		//return
 	}
-	var numPassesToTry int = 3
-	var passes = [numPassesToTry]common.Vector2d{ip1, receiver.Pos(), ip2}
+	//var numPassesToTry int = 3
+	var passes = []common.Vector2d{ip1, *receiver.Pos(), ip2}
 
 	var closestSoFar float64 = common.MaxFloat
 	for _, pass := range passes {
 		var dist float64 = math.Abs(pass.X - st.OpponentsGoal().Center().X)
-		var isPassSafeFromAll = st.isPassSafeFromAllOpponents(st.Patch().Ball().Pos(), pass, receiver, power)
-		if dist < closestSoFar && st.Pitch().PlayerArea().Inside(pass) && isPassSafeFromAll {
+		var isPassSafeFromAll = st.IsPassSafeFromAllOpponents(*st.Pitch().Ball().Pos(), pass, receiver, power)
+		if dist < closestSoFar && st.Pitch().PlayingArea().Inside(pass, Region_Normal) && isPassSafeFromAll {
 			closestSoFar = dist
 			passTarget = pass
 			ok = true
@@ -353,16 +373,16 @@ func (st *SoccerTeam) isPassSafeFromOpponent(
 	from,
 	target common.Vector2d,
 	receiver,
-	opp *PlayerBase,
+	opp IPlayerBase,
 	passingForce float64,
 ) bool {
-	var toTarget common.Vector2d = *target.OpMinus(from)
-	var ToTargetNormalized common.Vector2d = *toTarget.Normalize()
+	var toTarget common.Vector2d = *target.OpMinus(&from)
+	var toTargetNormalized common.Vector2d = *toTarget.Normalize()
 
 	var localPosOpp = common.PointToLocalSpace(
-		opp.Pos(),
+		*opp.Pos(),
 		toTargetNormalized,
-		toTargetNormalized.Perp(),
+		*toTargetNormalized.Perp(),
 		from,
 	)
 	//如果对方在踢球者后面，那么传球就被认为是可以的
@@ -372,7 +392,7 @@ func (st *SoccerTeam) isPassSafeFromOpponent(
 	}
 
 	//如果对手离目标较远，我们需要考虑对手是否能到达接受者之前的位置。
-	if from.DistanceSq(target) < opp.Pos().DistanceSq(from) {
+	if from.DistanceSq(&target) < opp.Pos().DistanceSq(&from) {
 		if receiver == nil {
 			return true
 		}
@@ -385,7 +405,7 @@ func (st *SoccerTeam) isPassSafeFromOpponent(
 
 	// 计算球到达与对手位置垂直的位置所需的距离
 	var timeForBall float64 = st.Pitch().Ball().TimeToCoverDistance(
-		Vector2d{0, 0}, Vector{localPosOpp.X, 0}, passingForce)
+		common.Vector2d{0, 0}, common.Vector2d{localPosOpp.X, 0}, passingForce)
 
 	//现在计算对手这次能跑多远
 	var reach float64 = opp.MaxSpeed()*timeForBall + st.Pitch().Ball().BRadius() + opp.BRadius()
@@ -402,14 +422,14 @@ func (st *SoccerTeam) isPassSafeFromOpponent(
  * 对对方球队的每个成员测试从'from'到'target'目标的传球。
  * 如果可以在不被拦截的情况下进行传递，则返回true
  */
-func (st *SoccerTeam) isPassSafeFromAllOpponents(
+func (st *SoccerTeam) IsPassSafeFromAllOpponents(
 	from,
 	target common.Vector2d,
-	receiver *PlayerBase,
+	receiver IPlayerBase,
 	passingForce float64,
 ) bool {
 	for _, opp := range st.pOpponentsTeam.Members() {
-		if isPassSafeFromOpponent(from, to, receiver, opp, passingForce) {
+		if st.isPassSafeFromOpponent(from, target, receiver, opp, passingForce) {
 			return false
 		}
 	}
@@ -419,9 +439,9 @@ func (st *SoccerTeam) isPassSafeFromAllOpponents(
 /*
  * 如果位置半径内有对手，则返回true
  */
-func (st *SoccerTeam) isOpponentWithinRadius(pos common.Vector2d, radius float64) bool {
+func (st *SoccerTeam) IsOpponentWithinRadius(pos common.Vector2d, radius float64) bool {
 	for _, opp := range st.pOpponentsTeam.Members() {
-		if pos.DictanceSq(opp.Pos()) < radius*radius {
+		if pos.DistanceSq(opp.Pos()) < radius*radius {
 			return true
 		}
 	}
@@ -437,13 +457,13 @@ func (st *SoccerTeam) RequestPass(requester *FieldPlayer) {
 	if rand.Float64() > 0.1 {
 		return
 	}
-	if st.isPassSafeFromAllOpponents(
-		st.ControllingPlayer().Pos(),
-		requester.Pos(),
+	if st.IsPassSafeFromAllOpponents(
+		*st.ControllingPlayer().Pos(),
+		*requester.Pos(),
 		requester,
 		st.ctx.Config().MaxPassingForce,
 	) {
-		st.ctx.Dispatcher.DispatchMsg(SEND_MSG_IMMEDIATELY,
+		st.ctx.Dispatcher().DispatchMsg(SEND_MSG_IMMEDIATELY,
 			requester.Id(),
 			st.ControllingPlayer().Id(),
 			Msg_PassToMe,
@@ -452,24 +472,25 @@ func (st *SoccerTeam) RequestPass(requester *FieldPlayer) {
 }
 
 // 计算最佳支撑位置并找到最合适的攻击者前往该位置
-func (st *SoccerTeam) DetermineBestSupportingAttacker() *PlayerBase {
+func (st *SoccerTeam) DetermineBestSupportingAttacker() IPlayerBase {
 	var closestSoFar float64 = common.MaxFloat
-	var basePlayer *PlayerBase
+	var bestPlayer IPlayerBase
 
-	for _, player := range st.player {
+	for _, player := range st.members {
 		//主攻角色的球员没有拿到球
 		if RoleType_Attacker == player.Role() && player != st.pControllingPlayer {
-			var dict float64 = player.Pos().DistanceSq(st.pSupportSpotCalc.GetBaseSupportingSpot())
+			var baseSupportingSpot = st.pSupportSpotCalc.GetBestSupportingSpot()
+			var dist float64 = player.Pos().DistanceSq(&baseSupportingSpot)
 			if dist < closestSoFar {
 				closestSoFar = dist
-				bastPlayer = player
+				bestPlayer = player
 			}
 		}
 	}
-	return basePlayer
+	return bestPlayer
 }
 
-func (st *SoccerTeam) Members() []*PlayerBase {
+func (st *SoccerTeam) Members() []IPlayerBase {
 	return st.members
 }
 
@@ -478,7 +499,7 @@ func (st *SoccerTeam) HomeGoal() *Goal {
 }
 
 func (st *SoccerTeam) OpponentsGoal() *Goal {
-	return st.pOpponentsTeam
+	return st.pOpponentsGoal
 }
 
 func (st *SoccerTeam) Pitch() *SoccerPitch {
@@ -497,11 +518,11 @@ func (st *SoccerTeam) Color() TeamColor {
 	return st.color
 }
 
-func (st *SoccerTeam) PlayerClosestToBall() *PlayerBase {
+func (st *SoccerTeam) PlayerClosestToBall() IPlayerBase {
 	return st.pPlayerClosestToBall
 }
 
-func (st *SoccerTeam) SetPlayerClosestToBall(player *PlayerBase) {
+func (st *SoccerTeam) SetPlayerClosestToBall(player IPlayerBase) {
 	st.pPlayerClosestToBall = player
 }
 
@@ -510,44 +531,44 @@ func (st *SoccerTeam) ClosestDistToBallSq() float64 {
 }
 
 func (st *SoccerTeam) GetSupportSpot() common.Vector2d {
-	return st.pSupportSpotCalc.GetBastSupportingSpot()
+	return st.pSupportSpotCalc.GetBestSupportingSpot()
 }
 
-func (st *SoccerTeam) SupportingPlayer() *PlayerBase {
+func (st *SoccerTeam) SupportingPlayer() IPlayerBase {
 	return st.pSupportingPlayer
 }
 
-func (st *SoccerTeam) SetSupportingPlayer(player *PlayerBase) {
+func (st *SoccerTeam) SetSupportingPlayer(player IPlayerBase) {
 	st.pSupportingPlayer = player
 }
 
-func (st *SoccerTeam) Receiving() *PlayerBase {
+func (st *SoccerTeam) Receiving() IPlayerBase {
 	return st.pReceivingPlayer
 }
 
-func (st *SoccerTeam) SetReceiving(player *PlayerBase) {
+func (st *SoccerTeam) SetReceiving(player IPlayerBase) {
 	st.pReceivingPlayer = player
 }
 
-func (st *SoccerTeam) ControllingPlayer() *PlayerBase {
+func (st *SoccerTeam) ControllingPlayer() IPlayerBase {
 	return st.pControllingPlayer
 }
 
-func (st *SoccerTeam) SetControllingPlayer(player *PlayerBase) {
+func (st *SoccerTeam) SetControllingPlayer(player IPlayerBase) {
 	st.pControllingPlayer = player
 	st.Opponents().LostControl()
 }
 
 func (st *SoccerTeam) InControl() bool {
-	return st.controllingPlayer != nil
+	return st.pControllingPlayer != nil
 }
 
 func (st *SoccerTeam) LostControl() {
 	st.pControllingPlayer = nil
 }
 
-func (st *SoccerTeam) GetPlayerFromID(id int) *PlayerBase {
-	for _, player := range st.Member() {
+func (st *SoccerTeam) GetPlayerFromID(id int) IPlayerBase {
+	for _, player := range st.Members() {
 		if player.Id() == id {
 			return player
 		}
@@ -556,7 +577,7 @@ func (st *SoccerTeam) GetPlayerFromID(id int) *PlayerBase {
 }
 
 func (st *SoccerTeam) SetPlayerHomeRegion(playerIdx, region int) {
-	st.members[plyr].SetHomeRegion(region)
+	st.members[playerIdx].SetHomeRegion(region)
 }
 
 func (st *SoccerTeam) DetermineBestSupportingPosition() {
@@ -565,11 +586,11 @@ func (st *SoccerTeam) DetermineBestSupportingPosition() {
 
 func (st *SoccerTeam) UpdateTargetsOfWaitingPlayers() {
 	for _, player := range st.members {
-		if player.Role() == RoleType_Keeper {
+		if player.Role() == RoleType_GoalKeeper {
 			var plyr = player.(*FieldPlayer)
 			if plyr.GetFSM().IsInState(StateWait) ||
 				plyr.GetFSM().IsInState(StateReturnToHomeRegion) {
-				plyr.Steering().SetTarget(plyr.HomeRegion().Center())
+				plyr.Steering().SetTarget(*plyr.HomeRegion().Center())
 			}
 		}
 	}
@@ -598,6 +619,10 @@ func (st *SoccerTeam) Ctx() *SoccerContext {
 	return st.ctx
 }
 
+func (st *SoccerTeam) GetFSM() *StateMachine {
+	return st.pStateMachine //状态机
+}
+
 /*------ 状态机 -------*/
 
 func (st *SoccerTeam) Update() {
@@ -607,4 +632,7 @@ func (st *SoccerTeam) Update() {
 		player.Update()
 	}
 }
-func (st *SoccerTeam) Render() bool { /*TODO*/ }
+func (st *SoccerTeam) Render() bool {
+	/*TODO*/
+	return false
+}

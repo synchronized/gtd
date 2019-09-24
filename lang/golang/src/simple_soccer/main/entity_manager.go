@@ -1,5 +1,9 @@
 package main
 
+import (
+	"simple_soccer/common"
+)
+
 type EntityManager struct {
 	entityMap map[int]common.IBaseGameEntity
 }
@@ -18,7 +22,7 @@ func (em *EntityManager) GetEntityFromID(id int) common.IBaseGameEntity {
 	return em.entityMap[id]
 }
 
-func (em *EntityManager) RemoveEntity(pEntity common.IBaseGameEntity) {
+func (em *EntityManager) RemoveEntity(entity common.IBaseGameEntity) {
 	delete(em.entityMap, entity.Id())
 }
 

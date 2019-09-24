@@ -4,6 +4,28 @@ import "math"
 
 type Accuracy func() float64
 
+const (
+	MinDouble = 0.00001
+)
+
+var DefaultAccuracy Accuracy
+
+func init() {
+	DefaultAccuracy = func() float64 { return MinDouble }
+}
+
+func FloatEqual(a, b float64) bool {
+	return DefaultAccuracy.Equal(a, b)
+}
+
+func FloatGreater(a, b float64) bool {
+	return DefaultAccuracy.Greater(a, b)
+}
+
+func FloatSmaller(a, b float64) bool {
+	return DefaultAccuracy.Smaller(a, b)
+}
+
 func (this Accuracy) Equal(a, b float64) bool {
 	return math.Abs(a-b) < this()
 }
