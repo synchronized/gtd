@@ -11,3 +11,9 @@ latex/**/*.toc
 latex/**/*.fdb_latexmk
 latex/**/*.synctex.gz
 **/*.build-latexmk/
+
+**/GPATH
+**/GRTAGS
+**/GTAGS
+/lang/golang/pkg
+/lang/golang/src/**/main/main
