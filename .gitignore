@@ -12,8 +12,15 @@ latex/**/*.fdb_latexmk
 latex/**/*.synctex.gz
 **/*.build-latexmk/
 
+**/*.o
+**/*.exe
+
 **/GPATH
 **/GRTAGS
 **/GTAGS
 /lang/golang/pkg
 /lang/golang/src/**/main/main
+
+/lang/c/qt/**/Makefile
+/lang/c/qt/**/moc_*
+/lang/c/qt/**/.qmake.stash
