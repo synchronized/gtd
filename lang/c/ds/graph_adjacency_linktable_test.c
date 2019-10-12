@@ -86,6 +86,7 @@ struct graph_link_table* graph_link_table_create() {
     p1 = graph_vnode_search(pg, edges[i][0]);
     p2 = graph_vnode_search(pg, edges[i][1]);
     graph_vnode_insert_enode(&pg->vexs[p1], p2);
+    graph_vnode_insert_enode(&pg->vexs[p2], p1);
   }
   return pg;
 }
