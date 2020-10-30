@@ -1,0 +1,8 @@
+计算机与操作系统
+    ENIARC:
+        CPU: 运算器,控制器,寄存器,缓存
+        存储器: 内存, RAM(Random Access Memory)
+        Input: 下指令,提供数据等
+        Output: 输出数据加工的结果
+
+    程序: 指令+数据

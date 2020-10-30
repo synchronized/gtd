@@ -1,5 +1,14 @@
+
+**/GPATH
+**/GRTAGS
+**/GTAGS
+
 **/a.out
 **/*.gch
+**/*.o
+**/*.exe
+**/*.build-latexmk/
+
 note/**/auto/
 latex/**/auto/
 latex/**/*.aux
@@ -10,14 +19,9 @@ latex/**/*.dvi
 latex/**/*.toc
 latex/**/*.fdb_latexmk
 latex/**/*.synctex.gz
-**/*.build-latexmk/
 
-**/*.o
-**/*.exe
+plantuml/**.png
 
-**/GPATH
-**/GRTAGS
-**/GTAGS
 /lang/golang/pkg
 /lang/golang/src/**/main/main
 
