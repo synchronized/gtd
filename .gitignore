@@ -8,6 +8,8 @@
 **/*.o
 **/*.exe
 **/*.build-latexmk/
+**/CMakeFiles
+**/cmake_install.cmake
 
 note/**/auto/
 latex/**/auto/
@@ -28,3 +30,5 @@ plantuml/**.png
 /lang/c/qt/**/Makefile
 /lang/c/qt/**/moc_*
 /lang/c/qt/**/.qmake.stash
+
+/lang/c/**/build
