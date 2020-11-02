@@ -1,0 +1,61 @@
+@startuml
+
+(*) --> ===Begin===
+-down-> "进入城市"
+-down-> "遍历每个当前城市联系人" as beginEventLine
+-down-> "检查当前联系人"
+if "事件线上一个步骤是否已经CD" then
+  -down-> [yes] "检查好感度等级" as checkRelaLevel
+else
+  -right-> [no] "添加定时器"
+  -up-> "直到CD时间到达"
+  -up-> beginEventLine
+endif
+
+checkRelaLevel --> if "达到好感度等级" then
+  -right-> [no] "监听好感度变化"
+  -right-> "直到好感度达到"
+  -up-> beginEventLine
+else
+  -down->[yes] "检查条件" as checkCondition
+endif
+checkCondition -down-> if "条件是否达成" then
+  -left-> [no] "监听条件"  
+  -up-> "直到条件达成"
+  -right-> beginEventLine
+else
+  -down-> [yes] "条件达成" as condition
+endif
+
+condition --> if "存在符合要求的地点" then
+  --> [no] "生成事件线临时地点" as generatePlace
+else
+  --> [yes] if "地点已经探索出现" then
+    -left-> [no] generatePlace
+  else
+    -right-> [yes] "直接使用已经探索的地点"
+    --> "开始事件线逻辑" as eventLineLogic
+  endif
+endif
+
+generatePlace -down-> if "事件线地点数量达到上限" then
+  -left-> [yes] "等待事件线地点数量减少"
+  -up-> generatePlace
+else
+  -down-> [no] eventLineLogic
+endif
+
+eventLineLogic --> "将联系人移动到此事件线地点"
+if "联系人是否已经存在事件" then
+  if "是事件线事件" then
+    --> [no] "删除事件"
+    --> "为联系人生成事件" as generateEvent
+    --> ===End===
+  endif
+else
+  --> [no] generateEvent
+endif
+
+===End=== --> (*)
+
+@enduml

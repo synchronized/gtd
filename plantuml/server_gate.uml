@@ -1,0 +1,50 @@
+服务器组件-网关
+@startuml
+
+class Client_Net_Manager  {
+	UserTableForLink map[uint64]*Gate_Client_User //玩家表（连接索引）
+}
+
+note top of Client_Net_Manager
+    客户端链接管理器
+    负责管理客户端链接
+end note
+
+
+class Gate_Client_User {
+    link       network.ILink //网络连接
+    GateClient *Gate_Client //玩家当前所在的服务器链接
+}
+
+note right of Gate_Client_User
+    客户端链接
+    每个代表一个玩家
+end note
+
+class Gate_Client_Mgr {
+    ServerTable map[int]*Gate_Client //网关对服务器的链接
+}
+
+note bottom of Gate_Client_Mgr
+    网关对其他服务器的链接管理器
+    管理网关对其他服务器的链接
+end note
+
+class Gate_Client {
+    UserTable map[uint64]*Gate_Client_User //玩家表（连接索引）
+}
+
+note bottom of Gate_Client
+    网关对其他服务器的链接
+    每个代表网关对其他服务器的链接
+end note
+
+Client_Net_Manager --> Gate_Client_User
+
+Gate_Client_User --> Gate_Client
+
+Gate_Client_Mgr --> Gate_Client
+
+Gate_Client --> Gate_Client_User
+
+@enduml
