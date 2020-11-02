@@ -31,4 +31,5 @@ plantuml/**.png
 /lang/c/qt/**/moc_*
 /lang/c/qt/**/.qmake.stash
 
-/lang/c/**/build
+/lang/c/**/.build
+/lang/cpp/**/.build
