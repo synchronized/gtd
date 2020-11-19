@@ -8,6 +8,7 @@ sudo yum install -y mongodb-org
 #+END_SRC
 
 * Windows
+** 安装服务
 #+BEGIN_SRC shell
 sc create MongoDB binPath= "C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe --service --config=D:\MongoDB\etc\mongo.conf"
 #+END_SRC
@@ -23,6 +24,15 @@ db.createUser({user:"mongouser",pwd:"<password>",roles:[{"role":"readWriteAnyDat
 db.updateUser("mongouser", {roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}]})
 
 db.updateUser("mongouser", {pwd: "<password>"})
+
+db.createUser({user:"test1",pwd:"123456",roles:[{"role":"readAnyDatabase","db":"admin"}]})
+db.createUser({user:"test2",pwd:"123456",roles:[{"role":"readWriteAnyDatabase","db":"admin"}]})  ok
+db.createUser({user:"test3",pwd:"123456",roles:[{"role":"dbAdminAnyDatabase","db":"admin"}]})
+db.createUser({user:"test4",pwd:"123456",roles:[{"role":"clusterAdmin","db":"admin"}]})
+db.createUser({user:"test5",pwd:"123456",roles:[{"role":"backup","db":"admin"}]})
+db.createUser({user:"test6",pwd:"123456",roles:[{"role":"restore","db":"admin"}]})  insert
+db.createUser({user:"sunday",pwd:"123456",roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}, {"role":"userAdminAnyDatabase","db":"admin"}]})
+db.updateUser("mongouser", {roles:[{"role":"readWriteAnyDatabase","db":"admin"}, {"role":"dbAdminAnyDatabase","db":"admin"}]})
 #+END_SRC
 
 
@@ -126,3 +136,14 @@ id: listData[0]['_id'],
 }
 result2
 #+END_SRC
+
+* mongo-express
+docker run -it --rm \
+    --name mongo-express \
+    -p 8081:8081 \
+    -e ME_CONFIG_OPTIONS_EDITORTHEME="ambiance" \
+    -e ME_CONFIG_MONGODB_SERVER="192.168.1.37" \
+    -e ME_CONFIG_MONGODB_PORT="27017" \
+    -e ME_CONFIG_BASICAUTH_USERNAME="admin" \
+    -e ME_CONFIG_BASICAUTH_PASSWORD="123456" \
+    mongo-express

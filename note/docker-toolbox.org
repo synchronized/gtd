@@ -1,2 +1,0 @@
-* 修改docker toolbox 的default虚拟机
-sudo sed -i '/virtualbox/a --registry-mirror=http://8f8ead5c.m.daocloud.io' /var/lib/boot2docker/profile

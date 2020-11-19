@@ -1,4 +1,4 @@
-* 
+* 逃逸分析
 #+BEGIN_SRC shell
 go build -ldflags "-s -w"
 #+END_SRC

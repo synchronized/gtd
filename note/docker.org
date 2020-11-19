@@ -1,3 +1,4 @@
+* 基础
 ** 安装
 *** CentOS
 **** 卸载旧版本
@@ -107,3 +108,7 @@ cat <<EOF | sudo tee -a /etc/docker/daemon.json
 EOF
 sudo systemctl restart docker
 #+END_SRC
+
+* windows
+** 修改docker toolbox 的default虚拟机
+sudo sed -i '/virtualbox/a --registry-mirror=http://8f8ead5c.m.daocloud.io' /var/lib/boot2docker/profile
