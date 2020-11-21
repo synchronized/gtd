@@ -111,4 +111,6 @@ sudo systemctl restart docker
 
 * windows
 ** 修改docker toolbox 的default虚拟机
+#+BEGIN_SRC shell
 sudo sed -i '/virtualbox/a --registry-mirror=http://8f8ead5c.m.daocloud.io' /var/lib/boot2docker/profile
+#+END_SRC

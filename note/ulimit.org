@@ -1,0 +1,38 @@
+* 文件打开数量，进程数
+** 查看
+*** 查看-所有
+#+BEGIN_SRC shell
+ulimit -a
+#+END_SRC
+
+*** 查看-用户最大进程
+#+BEGIN_SRC shell
+ulimit -u
+#+END_SRC
+
+*** 查看-最大打开文件数
+#+BEGIN_SRC shell
+ulimit -n
+#+END_SRC
+
+** 临时修改（当前终端）
+*** 修改-用户最大进程
+#+BEGIN_SRC shell
+ulimit -u 65535
+#+END_SRC
+
+*** 修改-最大打开文件数
+#+BEGIN_SRC shell
+ulimit -n 65535
+#+END_SRC
+
+** 永久修改
+编辑/etc/security/limits.conf
+注意: 星号(*)前面没有空格
+#+BEGIN_SRC shell
+ * soft nofile 65536      # open files  (-n)
+ * hard nofile 65536
+
+ * soft nproc 65565
+ * hard nproc 65565       # max user processes   (-u)
+#+END_SRC
