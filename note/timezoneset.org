@@ -1,0 +1,78 @@
+* 如何在 Debian 10 设置或者修改时区
+ 使用正确的时区对于很多系统相关的任务和进程都是基本的必要的。例如：cron 守护程序使用系统时区来执行 cron 任务，并且日志文件中的时间戳也是基于系统时区的。
+在 Debian 上，系统时区在安装过程中设置，并且在后面可以很容易修改它。
+本文描述如何在 Debian 10 系统上设置或者修改时区。
+
+** 检查当前时区
+_timedatectl_ 是一个命令行工具，它允许你查看并且修改系统时间和日期。它在所有现代的基于 systemd 的 Linux 系统中都可以使用：
+#+BEGIN_SRC shell
+timedatectl
+#+END_SRC
+
+输出显示了系统的时区。在这个例子中，时区被设置成 UTC：
+#+BEGIN_SRC shell
+Local time: Fri 2020-04-03 19:23:29 UTC
+           Universal time: Fri 2020-04-03 19:23:29 UTC
+                 RTC time: Fri 2020-04-03 19:23:29
+                Time zone: UTC (UTC, +0000)
+System clock synchronized: no
+              NTP service: inactive
+          RTC in local TZ: no
+#+END_SRC
+
+系统时区通过链接文件/etc/localtime配置，该链接指向/usr/share/zoneinfo目录下的一个二进制时区标识文件。
+另外一个检查时区的方法就是显示这个链接文件指向的实际路径，使用ls命令：
+
+#+BEGIN_SRC shell
+ls -l /etc/localtime
+lrwxrwxrwx 1 root root 23 Nov 21 23:44 /etc/localtime -> /usr/share/zoneinfo/UTC
+#+END_SRC
+
+** 在 Debian 中修改时区
+在修改时区时，你将需要找到你想要使用的时区的一个很长的名字。时区通常使用"地区/城市"格式.
+
+想要列出所有可用的时区，你可以列出/usr/share/zoneinfo目录下的所有文件，或者运行timedatectl命令，加上list-timezones选项：
+#+BEGIN_SRC shell
+timedatectl list-timezones
+...
+America/Monterrey
+America/Montevideo
+America/Montserrat
+America/Nassau
+America/New_York
+...
+#+END_SRC
+
+一旦你识别出哪一个时区能准备描述你的位置，以 root 或者其他有 sudo 权限的用户身份，运行下面的命令：
+#+BEGIN_SRC shell
+sudo timedatectl set-timezone your_time_zone
+#+END_SRC
+例如，想要将系统时区设置为America/Monterrey：
+#+BEGIN_SRC shell
+sudo timedatectl set-timezone America/Monterrey
+#+END_SRC
+运行timedatectl命令去验证修改:
+#+BEGIN_SRC shell
+timedatectl
+Local time: Fri 2020-04-03 13:30:30 CST
+           Universal time: Fri 2020-04-03 19:30:30 UTC
+                 RTC time: Fri 2020-04-03 19:30:30
+                Time zone: America/Monterrey (CST, -0600)
+System clock synchronized: no
+              NTP service: inactive
+          RTC in local TZ: no
+#+END_SRC
+
+** 通过创建一个链接来修改时区
+如果你正在运行一个比较古老的 Debian 版本，并且timedatectl在你的系统上不可用，你可以通过修改时区的链接文件/etc/localtime到/usr/share/zoneinfo目录下的时区文件来修改时区。
+识别你想要配置的时区，并且创建一个链接文件:
+
+#+BEGIN_SRC shell
+sudo ln -sf /usr/share/zoneinfo/America/Monterrey /etc/localtime
+#+END_SRC
+通过列出/etc/localtime文件或者触发timedatectl或者date命令，来验证修改：
+
+#+BEGIN_SRC shell
+date
+Fri 03 Apr 2020 01:34:27 PM CST
+#+END_SRC
