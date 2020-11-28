@@ -1,2 +1,41 @@
-** Debian10 更换软件源 & 配置中文环境 & 安装中文输入法
-*** s
+* Debian10 更换软件源 & 配置中文环境 & 安装中文输入法
+** 配置中文环境 & 安装中文输入法
+首先我们添加对中文的支持：
+#+BEGIN_SRC shell
+sudo apt-get install locales
+#+END_SRC
+
+然后然后配置 locales 软件包:
+#+BEGIN_SRC shell
+sudo dpkg-reconfigure locales
+#+END_SRC
+选择zh_CN_UTF-8, 点击确定
+[[file+sys:img/dpkg-reconfigure-locales.jpg][配置locales]]
+
+用方向键移动，空格键选择，Tab 键切换位置。从图中可以看到，出了默认选中的 en_US.UTF-8，
+我还选择了和中文有关的四个选项。选择确定，在下图中选择 zh_CN.UTF-8 并确定。
+（有些博客说要选 en_US.UTF-8，但有另外一篇博客说，中文输入法肯定是需要中文的区域设置的，我觉得有道理。）
+[[file+sys:img/dpkg-reconfigure-locales2.jpg][选择默认区域]]
+
+接下来安装输入法，网上的博客有的说安装 fcitx 中文输入法经常还是不能输入中文，
+有的说安装搜狗输入法容易出各种各样的问题，我最终选择了安装 fcitx 中文输入法。
+要注意的是，建议只安装一种输入法，把其他不相关的用不上的输入法卸载了，以免引起未知的冲突。
+
+实际上系统应该是自带了 fcitx，首先在菜单搜索输入法或 input 的前几个字母，打开可以看到下面的界面：
+（如果找不到，尝试
+#+BEGIN_SRC shell
+sudo apt-get install im-config
+#+END_SRC
+安装输入法配置，然后用
+#+BEGIN_SRC shell
+im-config
+#+END_SRC
+命令打开）
+
+实际上这个图很重要，要好好看一下，里面告诉了我们需要安装什么组件和支持。
+除了从“简体中文拼音”、“简体中文五笔”和“繁体中文或通用中文输入”三项中选一个
+（我选了 fcitx-sunpinyin，这是个简约的输入法，感觉还不错），其他提到的组件我们都要安装。依次输入下面的命令：
+#+BEGIN_SRC shell
+sudo apt-get install fcitx fcitx-sunpinyin fcitx-table-all fcitx-frontend-all
+sudo apt-get install fcitx-ui-classic fcitx-ui-light fcitx-config-gtk
+#+END_SRC
