@@ -13,13 +13,13 @@ mv dicts/* /usr/share/dictd
 #+END_SRC
 *** 配置词库
 #+BEGIN_SRC shell
-cat >> /var/lib/dictd/db.list<<EOF
+sudo tee -a /var/lib/dictd/db.list > /dev/null <<EOF
+
 database langdao-ec
  {
   data  /usr/share/dictd/langdao-ec.dict.dz
   index /usr/share/dictd/langdao-ec.index
 }
-
 database langdao-ce
  {
   data  /usr/share/dictd/langdao-ce.dict.dz
