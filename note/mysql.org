@@ -1,9 +1,9 @@
 * mysql
 ** 常用语句
 *** 创建数据库
-create database <db_name> default charset utf8 collate utf8_general_ci;
+create database <db_name> default charset utf8mb4 collate utf8mb4_unicode_ci;
 *** 创建/授权用户
-grant privileges on <db_name>.<tbl_name> to '<user_name>'@'<user_host>' identified by '<user_pass>'
+grant all privileges on <db_name>.<tbl_name> to '<user_name>'@'<user_host>' identified by '<user_pass>'
 flush privileges
 ** 事物隔离级别
 + read uncommitted(脏读) 可以看到未提交的数据
