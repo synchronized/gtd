@@ -34,6 +34,10 @@ flush privileges
 -t, --no-create-info
                       Don't write table creation info.
 
+-E, --events        Dump events.
+-R, --routines      Dump stored routines (functions and procedures).
+--triggers          Dump triggers for each dumped table.
+
 *** 导出结构不导出数据
 mysqldump　--opt　-d　数据库名
 *** 导出数据不导出结构
