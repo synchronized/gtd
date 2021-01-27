@@ -16,5 +16,11 @@ find_package(Threads)
 add_executable(select3 select3.c)
 target_link_libraries(select3 ${CMAKE_THREAD_LIBS_INIT})
 
+project(select4)
+add_executable(select4 select4.c)
+
+project(select4client)
+add_executable(select4client select4_client.c)
+
 # project(epoll)
 # add_executable(epoll epoll.c)
