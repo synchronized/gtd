@@ -10,7 +10,7 @@
 #define RECV_SERVER_MSG "recv server data: "
 
 void do_task(int sockfd) {
-  int nread;
+  int nread, bufstrlen;
   char buf[maxs] = "";
   fd_set rset, allset;
   FD_ZERO(&allset);
@@ -36,24 +36,29 @@ void do_task(int sockfd) {
         printf("server close the connection\n");
         break;
       }
-      buf[nread-1] = '\0';
-      write(STDOUT_FILENO, RECV_SERVER_MSG, sizeof(RECV_SERVER_MSG));
-      write(STDOUT_FILENO, buf, nread);
-      write(STDOUT_FILENO, "\n", 1);
+      buf[sizeof(buf)-1] = '\0'; //保证不会越界
+      printf("recv server data: '%s'\n", buf);
+      //write(STDOUT_FILENO, RECV_SERVER_MSG, sizeof(RECV_SERVER_MSG));
+      //write(STDOUT_FILENO, buf, nread);
+      //write(STDOUT_FILENO, "\n", 1);
     }
 
     if (FD_ISSET(STDIN_FILENO, &rset)) {
       fgets(buf, sizeof(buf), stdin);
       buf[sizeof(buf)-1] = '\0';
-      if (strlen(buf) == 0) {
+      bufstrlen = strlen(buf);
+      if (bufstrlen <= 0) {
         continue;
+      }
+      if (buf[bufstrlen-1] == '\n') {
+        buf[bufstrlen-1] = '\0';
       }
       if (strncasecmp(buf, "quit", 4) == 0) {
         printf("client exit...\n");
         break;
       }
       write(sockfd, buf, strlen(buf)); //发送输入数据
-      printf("send to server ok\n");
+      printf("send to server ok: '%s'\n", buf);
     }
   }
 }

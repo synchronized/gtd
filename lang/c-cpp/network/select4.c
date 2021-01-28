@@ -32,8 +32,8 @@ void do_task(int *clientfd, int maxsfd, fd_set *rset, fd_set *allset) {
         clientfd[i] = -1;
         continue;
       }
-      buf[nread-1] = '\0';
-      printf("send to '%s' client ok\n", buf);
+      buf[sizeof(buf)-1] = '\0'; //保证不会越界
+      printf("recv and send to '%s' client ok\n", buf);
       write(clientfd[i], buf, nread);
     }
   }
