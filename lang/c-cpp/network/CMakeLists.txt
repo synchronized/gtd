@@ -28,5 +28,5 @@ add_executable(select5 select5.cpp)
 project(select5client)
 add_executable(select5client select5_client.cpp)
 
-# project(epoll)
-# add_executable(epoll epoll.c)
+project(poll1)
+add_executable(poll1 poll1.c)
