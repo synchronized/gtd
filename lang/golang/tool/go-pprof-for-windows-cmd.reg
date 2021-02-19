@@ -1,0 +1,17 @@
+Windows Registry Editor Version 5.00
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.pprof\shell\gopprof]
+@="go pprof"
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.pprof\shell\gopprof\command]
+@="cmd.exe /k go tool pprof \"%1\""
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.pprof\shell\gopprofcount]
+@="go pprof count"
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.pprof\shell\gopprofcount\command]
+@="cmd.exe /k go tool pprof --alloc_objects \"%1\""
+
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.pprof\shell\gopprofcountinuse]
+@="go pprof count inuse"
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.pprof\shell\gopprofcountinuse\command]
+@="cmd.exe /k go tool pprof --inuse_objects \"%1\""
+
