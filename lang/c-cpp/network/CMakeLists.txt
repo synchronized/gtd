@@ -42,3 +42,11 @@ add_executable(epoll1client epoll1_client.c sd_epoll.c)
 
 project(epoll3)
 add_executable(epoll3 epoll3.c)
+
+project(epoll4)
+add_executable(epoll4 epoll4.c)
+target_link_libraries(epoll4 ${CMAKE_THREAD_LIBS_INIT})
+
+project(sd_thread_pool_test)
+add_executable(sd_thread_pool_test sd_thread_pool_test.c sd_thread_pool.c)
+target_link_libraries(sd_thread_pool_test ${CMAKE_THREAD_LIBS_INIT})
