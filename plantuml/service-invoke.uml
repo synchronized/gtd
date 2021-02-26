@@ -1,0 +1,24 @@
+@startuml
+
+left to right direction
+actor "用户" as user
+actor "管理员" as admin
+
+node "管理后台" {
+  actor Chef as c
+  usecase "管理后台接口" as interfaceA
+}
+
+node "服务器" {
+  usecase "接口1(给客户端用)" as interfaceForClient
+  usecase "接口2(给管理后台用)" as interfaceForAdmin
+  usecase "实际逻辑" as realLogic
+  interfaceForClient --> realLogic
+  interfaceForAdmin --> realLogic
+}
+
+interfaceA --> interfaceForAdmin: 服务器内部通讯(https)
+user --> interfaceForClient: 用户登陆验证通讯
+admin --> interfaceA: 管理后台权限验证通讯
+
+@enduml
