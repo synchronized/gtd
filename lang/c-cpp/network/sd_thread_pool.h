@@ -10,6 +10,7 @@ struct sd_thread_job; //任务
 
 struct sd_thread_worker {
   pthread_t pid;
+  int terminate; //结束标记
   struct sd_thread_pool *pool;
   struct sd_thread_worker *prev, *next;
 };
@@ -21,7 +22,6 @@ struct sd_thread_job {
 };
 
 struct sd_thread_pool {
-  int terminate; //结束标记
   struct sd_thread_worker *workers; //线程列表
   struct sd_thread_job *jobs; //任务列表
   pthread_cond_t emptycond;

@@ -12,6 +12,17 @@
 
 #define BUFSIZE 4096
 
+int sd_epoll_opt_create(struct sd_epoll_opt **pp_opt) {
+  if (pp_opt == NULL) return -1;
+  *pp_opt = (struct sd_epoll_opt*)malloc(sizeof(struct sd_epoll_opt));
+  if (*pp_opt == NULL) {
+    perror("malloc failed");
+    return -2;
+  }
+  bzero(*pp_opt, sizeof(struct sd_epoll_opt));
+  return 0;
+}
+
 int read_stdin(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
   char buf[BUFSIZE];
   fgets(buf, sizeof(buf), stdin);
@@ -57,6 +68,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "epoll1_client <ip> <port>\n");
     return -1;
   }
+  int ret;
   int connfd, sport;
   char ipbuf[16];
   struct sockaddr_in saddr;
@@ -90,32 +102,46 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  if (sd_epoll_init(&mgr, NULL) == -1) {
+  ret = sd_epoll_init(&mgr, NULL);
+  if (ret) {
+    fprintf(stderr, "sd_epoll_init(&mgr, NULL) failed ret:%d\n", ret);
     return -1;
   }
 
-  if (sd_epoll_opt_create(&opt_client) == -1) {
+  ret = sd_epoll_opt_create(&opt_client);
+  if (ret) {
+    fprintf(stderr, "sd_epoll_opt_create(&opt_client) failed ret:%d\n", ret);
     return -1;
   }
   opt_client->fd = connfd;
   opt_client->handle = read_server;
+  opt_client->flags |= SD_EPOLL_IN;
 
-  if (sd_epoll_opt_create(&opt_stdin) == -1) {
+  ret = sd_epoll_opt_create(&opt_stdin);
+  if (ret) {
+    fprintf(stderr, "sd_epoll_opt_create(&opt_stdin) failed ret:%d\n", ret);
     return -1;
   }
   opt_stdin->fd = STDIN_FILENO;
   opt_stdin->handle = read_stdin;
   opt_stdin->data.fd = connfd;
+  opt_stdin->flags |= SD_EPOLL_IN;
 
-  if (sd_epoll_opt_add(&mgr, opt_client) == -1) {
+  ret = sd_epoll_opt_add(&mgr, opt_client);
+  if (ret) {
+    fprintf(stderr, "sd_epoll_opt_add(&mgr, opt_client) failed ret:%d\n", ret);
     return -1;
   }
 
-  if (sd_epoll_opt_add(&mgr, opt_stdin) == -1) {
+  ret = sd_epoll_opt_add(&mgr, opt_stdin);
+  if (ret) {
+    fprintf(stderr, "sd_epoll_opt_add(&mgr, opt_stdin) failed ret:%d\n", ret);
     return -1;
   }
 
-  if (sd_epoll_run(&mgr) == -1) {
+  ret = sd_epoll_run(&mgr);
+  if (ret) {
+    fprintf(stderr, "sd_epoll_run(&mgr) failed ret:%d\n", ret);
     return -1;
   }
   sd_epoll_destory(&mgr);
