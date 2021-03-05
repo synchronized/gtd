@@ -41,7 +41,7 @@ project(epoll1client)
 add_executable(epoll1client epoll1_client.c sd_epoll.c)
 
 project(epoll3)
-add_executable(epoll3 epoll3.c)
+add_executable(epoll3 epoll3.c sd_buffer.c)
 
 project(epoll4)
 add_executable(epoll4 epoll4.c)

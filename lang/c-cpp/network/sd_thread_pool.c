@@ -11,11 +11,11 @@ static void* sd_thread_func(void *args) {
   while(1) {
     pthread_mutex_lock(&pool->mutex);
     while(!pool->jobs) {
-      if (pool->terminate) break;
+      if (worker->terminate) break;
       pthread_cond_signal(&pool->emptycond);
       pthread_cond_wait(&pool->cond, &pool->mutex);
     }
-    if (pool->terminate) {
+    if (worker->terminate) {
       pthread_mutex_unlock(&pool->mutex);
       break;
     }
@@ -68,7 +68,10 @@ int sd_thread_pool_destroy(struct sd_thread_pool *pool) {
   struct sd_thread_worker *tmp;
 
   pthread_mutex_lock(&pool->mutex);
-  pool->terminate = 1;
+  worker = pool->workers;
+  while(worker) {
+    worker->terminate = 1;
+  }
   pthread_cond_broadcast(&pool->cond);
   pthread_mutex_unlock(&pool->mutex);
 

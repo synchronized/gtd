@@ -8,10 +8,8 @@
 
 //初始化sd_epoll_mgr
 int sd_epoll_init(struct sd_epoll_mgr *mgr, void *arg) {
-  if (mgr == NULL) {
-    fprintf(stderr, "mgr is null\n");
-    return -1;
-  }
+  if (!mgr) return -1;
+
   mgr->efd = epoll_create(MAXEPOLLSIZE);
   if (mgr->efd == -1) {
     perror("epoll_create");
@@ -24,39 +22,21 @@ int sd_epoll_init(struct sd_epoll_mgr *mgr, void *arg) {
   return 0;
 }
 
-int sd_epoll_opt_create(struct sd_epoll_opt **pp_opt) {
-  if (pp_opt == NULL) {
-    fprintf(stderr, "pp_so is null\n");
-    return -1;
-  }
-  *pp_opt = (struct sd_epoll_opt*)malloc(sizeof(struct sd_epoll_opt));
-  if (*pp_opt == NULL) {
-    fprintf(stderr, "malloc failed\n");
-    return -1;
-  }
-  bzero(*pp_opt, sizeof(struct sd_epoll_opt));
-  return 0;
-}
-
 //添加
 int sd_epoll_opt_add(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
-  if (mgr == NULL) {
-    fprintf(stderr, "mgr is null\n");
-    return -1;
-  }
-  if (p_so == NULL) {
-    fprintf(stderr, "p_so is null\n");
-    return -1;
-  }
-  if (p_so->next != NULL) {
-    fprintf(stderr, "p_so already in sd_poll\n");
-  }
-  bzero(&mgr->ev, sizeof(mgr->ev));
-  mgr->ev.events = EPOLLIN | EPOLLET;
-  mgr->ev.data.ptr = p_so;
-  if (epoll_ctl(mgr->efd, EPOLL_CTL_ADD, p_so->fd, &mgr->ev) == -1) {
+  if (!mgr) return -1;
+  if (!p_so) return -2;
+  if (p_so->next) return -3;
+
+  struct epoll_event ev;
+  bzero(&ev, sizeof(ev));
+  ev.data.ptr = p_so;
+  if (p_so->flags & SD_EPOLL_IN) ev.events |= EPOLLIN;
+  if (p_so->flags & SD_EPOLL_OUT) ev.events |= EPOLLOUT;
+
+  if (epoll_ctl(mgr->efd, EPOLL_CTL_ADD, p_so->fd, &ev) == -1) {
     fprintf(stderr, "epoll set insertion error: fd=%d\n", p_so->fd);
-    return -1;
+    return -4;
   }
   mgr->curfds++;
 
@@ -66,29 +46,27 @@ int sd_epoll_opt_add(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
   return 0;
 }
 
-//从mgr中删除p_so,并且销毁p_so使用的内存
-int sd_epoll_opt_destory(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
-  if (sd_epoll_del_from_mgr(mgr, p_so) == -1) {
-    return -1;
+int sd_epoll_opt_mod(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
+  if (!mgr) return -1;
+  if (!p_so) return -2;
+
+  struct epoll_event ev;
+  bzero(&ev, sizeof(ev));
+  ev.data.ptr = p_so;
+  if (p_so->flags & SD_EPOLL_IN) ev.events |= EPOLLIN;
+  if (p_so->flags & SD_EPOLL_OUT) ev.events |= EPOLLOUT;
+
+  if (epoll_ctl(mgr->efd, EPOLL_CTL_MOD, p_so->fd, &ev) == -1) {
+    fprintf(stderr, "epoll set insertion error: fd=%d\n", p_so->fd);
+    return -4;
   }
-  free(p_so);
+  return 0;
 }
 
 //从mgr中删除p_so
-int sd_epoll_del_from_mgr(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
-  if (mgr == NULL) {
-    fprintf(stderr, "mgr is null\n");
-    return -1;
-  }
-  if (p_so == NULL) {
-    fprintf(stderr, "p_so is null\n");
-    return -1;
-  }
-
-  if (epoll_ctl(mgr->efd, EPOLL_CTL_DEL, p_so->fd, &mgr->ev) == -1) {
-    fprintf(stderr, "del socket '%d' to epoll failed:%s\n", p_so->fd, strerror(errno));
-    return -1;
-  }
+int sd_epoll_opt_del(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
+  if (!mgr) return -1;
+  if (!p_so) return -2;
 
   //查询链表中的位置
   struct sd_epoll_opt *it = &mgr->head;
@@ -100,11 +78,15 @@ int sd_epoll_del_from_mgr(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
   }
   if (it->next != p_so) {
     fprintf(stderr, "p_so is not in sd_poll fd:%d\n", p_so->fd);
+    return -3;
+  }
+  if (epoll_ctl(mgr->efd, EPOLL_CTL_DEL, p_so->fd, NULL) == -1) {
+    fprintf(stderr, "del socket '%d' to epoll failed:%s\n", p_so->fd, strerror(errno));
     return -1;
   }
-  mgr->curfds--;
 
   //删除p_so
+  mgr->curfds--;
   it->next = p_so->next;
   if (mgr->tail == p_so) {
     mgr->tail = it;
@@ -117,8 +99,8 @@ int sd_epoll_run(struct sd_epoll_mgr *mgr) {
     return -1;
   }
   int nfds, n;
-  mgr->runing = 1; //运行中
-  while (mgr->runing) {
+  mgr->terminate = 0; //运行中
+  while (!mgr->terminate) {
     nfds = epoll_wait(mgr->efd, mgr->events, mgr->curfds, -1);
     if (nfds == -1) {
       perror("epoll_wait");
@@ -137,9 +119,15 @@ int sd_epoll_stop(struct sd_epoll_mgr *mgr) {
     fprintf(stderr, "mgr is null\n");
     return -1;
   }
-  mgr->runing = 0;
+  mgr->terminate = 1;
 }
 
 int sd_epoll_destory(struct sd_epoll_mgr *mgr) {
-  //TODO
+  if (!mgr) return -1;
+
+  mgr->curfds = 0;
+  mgr->ctx = NULL;
+  mgr->tail = &mgr->head;
+  mgr->head.next = NULL;
+  return 0;
 }
