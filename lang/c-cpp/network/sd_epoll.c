@@ -23,74 +23,75 @@ int sd_epoll_init(struct sd_epoll_mgr *mgr, void *arg) {
 }
 
 //添加
-int sd_epoll_opt_add(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
+int sd_epoll_opt_add(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *opt) {
   if (!mgr) return -1;
-  if (!p_so) return -2;
-  if (p_so->next) return -3;
+  if (!opt) return -2;
+  if (opt->next) return -3;
 
   struct epoll_event ev;
   bzero(&ev, sizeof(ev));
-  ev.data.ptr = p_so;
-  if (p_so->flags & SD_EPOLL_IN) ev.events |= EPOLLIN;
-  if (p_so->flags & SD_EPOLL_OUT) ev.events |= EPOLLOUT;
+  ev.data.ptr = opt;
+  if (opt->flags & SD_EPOLL_IN) ev.events |= EPOLLIN;
+  if (opt->flags & SD_EPOLL_OUT) ev.events |= EPOLLOUT;
 
-  if (epoll_ctl(mgr->efd, EPOLL_CTL_ADD, p_so->fd, &ev) == -1) {
-    fprintf(stderr, "epoll set insertion error: fd=%d\n", p_so->fd);
+  if (epoll_ctl(mgr->efd, EPOLL_CTL_ADD, opt->fd, &ev) == -1) {
+    fprintf(stderr, "epoll set insertion error: fd=%d\n", opt->fd);
     return -4;
   }
   mgr->curfds++;
 
   //加入链表
-  mgr->tail->next = p_so;
-  mgr->tail = p_so;
+  mgr->tail->next = opt;
+  mgr->tail = opt;
   return 0;
 }
 
-int sd_epoll_opt_mod(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
+int sd_epoll_opt_mod(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *opt) {
   if (!mgr) return -1;
-  if (!p_so) return -2;
+  if (!opt) return -2;
 
   struct epoll_event ev;
   bzero(&ev, sizeof(ev));
-  ev.data.ptr = p_so;
-  if (p_so->flags & SD_EPOLL_IN) ev.events |= EPOLLIN;
-  if (p_so->flags & SD_EPOLL_OUT) ev.events |= EPOLLOUT;
+  ev.data.ptr = opt;
+  if (opt->flags & SD_EPOLL_IN) ev.events |= EPOLLIN;
+  if (opt->flags & SD_EPOLL_OUT) ev.events |= EPOLLOUT;
 
-  if (epoll_ctl(mgr->efd, EPOLL_CTL_MOD, p_so->fd, &ev) == -1) {
-    fprintf(stderr, "epoll set insertion error: fd=%d\n", p_so->fd);
+  if (epoll_ctl(mgr->efd, EPOLL_CTL_MOD, opt->fd, &ev) == -1) {
+    fprintf(stderr, "epoll set insertion error: fd=%d\n", opt->fd);
     return -4;
   }
   return 0;
 }
 
-//从mgr中删除p_so
-int sd_epoll_opt_del(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
+//从mgr中删除opt
+int sd_epoll_opt_del(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *opt) {
   if (!mgr) return -1;
-  if (!p_so) return -2;
+  if (!opt) return -2;
 
   //查询链表中的位置
   struct sd_epoll_opt *it = &mgr->head;
   while (it != mgr->tail) {
-    if (it->next == p_so) {
+    if (it->next == opt) {
       break;
     }
     it = it->next;
   }
-  if (it->next != p_so) {
-    fprintf(stderr, "p_so is not in sd_poll fd:%d\n", p_so->fd);
+  if (it->next != opt) {
+    fprintf(stderr, "opt is not in sd_poll fd:%d\n", opt->fd);
     return -3;
   }
-  if (epoll_ctl(mgr->efd, EPOLL_CTL_DEL, p_so->fd, NULL) == -1) {
-    fprintf(stderr, "del socket '%d' to epoll failed:%s\n", p_so->fd, strerror(errno));
+  if (epoll_ctl(mgr->efd, EPOLL_CTL_DEL, opt->fd, NULL) == -1) {
+    fprintf(stderr, "del socket '%d' to epoll failed:%s\n", opt->fd, strerror(errno));
     return -1;
   }
 
-  //删除p_so
+  //删除opt
   mgr->curfds--;
-  it->next = p_so->next;
-  if (mgr->tail == p_so) {
+  it->next = opt->next;
+  if (mgr->tail == opt) {
     mgr->tail = it;
   }
+  return 0;
 }
 
 int sd_epoll_run(struct sd_epoll_mgr *mgr) {
@@ -107,8 +108,23 @@ int sd_epoll_run(struct sd_epoll_mgr *mgr) {
       continue;
     }
     for (n=0; n<nfds; n++) {
-      struct sd_epoll_opt* p_so = (struct sd_epoll_opt*)mgr->events[n].data.ptr;
-      p_so->handle(mgr, p_so);
+      struct epoll_event *ev = &mgr->events[n];
+      struct sd_epoll_opt* opt = (struct sd_epoll_opt*)ev->data.ptr;
+      if (ev->events & (EPOLLIN | EPOLLHUP)) { //read
+        if (opt->handle_read) {
+          opt->handle_read(mgr->ctx, opt->ud);
+        }
+      }
+      if (ev->events & EPOLLOUT) {
+        if (opt->handle_write) {
+          opt->handle_write(mgr->ctx, opt->ud);
+        }
+      }
+      if (ev->events & EPOLLERR) {
+        if (opt->handle_error) {
+          opt->handle_error(mgr->ctx, opt->ud);
+        }
+      }
     }
   }
   return 0;

@@ -49,14 +49,20 @@ int sd_buffer_memmov(struct sd_buffer *list, size_t n) {
   if (!list->head) return -2;
   struct sd_buffer_node *wb = list->head;
   if (wb->size < n) return -3;
+
+  if (n == 0) {
+    return 0;
+  }
+
+  list->size -= n;
   if (wb->size > n) {
     //移动到头部(方便外部释放wb->buffer)
     memmove(wb->buffer, wb->buffer+n, n);
     wb->size -= n;
-    return 0;
+  } else {
+    list->head = wb->next;
+    free(wb);
   }
-  list->head = wb->next;
-  free(wb);
   return 0;
 }
 
