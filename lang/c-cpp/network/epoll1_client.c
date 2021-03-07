@@ -23,7 +23,10 @@ int sd_epoll_opt_create(struct sd_epoll_opt **pp_opt) {
   return 0;
 }
 
-int read_stdin(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
+void read_stdin(void *ctx, void *ud) {
+  struct sd_epoll_mgr *mgr = (struct sd_epoll_mgr*)ctx;
+  struct sd_epoll_opt *opt_client = (struct sd_epoll_opt*)ud;
+
   char buf[BUFSIZE];
   fgets(buf, sizeof(buf), stdin);
   buf[sizeof(buf)-1] = '\0';
@@ -37,30 +40,33 @@ int read_stdin(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
 
   if (strncasecmp(buf, "quit", 4) == 0) {
     sd_epoll_stop(mgr); //停止事件循环
-    return 0;
+    return;
   }
 
-  int connfd = p_so->data.fd;
+  int connfd = opt_client->fd;
   write(connfd, buf, strlen(buf));
-  return 0;
 }
 
-int read_server(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
+void read_server(void *ctx, void *ud) {
+  printf("read_server\n");
+  struct sd_epoll_mgr *mgr = (struct sd_epoll_mgr*)ctx;
+  struct sd_epoll_opt *opt = (struct sd_epoll_opt*)ud;
+
   int nread;
   char buf[BUFSIZE];
-  nread = read(p_so->fd, buf, sizeof(buf));
+  nread = read(opt->fd, buf, sizeof(buf));
   if (nread == 0) {
     printf("close from server\n");
     sd_epoll_stop(mgr); //停止事件循环
-    return 0;
+    return;
   }
   else if(nread < 0) {
     perror("read");
-    return -1;
+    return;
   }
   buf[sizeof(buf)-1] = '\0';
   fprintf(stdout, "recv from server: %s\n", buf);
-  return 0;
+  return;
 }
 
 int main(int argc, char **argv) {
@@ -72,8 +78,8 @@ int main(int argc, char **argv) {
   int connfd, sport;
   char ipbuf[16];
   struct sockaddr_in saddr;
-  struct sd_epoll_opt *opt_stdin;
-  struct sd_epoll_opt *opt_client;
+  struct sd_epoll_opt opt_stdin;
+  struct sd_epoll_opt opt_client;
   struct sd_epoll_mgr mgr;
 
   sport = atoi(argv[2]);
@@ -91,7 +97,7 @@ int main(int argc, char **argv) {
   }
 
   connfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (connfd == -1) {
+  if (connfd < 0) {
     perror("socket failed");
     return -1;
   }
@@ -101,39 +107,34 @@ int main(int argc, char **argv) {
             inet_ntop(AF_INET, &saddr.sin_addr, ipbuf, sizeof(ipbuf)), ntohs(saddr.sin_port), strerror(errno));
     return -1;
   }
+  printf("connect %s:%d fd: %d\n",
+          inet_ntop(AF_INET, &saddr.sin_addr, ipbuf, sizeof(ipbuf)), ntohs(saddr.sin_port), connfd);
 
-  ret = sd_epoll_init(&mgr, NULL);
+  ret = sd_epoll_init(&mgr, &mgr);
   if (ret) {
     fprintf(stderr, "sd_epoll_init(&mgr, NULL) failed ret:%d\n", ret);
     return -1;
   }
 
-  ret = sd_epoll_opt_create(&opt_client);
-  if (ret) {
-    fprintf(stderr, "sd_epoll_opt_create(&opt_client) failed ret:%d\n", ret);
-    return -1;
-  }
-  opt_client->fd = connfd;
-  opt_client->handle = read_server;
-  opt_client->flags |= SD_EPOLL_IN;
+  bzero(&opt_client, sizeof(opt_client));
+  opt_client.fd = connfd;
+  opt_client.ud = &opt_client;
+  opt_client.handle_read = read_server;
+  opt_client.flags |= SD_EPOLL_IN;
 
-  ret = sd_epoll_opt_create(&opt_stdin);
-  if (ret) {
-    fprintf(stderr, "sd_epoll_opt_create(&opt_stdin) failed ret:%d\n", ret);
-    return -1;
-  }
-  opt_stdin->fd = STDIN_FILENO;
-  opt_stdin->handle = read_stdin;
-  opt_stdin->data.fd = connfd;
-  opt_stdin->flags |= SD_EPOLL_IN;
+  bzero(&opt_stdin, sizeof(opt_stdin));
+  opt_stdin.fd = STDIN_FILENO;
+  opt_stdin.ud = &opt_client;
+  opt_stdin.handle_read = read_stdin;
+  opt_stdin.flags |= SD_EPOLL_IN;
 
-  ret = sd_epoll_opt_add(&mgr, opt_client);
+  ret = sd_epoll_opt_add(&mgr, &opt_client);
   if (ret) {
     fprintf(stderr, "sd_epoll_opt_add(&mgr, opt_client) failed ret:%d\n", ret);
     return -1;
   }
 
-  ret = sd_epoll_opt_add(&mgr, opt_stdin);
+  ret = sd_epoll_opt_add(&mgr, &opt_stdin);
   if (ret) {
     fprintf(stderr, "sd_epoll_opt_add(&mgr, opt_stdin) failed ret:%d\n", ret);
     return -1;

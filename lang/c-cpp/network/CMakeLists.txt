@@ -44,7 +44,7 @@ project(epoll3)
 add_executable(epoll3 epoll3.c sd_buffer.c)
 
 project(epoll4)
-add_executable(epoll4 epoll4.c)
+add_executable(epoll4 epoll4.c sd_buffer.c sd_epoll.c)
 target_link_libraries(epoll4 ${CMAKE_THREAD_LIBS_INIT})
 
 project(sd_thread_pool_test)

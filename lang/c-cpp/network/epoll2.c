@@ -16,6 +16,9 @@
 
 struct context {
   int naccept;
+  struct sd_epoll_opt opt_stdin;
+  struct sd_epoll_opt opt_listen;
+  struct sd_epoll_mgr mgr;
 };
 
 int sd_epoll_opt_create(struct sd_epoll_opt **pp_opt) {
@@ -29,14 +32,18 @@ int sd_epoll_opt_create(struct sd_epoll_opt **pp_opt) {
   return 0;
 }
 
-//从mgr中删除p_so,并且销毁p_so使用的内存
-int sd_epoll_opt_destory(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
-  int ret = sd_epoll_opt_del(mgr, p_so);
+//从mgr中删除opt,并且销毁opt使用的内存
+int sd_epoll_opt_destory(struct context *ctx, struct sd_epoll_opt *opt) {
+  struct sd_epoll_mgr *mgr = &ctx->mgr;
+  int ret = sd_epoll_opt_del(mgr, opt);
   if (ret) {
     fprintf(stderr, "sd_epoll_opt_del failed ret:%d\n", ret);
     return -1;
   }
-  free(p_so);
+  if (opt != &ctx->opt_listen && opt != &ctx->opt_stdin) {
+    free(opt);
+  }
+  return 0;
 }
 
 
@@ -47,7 +54,11 @@ static int setnonblocking(int sockfd) {
   return 0;
 }
 
-static int read_stdin(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
+static void read_stdin(void *_ctx, void *ud) {
+  struct context *ctx = (struct context*)_ctx;
+  struct sd_epoll_mgr *mgr = &ctx->mgr;
+  struct sd_epoll_opt *opt = (struct sd_epoll_opt*)ud;
+
   char buf[BUFSIZE];
   fgets(buf, sizeof(buf), stdin);
   buf[sizeof(buf)-1] = '\0';
@@ -61,59 +72,63 @@ static int read_stdin(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
 
   if (strncasecmp(buf, "quit", 4) == 0) {
     sd_epoll_stop(mgr); //停止事件循环
-    return 0;
+    return;
   }
 
-  int connfd = p_so->data.fd;
+  int connfd = opt->fd;
   write(connfd, buf, strlen(buf));
-  return 0;
 }
 
-static int read_client(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
+static void read_client(void *_ctx, void *ud) {
+  struct context *ctx = (struct context*)_ctx;
+  struct sd_epoll_opt *opt = (struct sd_epoll_opt*)ud;
   int nread;
   char buf[BUFSIZE];
-  int connfd = p_so->fd;
+  int connfd = opt->fd;
 
   nread = read(connfd, buf, sizeof(buf)-1);
   buf[nread] = '\0';
   if (nread == 0) {
     printf("client close the connection\n");
-    sd_epoll_opt_destory(mgr, p_so);
-    return -1;
+    sd_epoll_opt_destory(ctx, opt);
+    return;
   }
   if (nread < 0) {
     perror("read error");
-    sd_epoll_opt_destory(mgr, p_so);
-    return -1;
+    sd_epoll_opt_destory(ctx, opt);
+    return;
   }
 
   printf("recv from client: %s\n", buf);
   write(connfd, buf, nread); //响应客户端
-  return 0;
+  return;
 }
 
-static int onconnect(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
+static void onconnect(void *_ctx, void *ud) {
+  struct context *ctx = (struct context*)_ctx;
+  struct sd_epoll_mgr *mgr = &ctx->mgr;
+  struct sd_epoll_opt *opt = (struct sd_epoll_opt*)ud;
+
   int ret;
   char buf[BUFSIZE], ipbuf[16];
   struct sockaddr_in cliaddr;
   struct sd_epoll_opt *opt_conn;
   socklen_t socklen;
-  int listenfd = p_so->fd;
+  int listenfd = opt->fd;
 
-  struct context *ctx = (struct context*)mgr->ctx;
 
   int connfd = accept(listenfd, (struct sockaddr*)&cliaddr, &socklen);
   if (connfd == -1) {
     perror("accpet");
-    return -1;
+    return;
   }
   sprintf(buf, "accept from %s:%d\n",
           inet_ntop(AF_INET, &cliaddr.sin_addr, ipbuf, sizeof(ipbuf)), ntohs(cliaddr.sin_port));
   printf("%d:%s", ++ctx->naccept, buf);
-  if (mgr->curfds >= MAXEPOLLSIZE) {
+  if (ctx->naccept >= MAXEPOLLSIZE) {
     fprintf(stderr, "too many connection, more than %d\n", MAXEPOLLSIZE);
     close(connfd);
-    return -1;
+    return;
   }
   if (setnonblocking(connfd) < 0) {
     perror("setnonblocking error");
@@ -121,19 +136,22 @@ static int onconnect(struct sd_epoll_mgr *mgr, struct sd_epoll_opt *p_so) {
 
   ret = sd_epoll_opt_create(&opt_conn);
   if (ret) {
+    free(opt_conn);
+    close(connfd);
     fprintf(stderr, "sd_epoll_opt_create failed %d\n", ret);
-    return -1;
+    return;
   }
   opt_conn->fd = connfd;
-  opt_conn->handle = read_client;
+  opt_conn->ud = opt_conn;
+  opt_conn->handle_read = read_client;
   opt_conn->flags |= SD_EPOLL_IN;
 
   ret = sd_epoll_opt_add(mgr, opt_conn);
   if (ret) {
     fprintf(stderr, "sd_epoll_opt_add(mgr, opt_conn) failed ret:%d\n", ret);
-    return -1;
+    return;
   }
-  return 0;
+  return;
 }
 
 
@@ -149,10 +167,10 @@ int main(int argc, char *argv[]) {
   struct rlimit rt;
   char ipbuf[16];
   struct context ctx;
+  struct sd_epoll_mgr *mgr = &ctx.mgr;
+  struct sd_epoll_opt *opt_listen = &ctx.opt_listen;
+  struct sd_epoll_opt *opt_stdin = &ctx.opt_stdin;
 
-  struct sd_epoll_opt *opt_stdin;
-  struct sd_epoll_opt *opt_listen;
-  struct sd_epoll_mgr mgr;
 
   bzero(&ctx, sizeof(ctx));
 
@@ -197,51 +215,43 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  ret = sd_epoll_init(&mgr, &ctx);
+  ret = sd_epoll_init(mgr, &ctx);
   if (ret) {
-    fprintf(stderr, "sd_epoll_init(&mgr, &ctx) failed ret:%d\n", ret);
+    fprintf(stderr, "sd_epoll_init(mgr, &ctx) failed ret:%d\n", ret);
     return -1;
   }
 
-  ret = sd_epoll_opt_create(&opt_listen);
-  if (ret) {
-    fprintf(stderr, "sd_epoll_opt_create(&opt_listen) failed %d\n", ret);
-    return -1;
-  }
   opt_listen->fd = listenfd;
-  opt_listen->handle = onconnect;
+  opt_listen->ud = opt_listen;
+  opt_listen->handle_read = onconnect;
   opt_listen->flags |= SD_EPOLL_IN;
 
-  ret = sd_epoll_opt_create(&opt_stdin);
-  if (ret) {
-    fprintf(stderr, "sd_epoll_opt_create(&opt_stdin) failed %d\n", ret);
-    return -1;
-  }
   opt_stdin->fd = STDIN_FILENO;
-  opt_stdin->handle = read_stdin;
+  opt_stdin->ud = opt_stdin;
+  opt_stdin->handle_read = read_stdin;
   opt_stdin->flags |= SD_EPOLL_IN;
 
-  ret = sd_epoll_opt_add(&mgr, opt_listen);
+  ret = sd_epoll_opt_add(mgr, opt_listen);
   if (ret) {
-    fprintf(stderr, "sd_epoll_opt_add(&mgr, opt_listen) failed ret:%d\n", ret);
+    fprintf(stderr, "sd_epoll_opt_add(mgr, opt_listen) failed ret:%d\n", ret);
     return -1;
   }
 
-  ret = sd_epoll_opt_add(&mgr, opt_stdin);
+  ret = sd_epoll_opt_add(mgr, opt_stdin);
   if (ret) {
-    fprintf(stderr, "sd_epoll_opt_add(&mgr, opt_stdin) failed ret:%d\n", ret);
+    fprintf(stderr, "sd_epoll_opt_add(mgr, opt_stdin) failed ret:%d\n", ret);
     return -1;
   }
 
   printf("listen to %s:%d\n",
          inet_ntop(AF_INET, &servaddr.sin_addr, ipbuf, sizeof(ipbuf)), ntohs(servaddr.sin_port));
 
-  ret = sd_epoll_run(&mgr);
+  ret = sd_epoll_run(mgr);
   if (ret) {
-    fprintf(stderr, "sd_epoll_run(&mgr) failed ret:%d\n", ret);
+    fprintf(stderr, "sd_epoll_run(mgr) failed ret:%d\n", ret);
     return -1;
   }
-  sd_epoll_destory(&mgr);
+  sd_epoll_destory(mgr);
 
   close(listenfd);
   return 0;
