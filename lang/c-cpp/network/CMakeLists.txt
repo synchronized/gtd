@@ -31,6 +31,9 @@ add_executable(select5client select5_client.cpp)
 project(poll1)
 add_executable(poll1 poll1.c)
 
+project(poll2)
+add_executable(poll2 poll2.c)
+
 project(epoll1)
 add_executable(epoll1 epoll1.c)
 
