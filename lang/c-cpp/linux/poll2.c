@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   int i, maxi, listenfd, connfd, sockfd;
-  int nready;
+  int nready, nread;
   short port;
   ssize_t n;
   char buf[MAXLINE], ipbuf[16];
@@ -107,8 +107,8 @@ int main(int argc, char *argv[]) {
       }
       if (client[i].revents & POLLIN) {
         connfd = client[i].fd;
-        nready = read(connfd, buf, sizeof(buf)-1);
-        if (nready < 0) {
+        nread = read(connfd, buf, sizeof(buf)-1);
+        if (nread < 0) {
           int eno = errno;
           if (eno != EAGAIN && eno != EWOULDBLOCK) {
             perror("read");
@@ -117,18 +117,18 @@ int main(int argc, char *argv[]) {
           }
           continue;
         }
-        if (nready == 0) {
+        if (nread == 0) {
           printf("client close fd:%d\n", connfd);
           client[i].fd = -1;
           close(connfd);
           continue;
         }
-        buf[nready] = '\0';
-        int j = nready-1;
+        buf[nread] = '\0';
+        int j = nread-1;
         for (; j>0; j--) {
           if (buf[j] == '\n' || buf[j] == '\r') {
             buf[j] = '\0';
-            nready--;
+            nread--;
             continue;
           }
           break;

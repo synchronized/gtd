@@ -53,3 +53,14 @@ target_link_libraries(epoll4 ${CMAKE_THREAD_LIBS_INIT})
 project(sd_thread_pool_test)
 add_executable(sd_thread_pool_test sd_thread_pool_test.c sd_thread_pool.c)
 target_link_libraries(sd_thread_pool_test ${CMAKE_THREAD_LIBS_INIT})
+
+
+project(thread1)
+find_package(Threads)
+add_executable(thraed1 thread1.c)
+target_link_libraries(thraed1 ${CMAKE_THREAD_LIBS_INIT})
+
+project(thread2)
+find_package(Threads)
+add_executable(thraed2 thread2.c)
+target_link_libraries(thraed2 ${CMAKE_THREAD_LIBS_INIT})
