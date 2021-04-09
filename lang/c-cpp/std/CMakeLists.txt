@@ -37,3 +37,6 @@ add_executable(sharedptr6 sharedptr6.cpp str_blob.cpp str_blob_ptr.cpp)
 
 project(string1)
 add_executable(string1 string1.cpp)
+
+project(factor1)
+add_executable(factor1 factor1.cpp)
