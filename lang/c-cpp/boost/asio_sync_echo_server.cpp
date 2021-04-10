@@ -15,7 +15,7 @@ void Session(boost::asio::ip::tcp::socket socket) {
       boost::system::error_code ec;
       std::size_t length = socket.read_some(boost::asio::buffer(data), ec);
       if (ec == boost::asio::error::eof) {
-        std::cout << "连接被 Client s妥善关闭了" << std::endl;
+        std::cout << "连接被 Client 妥善关闭了" << std::endl;
         break;
       } else if (ec) {
         throw boost::system::system_error(ec);
