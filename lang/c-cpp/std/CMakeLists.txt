@@ -40,3 +40,9 @@ add_executable(string1 string1.cpp)
 
 project(factor1)
 add_executable(factor1 factor1.cpp)
+
+project(map1)
+add_executable(map1 map1.cpp)
+
+project(align1)
+add_executable(align1 align1.cpp)
