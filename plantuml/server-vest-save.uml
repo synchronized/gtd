@@ -1,0 +1,46 @@
+
+@startuml
+
+(*) --> ===Begin===
+
+partition "数据前端服务器" {
+  --> "服务器启动"
+  --> "收到保存数据请求" 
+  
+  --> if "是否存在内存中" then
+    --> [no] "保存到内存中"
+    --> ===s2===
+  else
+    --> [no] "更新内存中的数据"
+    --> ===s2===
+  endif 
+}
+
+partition "Redis组件" {
+  ===s2=== -right-> "将数据保存到Redis中" as SaveToRedis
+  SaveToRedis --> if "保存到Redis是否成功?" then
+    -down-> [yes] "将数据从BadList删除"
+    -down-> "Redis保存完毕" as RedisSaveFinish
+  else
+    -left-> [no] "将数据写入BadList"
+    -down-> "将对应数据的BadList写入数据库"
+    -right-> RedisSaveFinish
+  endif
+}
+
+partition "数据前端服务器" {
+  ===s2=== -down-> ===s3===
+  RedisSaveFinish -left-> ===s3===
+  -left-> "检查立即保存" as CheckNowSave
+  CheckNowSave --> if "是否是立即保存" then
+    --> [yes] "将数据保存到MongoDB"
+    --> ===End===
+  else
+    --> [no] "将数据添加到定时器"
+    --> ===End===
+  endif
+}
+
+===End=== --> (*)
+
+@enduml

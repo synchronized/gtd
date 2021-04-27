@@ -1,0 +1,44 @@
+
+@startuml
+
+(*) --> ===Begin===
+
+partition "数据前端服务器" {
+  --> "服务器启动"
+  --> "收到获取数据请求" 
+  --> if "是否存在内存中" then
+    -right-> [yes] "直接使用内存中的数据"
+    --> ===End===
+  else
+    -down-> [no] ===s1===
+  endif 
+}
+
+partition "Redis组件" {
+  ===s1=== -left-> "BadList检查" as BadListCheck
+  BadListCheck --> if "数据是否在BadList" then
+    --> [yes] "" "从Redis获取数据完毕" as RedisGetDataFinish
+  else 
+    --> [no] "从Redis中查询数据" as RedisGetData
+  endif
+  
+  RedisGetData --> if "是否在Redis中存在?" then
+    --> [no] RedisGetDataFinish
+  else
+    --> [yes] "使用Redis中的数据" as UseRedisData
+  endif
+
+  UseRedisData --> RedisGetDataFinish
+}
+
+partition "数据前端服务器" {
+  ===s1=== -down-> ===s2===
+  RedisGetDataFinish --> ===s2===
+  ===s2=== --> "从数据库中获取" as DbGetRequest
+  DbGetRequest --> "写入数据到Redis中"
+  --> ===End===
+}
+
+===End=== --> (*)
+
+@enduml
