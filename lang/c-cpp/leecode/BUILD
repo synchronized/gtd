@@ -14,3 +14,8 @@ cc_binary(
     name = "rotate",
     srcs = ["rotate.cpp"],
 )
+
+cc_binary(
+    name = "moveZeroes",
+    srcs = ["moveZeroes.cpp"],
+)
