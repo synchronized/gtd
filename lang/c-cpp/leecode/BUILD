@@ -19,3 +19,8 @@ cc_binary(
     name = "moveZeroes",
     srcs = ["moveZeroes.cpp"],
 )
+
+cc_binary(
+    name = "twoSum",
+    srcs = ["twoSum.cpp"],
+)
