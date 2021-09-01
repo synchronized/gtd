@@ -24,3 +24,8 @@ cc_binary(
     name = "twoSum",
     srcs = ["twoSum.cpp"],
 )
+
+cc_binary(
+    name = "reverseString",
+    srcs = ["reverseString.cpp"],
+)
