@@ -39,3 +39,8 @@ cc_binary(
     name = "middleNode",
     srcs = ["middleNode.cpp"],
 )
+
+cc_binary(
+    name = "removeNthFromEnd",
+    srcs = ["removeNthFromEnd.cpp"],
+)
