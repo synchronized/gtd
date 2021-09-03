@@ -28,4 +28,9 @@ cc_binary(
 cc_binary(
     name = "reverseString",
     srcs = ["reverseString.cpp"],
+))
+
+cc_binary(
+    name = "reverseWords",
+    srcs = ["reverseWords.cpp"],
 )
