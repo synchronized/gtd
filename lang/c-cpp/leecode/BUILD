@@ -49,3 +49,8 @@ cc_binary(
     name = "lengthOfLongestSubstring",
     srcs = ["lengthOfLongestSubstring.cpp"],
 )
+
+cc_binary(
+    name = "checkInclusion",
+    srcs = ["checkInclusion.cpp"],
+)
