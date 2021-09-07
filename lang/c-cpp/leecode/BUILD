@@ -44,3 +44,8 @@ cc_binary(
     name = "removeNthFromEnd",
     srcs = ["removeNthFromEnd.cpp"],
 )
+
+cc_binary(
+    name = "lengthOfLongestSubstring",
+    srcs = ["lengthOfLongestSubstring.cpp"],
+)
