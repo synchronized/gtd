@@ -17,19 +17,18 @@ public:
       return false;
     }
     unordered_map<char, int> mapM;
-    int i;
-    for (i=0; i<m; i++) {
+    for (int i=0; i<m; i++) {
       mapM[s1[i]]--;
-      mapM[s2[i]]++;
     }
-    if (zeroMap(mapM)) {
-      return true;
-    }
-    for (int j=m; j<n; j++) {
-      mapM[s2[j-m]]--;
-      mapM[s2[j]]++;
-
-      if (zeroMap(mapM)) {
+    int left = 0;
+    for (int j=0; j<n; j++) {
+      char x = s2[j];
+      mapM[x]++;
+      while (mapM[x] > 0) {
+        mapM[s2[left]]--;
+        left++;
+      }
+      if (j - left +1 == m) {
         return true;
       }
     }
