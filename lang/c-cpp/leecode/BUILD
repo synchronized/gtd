@@ -64,3 +64,8 @@ cc_binary(
     name = "maxAreaOfIsland",
     srcs = ["maxAreaOfIsland.cpp"],
 )
+
+cc_binary(
+    name = "connect",
+    srcs = ["connect.cpp"],
+)
