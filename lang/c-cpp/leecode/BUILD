@@ -69,3 +69,8 @@ cc_binary(
     name = "connect",
     srcs = ["connect.cpp"],
 )
+
+cc_binary(
+    name = "mergeTwoLists",
+    srcs = ["mergeTwoLists.cpp"],
+)
