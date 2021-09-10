@@ -79,3 +79,8 @@ cc_binary(
     name = "reverseList",
     srcs = ["reverseList.cpp"],
 )
+
+cc_binary(
+    name = "updateMatrix",
+    srcs = ["updateMatrix.cpp"],
+)
