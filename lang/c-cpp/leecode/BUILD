@@ -59,3 +59,8 @@ cc_binary(
     name = "floodFill",
     srcs = ["floodFill.cpp"],
 )
+
+cc_binary(
+    name = "maxAreaOfIsland",
+    srcs = ["maxAreaOfIsland.cpp"],
+)
