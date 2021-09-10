@@ -74,3 +74,8 @@ cc_binary(
     name = "mergeTwoLists",
     srcs = ["mergeTwoLists.cpp"],
 )
+
+cc_binary(
+    name = "reverseList",
+    srcs = ["reverseList.cpp"],
+)
