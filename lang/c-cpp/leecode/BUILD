@@ -84,3 +84,8 @@ cc_binary(
     name = "updateMatrix",
     srcs = ["updateMatrix.cpp"],
 )
+
+cc_binary(
+    name = "addTwoNumbers",
+    srcs = ["addTwoNumbers.cpp"],
+)
