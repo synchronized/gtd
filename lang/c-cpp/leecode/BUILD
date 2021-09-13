@@ -89,3 +89,8 @@ cc_binary(
     name = "addTwoNumbers",
     srcs = ["addTwoNumbers.cpp"],
 )
+
+cc_binary(
+    name = "findMedianSortedArrays",
+    srcs = ["findMedianSortedArrays.cpp"],
+)
