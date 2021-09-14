@@ -94,3 +94,8 @@ cc_binary(
     name = "findMedianSortedArrays",
     srcs = ["findMedianSortedArrays.cpp"],
 )
+
+cc_binary(
+    name = "longestPalindrome",
+    srcs = ["longestPalindrome.cpp"],
+)
