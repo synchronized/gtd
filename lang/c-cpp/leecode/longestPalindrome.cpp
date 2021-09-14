@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <map>
 
 /*
  * leetcode: 5. 最长回文子串
@@ -22,6 +23,7 @@
  */
 using namespace std;
 
+//中心扩散
 class Solution {
 public:
   string longestPalindrome(string s) {
@@ -29,7 +31,7 @@ public:
     int maxlength = 0;
     int n = s.size();
     for (int i=0; i<n;) {
-      if (maxlength-i < maxlength/2) break;
+      if (n-i < maxlength/2) break;
       int left = i, right = i;
       while (right < n-1 && s[right] == s[right+1]) right++;
       i = right + 1;
@@ -46,17 +48,50 @@ public:
   }
 };
 
+//动态规划
+class Solution1 {
+public:
+  string longestPalindrome(string s) {
+    if (s.size() < 2) {
+      return s;
+    }
+    int start = 0;
+    int maxlength = 1;
+    int n = s.size();
+    vector<vector<bool>> boolfilter(n, vector<bool>(n, false));
+    for (int right=1; right < n; right++) {
+      for (int left=0; left < right; left++) {
+        if (s[left] != s[right]) continue;
+
+        if (right-left <= 2) {
+          boolfilter[left][right] = true;
+        } else {
+          boolfilter[left][right] = boolfilter[left+1][right-1];
+        }
+
+        if (boolfilter[left][right] && maxlength < right-left+1) {
+          start = left;
+          maxlength = right-left+1;
+        }
+      }
+    }
+    return s.substr(start, maxlength);
+  }
+};
 
 struct solutionItem {
    string str;
 };
 
 int main() {
-  Solution solution;
+  Solution1 solution;
   vector<solutionItem> data {
                              {"babad"},
                              {"cbbd"},
                              {"a"},
+                             {"aaaa"},
+                             {"caba"},
+                             {"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"},
   };
   for (auto it = data.begin(); it != data.end(); it++) {
     solutionItem &item = *it;
