@@ -99,3 +99,8 @@ cc_binary(
     name = "longestPalindrome",
     srcs = ["longestPalindrome.cpp"],
 )
+
+cc_binary(
+    name = "convert",
+    srcs = ["convert.cpp"],
+)
