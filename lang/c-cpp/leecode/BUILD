@@ -109,3 +109,8 @@ cc_binary(
     name = "reverse",
     srcs = ["reverse.cpp"],
  )
+
+cc_binary(
+    name = "myAtoi",
+    srcs = ["myAtoi.cpp"],
+ )
