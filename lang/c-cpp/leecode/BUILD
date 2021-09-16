@@ -108,9 +108,14 @@ cc_binary(
 cc_binary(
     name = "reverse",
     srcs = ["reverse.cpp"],
- )
+)
 
 cc_binary(
     name = "myAtoi",
     srcs = ["myAtoi.cpp"],
- )
+)
+
+cc_binary(
+    name = "isPalindrome",
+    srcs = ["isPalindrome.cpp"],
+)
