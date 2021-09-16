@@ -104,3 +104,8 @@ cc_binary(
     name = "convert",
     srcs = ["convert.cpp"],
 )
+
+cc_binary(
+    name = "reverse",
+    srcs = ["reverse.cpp"],
+ )
