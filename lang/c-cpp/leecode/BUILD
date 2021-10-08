@@ -119,3 +119,8 @@ cc_binary(
     name = "isPalindrome",
     srcs = ["isPalindrome.cpp"],
 )
+
+cc_binary(
+    name = "isMatch",
+    srcs = ["isMatch.cpp"],
+)
