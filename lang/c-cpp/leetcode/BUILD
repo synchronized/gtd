@@ -124,3 +124,8 @@ cc_binary(
     name = "isMatch",
     srcs = ["isMatch.cpp"],
 )
+
+cc_binary(
+    name = "maxArea",
+    srcs = ["maxArea.cpp"],
+)
