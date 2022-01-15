@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <title>position值:static,relative,absolute,fixed</title>
+    <style>
+     .positionStatic {
+       background: #cccccc;
+       position: static;
+       padding: 20px;
+
+       -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+               box-sizing: border-box;
+     }
+
+     .positionStatic2 {
+       background: blue;
+       position: static;
+       top: -20px;
+       left: 50px;
+       width: 500px;
+     }
+
+     .relative1 {
+       background: #cccccc;
+       padding: 20px;
+       position: relative;
+     }
+     .relative2 {
+       background: #3399cc;
+       padding: 20px;
+       position: relative;
+       top: -20px;
+       left: 20px;
+       width: 500px;
+     }
+
+     .positionFixed {
+       background: #3399cc;
+       position: fixed;
+       width: 200px;
+       right: 0;
+       bottom: 0;
+     }
+
+     .posiRela {
+       background: green;
+       position: relative;
+       width: 600px;
+       height: 400px;
+     }
+     .posiAbso {
+       background: blue;
+       position: absolute;
+       top: 120px;
+       right: 0;
+       width: 300px;
+       height: 200px;
+     }
+
+     .pageSpace {
+       background: #3399cc;
+       height: 5000px;
+     }
+    </style>
+  </head>
+  <body>
+    <div>
+      <ul>
+        <li>position值:static,relative,absolute,fixed</li>
+      </ul>
+    </div>
+    <div class="positionStatic">
+      static 是默认值。任意 position: static; 的元素不会被特殊的定位。一个 static 元素表示它不会被“positioned”，一个 position 属性被设置为其他值的元素表示它会被“positioned”。
+    </div>
+    <div class="positionStatic2">
+      position 为 static
+      增加了top和left
+    </div>
+    <hr />
+    <div class="relative1">
+      relative 表现的和 static 一样，除非你添加了一些额外的属性。
+    </div>
+    <div class="relative2">
+      在一个相对定位（position属性的值为relative）的元素上设置 top 、 right 、 bottom 和 left 属性会使其偏离其正常位置。其他的元素的位置则不会受该元素的影响发生位置改变来弥补它偏离后剩下的空隙。
+    </div>
+
+    <div class="positionFixed">
+      在一个相对定位（position属性的值为relative）的元素上设置 top 、 right 、 bottom 和 left 属性会使其偏离其正常位置。其他的元素的位置则不会受该元素的影响发生位置改变来弥补它偏离后剩下的空隙。
+    </div>
+    <hr />
+    <div class="posiRela">
+      这个元素是相对定位的。如果它是 position: static; ，那么它的绝对定位子元素会跳过它直接相对于body元素定位。
+      <div class="posiAbso">
+        这个元素是绝对定位的。它相对于它的父元素定位。
+      </div>
+    </div>
+    <div class="posiAbso">
+      这个元素是绝对定位的。它相对于它的父元素定位。
+    </div>
+    <div class="pageSpace">这是一个占页标签,他会把页面撑出滚动条</div>
+  </body>
+</html>

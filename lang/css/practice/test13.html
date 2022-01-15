@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <title>flex布局-简单应用</title>
+    <style>
+     * {
+       -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+       box-sizing: border-box;
+     }
+
+     .container {
+       border: solid #6AC5AC 3px;
+       display: -webkit-flex;
+       display: flex;
+     }
+
+     .nav {
+       border: solid #D64078 3px;
+       width: 200px;
+     }
+
+     .main {
+       border: solid #FDC72F 3px;
+       -webkit-flex: 1;
+               flex: 1;
+     }
+
+     .section {
+       border: solid #3399cc 3px;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="nav">
+        <ul>
+          <li>Home</li>
+          <li>Taco Menu</li>
+          <li>Draft List</li>
+          <li>Hours</li>
+          <li>Directions</li>
+          <li>Contact</li>
+        </ul>
+      </div>
+      <div class="main">
+        <div class="section">
+          Flexbox好容易使用！
+        </div>
+        <div class="section">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus imperdiet, nulla et dictum interdum, nisi lorem egestas odio, vitae scelerisque enim ligula venenatis dolor. Maecenas nisl est, ultrices nec congue eget, auctor vitae massa. Fusce luctus vestibulum augue ut aliquet. Mauris ante ligula, facilisis sed ornare eu, lobortis in odio. Praesent convallis urna a lacus interdum ut hendrerit risus congue. Nunc sagittis dictum nisi, sed ullamcorper ipsum dignissim ac. In at libero sed nunc venenatis imperdiet sed ornare turpis. Donec vitae dui eget tellus gravida venenatis. Integer fringilla congue eros non fermentum. Sed dapibus pulvinar nibh tempor porta. Cras ac leo purus. Mauris quis diam velit.
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

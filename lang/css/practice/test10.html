@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <title>float 布局</title>
+    <style>
+     .container {
+       background: #eaeaea;
+
+     }
+
+     .clearfix {
+       overflow: auto;
+     }
+
+     .box {
+       background: #dadada;
+       float: left;
+       width: 200px;
+       height: 100px;
+       margin: 5px;
+       padding: 5px;
+       -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+               box-sizing: border-box;
+     }
+
+     .after-box{
+       clear: left;
+     }
+
+     .floot {
+       background: #cacaca;
+       margin: 5px;
+       padding: 5px;
+       -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+               box-sizing: border-box;
+     }
+
+     .box2 {
+       background: #dadada;
+       display: inline-block;
+       width: 200px;
+       height: 100px;
+       padding: 5px;
+       margin: 5px;
+       -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+               box-sizing: border-box;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="container clearfix">
+      <div class="box">我在浮动！</div>
+      <div class="box">我在浮动！</div>
+      <div class="box">我在浮动！</div>
+      <div class="box">我在浮动！</div>
+      <div class="box">我在浮动！</div>
+      <div class="box">我在浮动！</div>
+      <div class="box">我在浮动！</div>
+      <div class="box">我在浮动！</div>
+      <div class="floot after-box">
+        我在使用 clear，所以我不会浮动到上面那堆盒子的旁边。
+      </div>
+      <hr />
+      <div class="container">
+        <div class="box2">我是一个行内块！</div>
+        <div class="box2">我是一个行内块！</div>
+        <div class="box2">我是一个行内块！</div>
+        <div class="box2">我是一个行内块！</div>
+        <div class="box2">我是一个行内块！</div>
+        <div class="box2">我是一个行内块！</div>
+        <div class="box2">我是一个行内块！</div>
+        <div class="floot">
+          这次我可没有用 clear 。太棒了！
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

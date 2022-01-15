@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>float布局,并且使用clearfix(overflow: auto)处理浮动元素比父元素高的问题</title>
+    <style>
+     .container {
+       background: blue;
+       padding: 2px;
+       position: relative;
+     }
+     .clearfix {
+       overflow: auto;
+     }
+
+     .nav {
+       background: #ee99cc;
+       float: left;
+       width: 200px;
+       padding: 2px;
+       -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+               box-sizing: border-box;
+     }
+
+     .section {
+       background: #3399cc;
+       margin-left: 200px;
+       padding: 2px;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="container clearfix">
+      <nav class="nav">
+        <ul>
+          <li>Home</li>
+          <li>Taco Menu</li>
+          <li>Draft List</li>
+          <li>Hours</li>
+          <li>Directions</li>
+          <li>Contact</li>
+        </ul>
+      </nav>
+      <div class="section">
+        这个例子和之前那个外观一模一样。请注意我们在容器上做了“清除浮动”。原本在这个例子中是不需要的，但是当 nav 比非浮动的内容还要高时就需要了。
+      </div>
+      <div class="section">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus imperdiet, nulla et dictum interdum, nisi lorem egestas odio, vitae scelerisque enim ligula venenatis dolor. Maecenas nisl est, ultrices nec congue eget, auctor vitae massa. Fusce luctus vestibulum augue ut aliquet. Mauris ante ligula, facilisis sed ornare eu, lobortis in odio. Praesent convallis urna a lacus interdum ut hendrerit risus congue. Nunc sagittis dictum nisi, sed ullamcorper ipsum dignissim ac. In at libero sed nunc venenatis imperdiet sed ornare turpis. Donec vitae dui eget tellus gravida venenatis. Integer fringilla congue eros non fermentum. Sed dapibus pulvinar nibh tempor porta. Cras ac leo purus. Mauris quis diam velit.
+      </div>
+    </div>
+  </body>
+</html>

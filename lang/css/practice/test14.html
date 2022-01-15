@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <title>flex布局-复杂应用</title>
+    <style>
+     * {
+       -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+               box-sizing: border-box;
+     }
+
+     .container {
+       border: solid #6AC5AC 3px;
+       display: -webkit-flex;
+       display: flex;
+     }
+
+     .initial {
+       border: solid #D64078 3px;
+       -webkit-flex: initial;
+               flex: initial;
+
+       width: 200px;
+       min-width: 100px;
+     }
+
+     .none {
+       border: solid #FDC72F 3px;
+       -webkit-flex: none;
+               flex: none;
+       width: 200px;
+     }
+
+     .flex1 {
+       border: solid #3399cc 3px;
+       -webkit-flex: 1;
+               flex: 1;
+     }
+
+     .flex2 {
+       border: solid #eeaadd 3px;
+       -webkit-flex: 2;
+               flex: 2;
+     }
+
+     .vertical-container {
+       border: solid #6AC5AC 3px;
+       width: 500px;
+       height: 300px;
+       margin: 0 auto;
+
+       display: -webkit-flex;
+       display: flex;
+
+       -webkit-align-items: center;
+               align-items: center;
+       -webkit-justify-content: center;
+               justify-content: center;
+     }
+
+     .inner {
+       border: solid #eeaadd 3px;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="initial">
+        空间足够的时候，我的宽度是200px，如果空间不足，我会变窄到100px，但不会再窄了。
+      </div>
+      <div class="none">
+        无论窗口如何变化，我的宽度一直是200px。
+      </div>
+      <div class="flex1">
+        我会占满剩余宽度的1/3。
+      </div>
+      <div class="flex2">
+        我会占满剩余宽度的2/3。
+      </div>
+    </div>
+    <hr />
+    <div class="vertical-container">
+      <div class="inner">CSS里总算是有了一种简单的垂直居中布局的方法了！</div>
+    </div>
+  </body>
+</html>

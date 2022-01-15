@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <title>基础:块(block)元素使用margin居中,控制宽高等,display属性值:block,inline,inline-block,none</title>
+    <style>
+     .space {
+       height: 10px;
+     }
+     .elem {
+       border: solid #3399cc 3px;
+       max-width: 600px;
+       margin: 0 auto;
+     }
+
+     .simple {
+       background: #cccccc;
+       width: 500px;
+       margin: 0 auto;
+     }
+
+     .fancy {
+       background: #cccccc;
+       width: 500px;
+       margin: 0 auto;
+       padding: 50px;
+       border: solid #3399cc 10px;
+       //border-width: 10px;
+     }
+
+     .simple2 {
+       background: #cccccc;
+       width: 500px;
+       margin: 0 auto;
+       -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+               box-sizing: border-box;
+     }
+     .fancy2 {
+       background: #cccccc;
+       width: 500px;
+       margin:  0 auto;
+       padding: 50px;
+       border: solid #3399cc 10px;
+       -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+               box-sizing: border-box;
+     }
+    </style>
+  </head>
+  <body>
+    <div>
+      基础:
+      <ul>
+        <li>块(block)元素使用margin居中</li>
+        <li>控制宽高等</li>
+        <li>display属性值:block,inline,inline-block,none</li>
+        <li>盒子模型, border, padding, margin, width, height</li>
+        <li>新盒子模型(box-sizing: border-box)使border, padding, margin不占宽高</li>
+      </ul>
+    </div>
+    <div class="elem">
+      div 是一个标准的块级元素。一个块级元素会新开始一行并且尽可能撑满容器。其他常用的块级元素包括 p 、 form 和HTML5中的新元素： header 、 footer 、 section 等等。
+    </div>
+    <div class="space"></div>
+    <div class="simple">
+      我小一些...
+    </div>
+    <div class="space"></div>
+    <div class="fancy">
+      我比它大！
+    </div>
+    <hr />
+
+    <div class="simple2">
+      我们现在一样大小了！
+    </div>
+    <div class="space"></div>
+    <div class="fancy2">
+      万岁
+    </div>
+  </body>
+</html>

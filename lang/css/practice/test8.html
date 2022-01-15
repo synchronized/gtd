@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>float布局(宽度使用百分比)</title>
+    <style>
+     .container {
+       background: #eaeaea;
+       padding: 3px;
+     }
+     .clearfix {
+       overflow: auto;
+     }
+
+     .nav {
+       float: left;
+       background: #dadada;
+       padding: 10px;
+       width: 25%;
+       -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+               box-sizing: border-box;
+     }
+
+     .section {
+       background: #cacaca;
+       margin-left: 25%;
+       padding: 10px;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="container clearfix">
+      <div class="nav">
+        <ul>
+          <li>Home</li>
+          <li>Taco Menu</li>
+          <li>Draft List</li>
+          <li>Hours</li>
+          <li>Directions</li>
+          <li>Contact</li>
+        </ul>
+      </div>
+      <div class="section">
+        当布局很窄时， nav 就会被挤扁。更糟糕的是，你不能在 nav 上使用 min-width 来修复这个问题，因为右边的那列是不会遵守它的。
+      </div>
+      <div class="section">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus imperdiet, nulla et dictum interdum, nisi lorem egestas odio, vitae scelerisque enim ligula venenatis dolor. Maecenas nisl est, ultrices nec congue eget, auctor vitae massa. Fusce luctus vestibulum augue ut aliquet. Mauris ante ligula, facilisis sed ornare eu, lobortis in odio. Praesent convallis urna a lacus interdum ut hendrerit risus congue. Nunc sagittis dictum nisi, sed ullamcorper ipsum dignissim ac. In at libero sed nunc venenatis imperdiet sed ornare turpis. Donec vitae dui eget tellus gravida venenatis. Integer fringilla congue eros non fermentum. Sed dapibus pulvinar nibh tempor porta. Cras ac leo purus. Mauris quis diam velit.
+      </div>
+    </div>
+  </body>
+</html>

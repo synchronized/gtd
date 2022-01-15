@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>position布局,relative,absolute,fixed</title>
+    <style>
+     .container {
+       background: #d0d0d0;
+       position: relative;
+       padding: 3px;
+     }
+
+     .nav {
+       background: #a0a0a0;
+       position: absolute;
+       left: 0px;
+       width: 200px;
+       -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+               box-sizing: border-box;
+       padding: 10px;
+     }
+
+     .header {
+     }
+
+     .section {
+       background: #808080;
+       margin-left: 200px;
+       border: solid #3399cc 3px;
+     }
+
+     .footer {
+       background: #909090;
+       position: fixed;
+       bottom: 0;
+       height: 70px;
+       width: 100%;
+     }
+
+     body {
+       margin-bottom: 120px;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="nav">
+        <ul>
+          <li>Home</li>
+          <li>Taco Menu</li>
+          <li>Draft List</li>
+          <li>Hours</li>
+          <li>Directions</li>
+          <li>Contact</li>
+        </ul>
+      </div>
+      <div class="section">
+        section 的 margin-left 样式确保了有足够的空间容纳 nav 元素。
+      </div>
+      <div class="section">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus imperdiet, nulla et dictum interdum, nisi lorem egestas odio, vitae scelerisque enim ligula venenatis dolor. Maecenas nisl est, ultrices nec congue eget, auctor vitae massa. Fusce luctus vestibulum augue ut aliquet. Mauris ante ligula, facilisis sed ornare eu, lobortis in odio. Praesent convallis urna a lacus interdum ut hendrerit risus congue. Nunc sagittis dictum nisi, sed ullamcorper ipsum dignissim ac. In at libero sed nunc venenatis imperdiet sed ornare turpis. Donec vitae dui eget tellus gravida venenatis. Integer fringilla congue eros non fermentum. Sed dapibus pulvinar nibh tempor porta. Cras ac leo purus. Mauris quis diam velit.
+      </div>
+      <div class="section">
+        注意观察当你调整浏览器窗口时发生了什么。效果很赞！
+      </div>
+    </div>
+    <div class="footer">
+      如果你使用了一个固定定位的页眉或页脚，确保有足够的空间来显示它们！我在 body 上面加了 margin-bottom 。
+    </div>
+  </body>
+</html>
