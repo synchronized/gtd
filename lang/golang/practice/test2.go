@@ -1,3 +1,6 @@
+//go:build ignore
+// +build ignore
+
 package main
 
 import (
@@ -13,7 +16,7 @@ func main() {
 	}
 
 	var j = 0
-	for i:=0; i<len(arri); i++ {
+	for i := 0; i < len(arri); i++ {
 		var v = arri[i]
 		if _, exist := rmMap[v]; !exist {
 			arri[j] = arri[i]

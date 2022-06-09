@@ -1,3 +1,6 @@
+//go:build ignore
+// +build ignore
+
 package main
 
 import (
@@ -16,13 +19,14 @@ func test1() {
 }
 
 const SoccerClubRecentPlayerPointsNum = 5
+
 var RecentPlayerPoints []int
 
 func test2(PlayerPoint int) {
 	var num = len(RecentPlayerPoints)
-	var slen = SoccerClubRecentPlayerPointsNum -1
+	var slen = SoccerClubRecentPlayerPointsNum - 1
 	if num >= SoccerClubRecentPlayerPointsNum {
-		RecentPlayerPoints = append(RecentPlayerPoints[:0], RecentPlayerPoints[num - slen:]...)
+		RecentPlayerPoints = append(RecentPlayerPoints[:0], RecentPlayerPoints[num-slen:]...)
 	}
 	RecentPlayerPoints = append(RecentPlayerPoints, PlayerPoint)
 	fmt.Printf("RecentPlayerPoints:%#v\n", RecentPlayerPoints)

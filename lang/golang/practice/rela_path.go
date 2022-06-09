@@ -1,3 +1,6 @@
+//go:build ignore
+// +build ignore
+
 package main
 
 import (
@@ -10,7 +13,7 @@ func main() {
 	var runPath = "../workdoc"
 	var a, err = filepath.Abs(fmt.Sprint(workPath, "/", runPath, "/XXX.exe"))
 	var b, err1 = filepath.Abs(filepath.Join(workPath, runPath, "XXX.exe"))
-	fmt.Printf("a:%s", a )
+	fmt.Printf("a:%s", a)
 	if err != nil {
 		fmt.Printf("err:%s", err.Error())
 	}
