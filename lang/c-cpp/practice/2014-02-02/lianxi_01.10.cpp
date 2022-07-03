@@ -1,17 +1,22 @@
-#include <iostream> 
+#include <iostream>
 using namespace std;
 
-int main()
-{
-	void sort(int x, int y, int z);
+int main() {
+	void sort(int, int, int);
 	int x, y, z;
-	cin >>x >>y >>z;
+
+    cout << "read var x:";
+    cin >> x;
+    cout << "read var y:";
+    cin >> y;
+    cout << "read var z:";
+    cin >> z;
+
 	sort(x, y, z);
 	return 0;
 }
 
-void sort( int x, int y, int z)
-{
+void sort(int x, int y, int z) {
 	int temp;
 	if (x > y) { temp = x; x = y; y = temp;}
 	if (z < x) cout <<z <<',' <<x <<',' <<y <<endl;

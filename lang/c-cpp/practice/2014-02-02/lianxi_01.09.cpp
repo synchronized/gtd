@@ -1,22 +1,22 @@
 #include <iostream>
 using namespace std;
 
-int add( int x, int y);
-int main()
-{
+int add(int, int);
+
+int add(int x, int y) {
+	return x + y;
+}
+
+int main() {
 	int a,b;
-	cin >>a >>b;
-	cout << "a=" << a;
-	cout << ", b=" << b;
-	cout << endl;
+    cout << "read var a:";
+    cin >>a;
+    cout << "read var b:";
+    cin >>b;
+
+	cout << "a=" << a << ", b=" << b << endl;
 
 	int c = add( a, b);
 	cout << "a+b=" << c << endl;
 	return 0;
-}
-
-int add( int x, int y)
-{
-	int z = x + y;
-	return z;
 }

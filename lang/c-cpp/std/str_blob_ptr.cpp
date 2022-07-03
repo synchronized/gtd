@@ -1,4 +1,5 @@
 #include <str_blob_ptr.h>
+#include <stdexcept>
 
 std::shared_ptr<std::vector<std::string>> StrBlobPtr::check(
     size_t i, const std::string& msg) const {

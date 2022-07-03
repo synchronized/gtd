@@ -1,8 +1,7 @@
 #include <iostream>
 using namespace std;
 
-int main() 
-{
+int main() {
 	int a=3,b=4,c=5;
 	bool r;
 

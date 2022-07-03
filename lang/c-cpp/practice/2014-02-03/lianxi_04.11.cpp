@@ -1,9 +1,8 @@
 #include <iostream>
 using namespace std;
 
-void pout (int i);
-int main()
-{
+void pout(int);
+int main() {
 	int i;
 	cin >>i;
 	pout(i);
@@ -11,16 +10,12 @@ int main()
 	return 0;
 }
 
-void pout (int i)
-{
+void pout(int i) {
 	char m;
-	if (i>9) {
-		m = i%10+48;
+	if (i>9) {m = i%10+48;
 		cout <<m;
 		pout (i/10);
-	}
-	else
-	{
+	} else {
 		m = i+48;
 		cout <<m;
 	}

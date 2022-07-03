@@ -1,8 +1,7 @@
 #include <iostream>
 using namespace std;
 
-int main()
-{
+int main() {
 	int a;
 	a = 3.5*3+2*7-'a'; //115.5
 	cout <<"a = 3.5*3+2*7-'a'=" <<a <<endl;

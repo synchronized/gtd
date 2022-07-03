@@ -1,8 +1,7 @@
 #include <iostream>
 using namespace std;
 
-int main()
-{
+int main() {
 	int a,b;
 	int *pointer_1, *pointer_2;
 	a=100;b=10;

@@ -1,8 +1,7 @@
 #include <iostream>
 using namespace std;
 
-struct Date
-{
+struct Date {
 	int year;
 	int month;
 	int day;
@@ -10,19 +9,8 @@ struct Date
 
 bool isleap(int year);
 int getdaybyyear(Date date);
-int main()
-{
-	Date date = {2000,1,1};
-	cout <<"please input the date" <<endl;
-	cin >>date.year >>date.month >>date.day;
 
-	cout <<date.year <<"-" <<date.month <<"-" <<date.day <<endl;
-	cout <<"the day is " <<getdaybyyear(date) <<" of year" <<endl;
-	return 0;
-}
-
-bool isleap(int year)
-{
+bool isleap(int year) {
 	bool r;
 	if(year%4==0 && year%100!=0) r = true;
 	else if(year%400==0) r = true;
@@ -30,11 +18,9 @@ bool isleap(int year)
 	return r;
 }
 
-int getdaybyyear(Date date)
-{
+int getdaybyyear(Date date) {
 	int r=0;
-	switch(date.month-1)
-	{
+	switch(date.month-1) {
 		case 11: r+=30;
 		case 10: r+=31;
 		case 9: r+=30;
@@ -53,4 +39,14 @@ int getdaybyyear(Date date)
 	cout <<"r=" <<r <<endl;
 	r+=date.day;
 	return r;
+}
+
+int main() {
+	Date date = {2000,1,1};
+	cout <<"please input the date" <<endl;
+	cin >>date.year >>date.month >>date.day;
+
+	cout <<date.year <<"-" <<date.month <<"-" <<date.day <<endl;
+	cout <<"the day is " <<getdaybyyear(date) <<" of year" <<endl;
+	return 0;
 }

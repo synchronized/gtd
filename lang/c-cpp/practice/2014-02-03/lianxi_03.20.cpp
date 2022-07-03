@@ -1,26 +1,20 @@
 #include <iostream>
 using namespace std;
 
-int main()
-{
+int main() {
 	int i,j,m,b,n = 1000;
 	bool k;
-	for(i=1; i<n; i++) 
-	{
+	for(i=1; i<n; i++) {
 		m = 0;
 		k = false;
 		b = i/2+1;
-		for(j=1; j<b; j++)
-		{
+		for(j=1; j<b; j++) {
 			if(i%j==0) m+=j;
 		}
-		if(m==i)
-		{
+		if(m==i) {
 			cout <<i <<",its factors are ";
-			for(j=1; j<b; j++)
-			{
-				if(i%j==0) 
-				{
+			for(j=1; j<b; j++) {
+				if(i%j==0) {
 					if(k) cout <<',';
 					cout <<j;
 					k = true;

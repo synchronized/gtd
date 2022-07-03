@@ -1,8 +1,7 @@
 #include <iostream>
 using namespace std;
 
-int main()
-{
+int main() {
 	int a=12,n;
 	a+=a; //24;
 	cout <<"a+=a:" <<a <<endl;
@@ -22,6 +21,6 @@ int main()
 
 	a+=a-=a*=a; //0
 	cout <<"a+=a-=a*=a:" <<a <<endl;
-	
+
 	return 0;
 }
