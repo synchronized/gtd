@@ -1,9 +1,11 @@
 #include <iostream>
 using namespace std;
 
+//将数字颠倒
 void pout(int);
 int main() {
 	int i;
+    cout << "please input the var i:";
 	cin >>i;
 	pout(i);
 	cout <<endl;

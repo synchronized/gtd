@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 
+//因式分解
 int main() {
 	int i,j,m,b,n = 1000;
 	bool k;

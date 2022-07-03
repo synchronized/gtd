@@ -5,8 +5,7 @@ long p (long);
 
 long p (long n) {
 	long i,r=1;
-	for(i=0; i<n; i++)
-	{
+	for(i=0; i<n; i++) {
 		r *= i+1;
 	}
 	cout <<n <<"p:" <<r <<endl;

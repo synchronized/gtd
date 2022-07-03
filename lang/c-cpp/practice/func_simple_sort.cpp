@@ -2,7 +2,7 @@
 using namespace std;
 
 int main() {
-	void sort(int, int, int);
+	void simple_sort(int, int, int);
 	int x, y, z;
 
     cout << "read var x:";
@@ -12,11 +12,11 @@ int main() {
     cout << "read var z:";
     cin >> z;
 
-	sort(x, y, z);
+	simple_sort(x, y, z);
 	return 0;
 }
 
-void sort(int x, int y, int z) {
+void simple_sort(int x, int y, int z) {
 	int temp;
 	if (x > y) { temp = x; x = y; y = temp;}
 	if (z < x) cout <<z <<',' <<x <<',' <<y <<endl;

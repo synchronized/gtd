@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 
+//fibonacci 斐波那契数
 int main() {
 	int i,j,m,n=10;
 	i=j=1;
