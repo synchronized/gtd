@@ -1,4 +1,4 @@
 #/bin/sh
 
-cmake -Bbuild
+cmake -B build
 cmake --build build
