@@ -1,0 +1,4 @@
+[submodule "lang/c-cpp/lua/external/lua"]
+	path = lang/c-cpp/lua/external/lua
+	url = https://github.com/synchronized/lua-cmake.git
+	branch = v5.4
