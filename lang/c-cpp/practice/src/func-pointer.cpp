@@ -6,6 +6,7 @@ typedef int(*Func)(int);
 
 int func1(int i) {
 	cout << "func1(" << i << ")" << endl;
+    return 0;
 }
 
 int main() {
