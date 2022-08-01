@@ -42,6 +42,10 @@ void printLuaStack(lua_State* lua) {
     }
 }
 
+/*
+
+ */
+
 int main() {
     const char *script_define = R"(
 function mypow(x, y)
@@ -50,9 +54,21 @@ function mypow(x, y)
 end
 )";
 
-    const char *script_call = R"(
+const char *script_call = R"(
 print(pkg.mypow(2, 8))
 )";
+
+
+/**
+需要达到这种效果
+{
+    "_G" = {
+        "pkg" = {
+            mypow = function{...}
+        }
+    }
+}
+*/
 
     auto lState = luaL_newstate();
     luaL_openlibs(lState); //注入标准库到lua
@@ -77,13 +93,19 @@ print(pkg.mypow(2, 8))
             return -1;
         }
         printLuaStack(lState);
-        lua_newtable(lState); //chunk, _G(table), empty(table)
-        lua_pushstring(lState, "pkg"); //chunk, _G(table), empty(table), "pkg"
-        lua_pushvalue(lState, -2); //chunk, _G(table), empty(table), "pkg", empty(table)
-        lua_rawset(lState, -4);
+        //定义 package => pkg
+        lua_newtable(lState); //chunk, _G(table), pkg(table)
+        lua_pushstring(lState, "pkg"); //chunk, _G(table), pkg(table), "pkg"(string)
+        lua_pushvalue(lState, -2); //chunk, _G(table), pkg(table), "pkg"(string), pkg(table)
+        lua_rawset(lState, -4); //chunk, _G(table), pkg(table)
         printLuaStack(lState);
         //chunk, _G(table), pkg(table)
+        //setupvalue (pkg(table)) 到 chunk
         auto upvalueName = lua_setupvalue(lState, -3, 1); //chunk, pkg(table)
+        if (strcmp(upvalueName, "_ENV") != 0) {
+            printf("lua_setupvalue return value is not _ENV");
+            return -1;
+        }
         printf("upvalueName: %s\n", upvalueName);
         printLuaStack(lState);
         lua_pop(lState, 1); //chunk

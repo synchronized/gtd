@@ -42,6 +42,20 @@ void printLuaStack(lua_State* lua) {
     }
 }
 
+/**
+ * 需要达到这种效果
+ * {
+ *   "_G" = {
+ *     "pkg" = {
+ *       metatable = {
+ *         __index = _G
+ *       }
+ *       mypow = function{...}
+ *     }
+ *   }
+ * }
+*/
+
 int main() {
     const char *script_define = R"(
 function mypow(x, y)
@@ -53,6 +67,7 @@ end
     const char *script_call = R"(
 print(pkg.mypow(2, 8))
 )";
+
 
     auto lState = luaL_newstate();
     luaL_openlibs(lState); //注入标准库到lua
