@@ -4,11 +4,10 @@ go 1.17
 
 require (
 	github.com/sirupsen/logrus v1.8.1
-	github.com/stretchr/testify v1.2.2
+	github.com/stretchr/testify v1.7.0
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 // indirect
+	github.com/elliotchance/orderedmap v1.4.0 // indirect
+	github.com/huandu/skiplist v1.2.0 // indirect
 )
