@@ -15,8 +15,6 @@ func test2(a, b bool) {
 	fmt.Printf("%t ^ %t = %t\n", a, b, !(a || b) || (a && b))
 }
 
-func ()
-
 func main() {
 	test1(true, true, true)
 
