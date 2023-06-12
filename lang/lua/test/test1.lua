@@ -8,11 +8,16 @@
 ------------------
 
 num = 23 -- 数字都是双精度
-str = 'this is a string' -- 像python 一样不可变
-str = "this is a another string" -- 可以双引号
-str = [[
-像 python的多行注释可以用于表示多行字符串一样
+str1 = 'this is a string' -- 像python 一样不可变
+str2 = "this is a \"another string" -- 可以双引号
+str3 = [[
+像 python的多行注释"'可以用于表示多行字符串一样
 ]]
+
+print("str1:", str1)
+print("str1:", str2)
+print("str1:", str3)
+
 
 bol = nil -- 为定义,支持垃圾回收
 
@@ -29,7 +34,7 @@ elseif s ~= 'aspython' then -- ~= 表示 ！=
 else
    thisIsGlobal = 5 -- 驼峰式命名
    -- 显示声明局部变量（像 js 一样）
-   local line = io。read()
+   local line = io.read()
 
    -- .. 作为字符串链接字符
    print("凛冬将至" .. line)
@@ -40,7 +45,7 @@ foo = anUnknowVariable -- 等价于 foo = nil
 aBoolValue = false
 -- 只有nil 与false 为逻辑假; 数字0与空字符串''为真!
 if not aBoolValue  then
-   print('false')
+    print('false')
 end
 
 -- 想python 一样运用 'or' 和 'and'
@@ -48,19 +53,20 @@ end
 ans = aBoolValue and 'yes' or 'no'
 
 karlSum = 0
-for i=l,100  do -- 像matlab 一样的递增语法，包括两端，如同数学中[1,100]
-   karlSum = karlSum + i
+for i=1,100  do -- 像matlab 一样的递增语法，包括两端，如同数学中[1,100]
+    karlSum = karlSum + i
 end
 
 -- Step 为 2 递减的方式 '100, 1, -2'
 for i=1, 100, -2 do
-   print(j)
+    print(j)
 end
 -- 续上，范围可表示为"begin, end [, step]"
 
 num = 23
 repeat
-   print('凡人必有一死')
+    print('凡人必有一死')
+    num = num-1
 until num == 0
 
 --------------------
