@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdint>
 
 class MyClass{
 public:
@@ -18,11 +19,11 @@ private:
 
 int main() {
 	MyClass c1(1),c2(1);
-	if(c1 == c2) 
+	if(c1 == c2)
 	{
 		std::cout << "c1 == c2" << std::endl;
 	}
-	else 
+	else
 	{
 		std::cout << "c1 != c2" << std::endl;
 	}
